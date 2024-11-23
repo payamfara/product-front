@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import Quill from "quill";
 import "quill/dist/quill.snow.css";
 import ImageResize from "quill-image-resize";
-import GalleryModal from "../components/GalleryModal";
+import GalleryModal from "./GalleryModal";
 
 Quill.register("modules/imageResize", ImageResize);
 window.Quill = Quill;

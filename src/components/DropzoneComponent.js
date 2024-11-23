@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import Dropzone from "dropzone";
-import AddFromLinkModal from "../components/AddFromLinkModal";
-import GalleryModal from "../components/GalleryModal";
+import AddFromLinkModal from "./AddFromLinkModal";
+import GalleryModal from "./GalleryModal";
 
 const DropzoneComponent = ({ uploadedFiles = [], uploadUrl }) => {
   const [isAddFromLinkModalOpen, setIsAddFromLinkModalOpen] = useState(false);
