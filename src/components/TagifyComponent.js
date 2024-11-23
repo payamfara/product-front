@@ -40,7 +40,6 @@ const TagifyComponent = ({
     const handleChange = (e) => {
         if (onChange) onChange(e.detail.value);
     };
-    console.log('default', defaultValue);
 
     return (
         <Tags

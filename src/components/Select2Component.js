@@ -13,7 +13,6 @@ const Select2Component = ({
 }) => {
   const handleOptions = async (inputValue) => {
     try {
-      console.log(asyncUrl);
       const response = await fetch(`${asyncUrl}?term=${inputValue}`);
       const data = await response.json();
       return data.results; 

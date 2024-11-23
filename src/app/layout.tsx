@@ -84,13 +84,13 @@ export default function RootLayout({
         {/* <script src="/vendor/libs/quill/katex.js"></script>
         <script src="/vendor/libs/select2/select2.js"></script>
         <script src="/vendor/libs/select2/i18n/fa.js"></script>
-        <script src="/vendor/libs/dropzone/dropzone.min.js"></script>
         <script src="/vendor/libs/jquery-repeater/jquery-repeater.js"></script>
         <script src="/libs/jdate/jdate.js"></script>
         <script src="/libs/flatpickr/flatpickr-jalali.js"></script>
         <script src="/libs/flatpickr/l10n/fa.js"></script>
         <script src="/vendor/libs/tagify/tagify.js"></script>
         <script src="/js/jquery.toast.min.js"></script> */}
+        <script src="/vendor/libs/dropzone/dropzone.min.js"></script>
 
         {/* Main JS  */}
         {/* <script src="/js/main.js"></script> */}

@@ -3,35 +3,35 @@ import { Fragment, useState, useEffect } from "react";
 import Select2 from '../../../../components/Select2Component';
 import TagifyComponent from '../../../../components/TagifyComponent';
 import DropzoneComponent from '../../../../components/DropzoneComponent';
+import QuillEditorComponent from '../../../../components/QuillEditorComponent';
 import axios from "axios";
 import { useParams } from "next/navigation";
 
 const CreateProductPage = () => {
     const [tags, setTags] = useState([]);
     const [images, setImages] = useState([]);
+    const [description, setDescription] = useState('');
     const [loading, setLoading] = useState(true);
-
-    const params = useParams(); 
+    const params = useParams();
     const { id = "" } = params;
-    console.log('id', id);
     useEffect(() => {
         const requestUrl = `http://localhost:8000/products/save/${id}`
-        console.log('url', requestUrl);
         axios.get(requestUrl)
-        .then((res)=>{
-            console.log('result', res.data);
-            setTags(res.data?.tags)
-            setImages(res.data?.images)
-            console.log('images', res.data?.images)
-            setLoading(false);
-        })
-        .catch((err)=>{
-            console.error('Error fetching tags:', error);
-            setLoading(false);
-        })
+            .then((res) => {
+                setTags(res.data?.tags)
+                setImages(res.data?.images)
+                setDescription(res.data?.description)
+                setLoading(false);
+            })
+            .catch((err) => {
+                console.error('Error fetching tags:', error);
+                setLoading(false);
+            })
     }, [])
 
     if (loading) {
+        console.log('dd1');
+
         return <div>Loading...</div>;
     }
 
@@ -605,7 +605,7 @@ const CreateProductPage = () => {
                                                             <a className="fw-medium" href="javascript:void(0);">اضافه کردن دسته جدید</a>
                                                         </label>
                                                         <Select2
-                                                            url="http://localhost:8000/ajax/category-choices/"
+                                                            asyncUrl="http://localhost:8000/ajax/category-choices/"
                                                             isAsync={true}
                                                             placeholder="انتخاب دسته"
                                                             onChange={(vals) => { console.log(vals) }}
@@ -628,7 +628,7 @@ const CreateProductPage = () => {
                                                     {/* Description */}
                                                     <div>
                                                         <label className="form-label">توضیح (اختیاری)</label>
-                                                        <div className="form-control p-0 pt-1">
+                                                        {/* <div className="form-control p-0 pt-1">
                                                             <div className="comment-toolbar border-0 border-bottom">
                                                                 <div className="d-flex justify-content-start">
                                                                     <span className="ql-formats me-0">
@@ -643,25 +643,25 @@ const CreateProductPage = () => {
                                                                 </div>
                                                             </div>
                                                             <div className="comment-editor border-0 pb-4" id="ecommerce-category-description"></div>
-                                                        </div>
+                                                        </div> */}
+                                                        <QuillEditorComponent
+                                                            id="description"
+                                                            name="description"
+                                                            value={description}
+                                                            toolbarOptions={[
+                                                                'bold', 'italic', 'underline',
+                                                                { 'list': 'ordered' }, { 'list': 'bullet' },
+                                                                'link', 'image', 'gallery'
+                                                            ]}
+                                                            placeholder="متن خود را وارد کنید..."
+                                                            apiSaveImagesUrl="http://localhost:8000/api/save_images/products/"
+                                                        />
                                                     </div>
                                                 </div>
                                             </div>
                                             {/* /Product Information */}
                                             {/* Media */}
-                                            <div className="card mb-4">
-                                                <div className="card-header d-flex justify-content-between align-items-center">
-                                                    <h5 className="mb-0 card-title">رسانه ها</h5>
-                                                    <a className="fw-medium ql-snow" href="javascript:void(0);">افزودن از
-                                                        <button id="showAddLinkModal" type="button" className="rounded-pill lh-sm px-1 border"><svg width="18" height="18" viewBox="0 0 18 18"> <line className="ql-stroke" x1="7" x2="11" y1="7" y2="11"></line> <path className="ql-even ql-stroke" d="M8.9,4.577a3.476,3.476,0,0,1,.36,4.679A3.476,3.476,0,0,1,4.577,8.9C3.185,7.5,2.035,6.4,4.217,4.217S7.5,3.185,8.9,4.577Z"></path> <path className="ql-even ql-stroke" d="M13.423,9.1a3.476,3.476,0,0,0-4.679-.36,3.476,3.476,0,0,0,.36,4.679c1.392,1.392,2.5,2.542,4.679.36S14.815,10.5,13.423,9.1Z"></path> </svg></button>
-                                                        <button id="showAddFromGalleryModal" type="button" className="rounded-pill lh-sm px-1 border"><svg width="18" height="18" viewBox="0 0 18 18"> <rect className="ql-stroke" height="10" width="12" x="3" y="4"></rect> <circle className="ql-fill" cx="6" cy="7" r="1"></circle> <polyline className="ql-even ql-fill" points="5 12 5 11 7 9 8 10 11 7 13 9 13 12 5 12"></polyline> </svg></button>
-                                                    </a>
-                                                </div>
-                                                <div className="card-body">
-                                                    <DropzoneComponent uploadedFiles={images} uploadUrl={"http://localhost:8000/api/save_images/products"} />
-
-                                                </div>
-                                            </div>
+                                            <DropzoneComponent uploadedFiles={images} uploadUrl={"http://localhost:8000/api/save_images/products/"} />
                                             {/* /Media */}
                                             {/* Variants */}
                                             <div id="category_attrs" className="card mb-4">
@@ -1015,8 +1015,8 @@ const CreateProductPage = () => {
                                                     <div className="mb-3">
                                                         <label className="form-label mb-1" htmlFor="ecommerce-product-tags">برچسب ها</label>
                                                         <TagifyComponent
-                                                            placeholder="Search for tags..."
                                                             asyncUrl="http://localhost:8000/ajax/tags/"
+                                                            placeholder="Search for tags..."
                                                             onChange={(tags) => { console.log(tags); }}
                                                             defaultValue={tags}
                                                         />
