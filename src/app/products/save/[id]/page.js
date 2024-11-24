@@ -4,7 +4,6 @@ import Select2 from '../../../../components/Select2Component';
 import TagifyComponent from '../../../../components/TagifyComponent';
 import DropzoneComponent from '../../../../components/DropzoneComponent';
 import QuillEditorComponent from '../../../../components/QuillEditorComponent';
-import AttrFormRepeater from '../../../../components/AttrFormRepeater';
 import DynamicAttributeField from '../../../../components/DynamicAttributeField';
 import axios from "axios";
 import { useParams } from "next/navigation";
@@ -19,8 +18,7 @@ const CreateProductPage = () => {
     const [tags, setTags] = useState([]);
     const [images, setImages] = useState([]);
     const [description, setDescription] = useState('');
-    const [categoryAttrs, setCategoryAttrs] = useState([]);
-    const [productAttrs, setProductAttrs] = useState([]);
+    const [attrs, setAttrs] = useState([]);
     const [loading, setLoading] = useState(true);
     const params = useParams();
     const { id = "" } = params;
@@ -39,8 +37,7 @@ const CreateProductPage = () => {
                 setTags(res.data?.tags)
                 setImages(res.data?.images)
                 setDescription(res.data?.description)
-                setCategoryAttrs(res.data?.category_attrs)
-                setProductAttrs(res.data?.product_attrs)
+                setAttrs(res.data?.attrs)
                 setLoading(false);
             })
             .catch((err) => {
@@ -709,7 +706,7 @@ const CreateProductPage = () => {
                                                     <h5 className="card-title mb-0">ویژگی های دسته بندی</h5>
                                                 </div>
                                                 <div id="category_attrs_items" className="gap-3 d-flex flex-column card-body">
-                                                {categoryAttrs.map(item=>(
+                                                {attrs.map(item=>(
                                                   <DynamicAttributeField data={item} />
                                                 ))}
                                                 </div>
@@ -719,16 +716,6 @@ const CreateProductPage = () => {
                                                     <h5 className="card-title mb-0">ویژگی های وریانت</h5>
                                                 </div>
                                                 <div id="variant_attrs_items" className="card-body mxn-2 row row-cols-3">
-                                                </div>
-                                            </div>
-                                            {/* /Variants */}
-                                            {/* Variants */}
-                                            <div id="product_attrs" className="card mb-4">
-                                                <div className="card-header">
-                                                    <h5 className="card-title mb-0">ویژگی های عمومی محصول</h5>
-                                                </div>
-                                                <div id="product_attrs_items" className="d-flex flex-column gap-3 card-body">
-                                                    <AttrFormRepeater initialAttributes={productAttrs} />
                                                 </div>
                                             </div>
                                             {/* /Variants */}
