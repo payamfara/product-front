@@ -10,10 +10,17 @@ import axios from "axios";
 import { useParams } from "next/navigation";
 
 const CreateProductPage = () => {
+    const [partNumberIsManual, setPartNumberIsManual] = useState({});
+    const [partNumberEn, setPartNumberEn] = useState({});
+    const [partNumberFa, setPartNumberFa] = useState({});
+    const [partNumberBz, setPartNumberBz] = useState({});
+    const [status, setStatus] = useState({});
+    const [category, setCategory] = useState({});
     const [tags, setTags] = useState([]);
     const [images, setImages] = useState([]);
     const [description, setDescription] = useState('');
     const [categoryAttrs, setCategoryAttrs] = useState([]);
+    const [productAttrs, setProductAttrs] = useState([]);
     const [loading, setLoading] = useState(true);
     const params = useParams();
     const { id = "" } = params;
@@ -21,14 +28,23 @@ const CreateProductPage = () => {
         const requestUrl = `http://localhost:8000/products/save/${id}`
         axios.get(requestUrl)
             .then((res) => {
+                console.log(res);
+                
+                setPartNumberIsManual(res.data?.part_number_is_manual)
+                setPartNumberEn(res.data?.part_number_en)
+                setPartNumberFa(res.data?.part_number_fa)
+                setPartNumberBz(res.data?.part_number_bz)
+                setStatus(res.data?.status)
+                setCategory(res.data?.category)
                 setTags(res.data?.tags)
                 setImages(res.data?.images)
                 setDescription(res.data?.description)
                 setCategoryAttrs(res.data?.category_attrs)
+                setProductAttrs(res.data?.product_attrs)
                 setLoading(false);
             })
             .catch((err) => {
-                console.error('Error fetching tags:', error);
+                console.error('Error fetching tags:', err);
                 setLoading(false);
             })
     }, [])
@@ -37,6 +53,24 @@ const CreateProductPage = () => {
         console.log('dd1');
 
         return <div>Loading...</div>;
+    }
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        const form = e.target; 
+        const formData = new FormData(form); 
+        formData.forEach((value, key) => {
+            console.log(value, key);
+        })
+        const requestUrl = `http://localhost:8000/products/save/${id}`
+        axios.post(requestUrl, formData)
+        .then((res) => {
+            console.log(res);
+        })
+        .catch((err) => {
+            console.error('Error fetching tags:', err);
+        })
+        
     }
 
     return (
@@ -564,7 +598,7 @@ const CreateProductPage = () => {
                                     <span className="text-muted fw-light">تجارت الکترونیک /</span>
                                     افزودن محصول
                                 </h4>
-                                <form action="{% url 'save_view' pk=pk %}" id="productForm" className="app-ecommerce">
+                                <form action={`http://localhost:8000/products/save/${id}`} onSubmit={handleSubmit} className="app-ecommerce">
                                     {/* Add Product */}
                                     <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3">
                                         <div className="d-flex flex-column justify-content-center">
@@ -609,10 +643,12 @@ const CreateProductPage = () => {
                                                             <a className="fw-medium" href="javascript:void(0);">اضافه کردن دسته جدید</a>
                                                         </label>
                                                         <Select2
+                                                            name={'category'}
                                                             asyncUrl="http://localhost:8000/ajax/category-choices/"
                                                             isAsync={true}
                                                             placeholder="انتخاب دسته"
                                                             onChange={(vals) => { console.log(vals) }}
+                                                            defaultValue={category}
                                                         />
                                                     </div>
                                                     <div className="row mb-3">
@@ -672,7 +708,7 @@ const CreateProductPage = () => {
                                                 <div className="card-header">
                                                     <h5 className="card-title mb-0">ویژگی های دسته بندی</h5>
                                                 </div>
-                                                <div id="category_attrs_items" className="card-body">
+                                                <div id="category_attrs_items" className="gap-3 d-flex flex-column card-body">
                                                 {categoryAttrs.map(item=>(
                                                   <DynamicAttributeField data={item} />
                                                 ))}
@@ -692,7 +728,7 @@ const CreateProductPage = () => {
                                                     <h5 className="card-title mb-0">ویژگی های عمومی محصول</h5>
                                                 </div>
                                                 <div id="product_attrs_items" className="d-flex flex-column gap-3 card-body">
-                                                    <AttrFormRepeater />
+                                                    <AttrFormRepeater initialAttributes={productAttrs} />
                                                 </div>
                                             </div>
                                             {/* /Variants */}
@@ -952,8 +988,8 @@ const CreateProductPage = () => {
                                                 <div className="card-body">
                                                     {/* Base Price */}
                                                     <div className="mb-3">
-                                                        <label className="form-label" htmlFor="ecommerce-product-price">قیمت پایه</label>
-                                                        <input aria-label="قیمت محصول" className="form-control" id="ecommerce-product-price" name="productPrice" placeholder="قیمت" type="number" />
+                                                        <label className="form-label" htmlFor="price">قیمت پایه</label>
+                                                        <input aria-label="قیمت محصول" className="form-control" id="price" name="price" placeholder="قیمت" type="number" />
                                                     </div>
 
                                                     {/* Discounted Price */}
@@ -992,9 +1028,48 @@ const CreateProductPage = () => {
                                                     <h5 className="card-title mb-0">جزئیات</h5>
                                                 </div>
                                                 <div className="card-body">
-                                                    <div className="border border-dashed p-3 mb-3">
+                                                    <div className="d-flex flex-column gap-3 border border-dashed p-3 mb-3">
                                                         {/* Part number manual */}
-
+                                                        <div className="form-check m-0">
+                                                            <input
+                                                                type="checkbox"
+                                                                id={'part_number_is_manual'}
+                                                                name={'part_number_is_manual'}
+                                                                className="form-check-input"
+                                                                defaultChecked={!!partNumberIsManual}
+                                                            />
+                                                            <label class="form-label" for="part_number_is_manual">پارت نامبر دستی</label>
+                                                        </div>
+                                                        {/* Part number en */}
+                                                        <div>
+                                                            <label class="form-label" for="part_number_en">پارت نامبر انگلیسی</label>
+                                                            <input
+                                                                id={'part_number_en'}
+                                                                name={'part_number_en'}
+                                                                className="form-control"
+                                                            />
+                                                            <span id="help_part_number_en" class="fs-tiny form-label"></span>
+                                                        </div>
+                                                        {/* Part number fa */}
+                                                        <div>
+                                                            <label class="form-label" for="part_number_fa">پارت نامبر فارسی</label>
+                                                            <input
+                                                                id={'part_number_fa'}
+                                                                name={'part_number_fa'}
+                                                                className="form-control"
+                                                            />
+                                                            <span id="help_part_number_fa" class="fs-tiny form-label"></span>
+                                                        </div>
+                                                        {/* Part number bz */}
+                                                        <div>
+                                                            <label class="form-label" for="part_number_bz">پارت نامبر بازاری</label>
+                                                            <input
+                                                                id={'part_number_bz'}
+                                                                name={'part_number_bz'}
+                                                                className="form-control"
+                                                            />
+                                                            <span id="help_part_number_bz" class="fs-tiny form-label"></span>
+                                                        </div>
                                                     </div>
                                                     {/* Status */}
                                                     {/* <div className="mb-3 col ecommerce-select2-dropdown">
@@ -1009,9 +1084,11 @@ const CreateProductPage = () => {
                                                     <div className="mb-3 col ecommerce-select2-dropdown">
                                                         <label className="form-label mb-1" htmlFor="status-org">وضعیت</label>
                                                         <Select2
+                                                            name={'status'}
                                                             asyncUrl="http://localhost:8000/ajax/status-choices/" 
                                                             isAsync={true}
                                                             placeholder="وضعیت انتشار"
+                                                            defaultValue={status}
                                                             onChange={(vals) => { console.log(vals) }}
                                                         />
                                                     </div>
@@ -1076,37 +1153,6 @@ const CreateProductPage = () => {
 
                 {/* Drag Target Area To SlideIn Menu On Small Screens */}
                 <div className="drag-target"></div>
-            </div>
-
-
-
-            <div className="modal fade" id="formModal">
-                <div className="modal-dialog">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h5>افزودن ویژگی</h5>
-                        </div>
-                        <div className="modal-body"></div>
-                        <div className="modal-footer">
-                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">بستن</button>
-                            <button type="button" className="btn btn-primary" id="confirmButton">تایید</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div className="modal fade" id="attrModal">
-                <div className="modal-dialog">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h5>فرم ویژگی</h5>
-                        </div>
-                        <div className="modal-body"><form></form></div>
-                        <div className="modal-footer">
-                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">بستن</button>
-                            <button type="button" className="btn btn-primary" id="confirmButton">تایید</button>
-                        </div>
-                    </div>
-                </div>
             </div>
         </Fragment>
     );

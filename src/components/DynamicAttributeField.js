@@ -1,6 +1,8 @@
 import Select2 from "./Select2Component";
 
 const DynamicAttributeField = ({ data }) => {
+  console.log(data.attribute_title, data.attribute_value);
+
   const {
     attribute_type,
     attribute_title,
@@ -12,24 +14,26 @@ const DynamicAttributeField = ({ data }) => {
   switch (attribute_type) {
     case 0: // Select2
       return (
-        <div className="mb-3">
+        <div>
           <label className="form-label" htmlFor={attribute_title}>
             {attribute_placeholder}
           </label>
           <Select2
             id={attribute_title}
+            name={attribute_title}
             asyncUrl={`http://localhost:8000/ajax/attrs/${attribute_id}/`}
             isAsync={true}
             placeholder={attribute_placeholder}
             onChange={(vals) => {
               console.log(vals);
             }}
+            defaultValue={attribute_value}
           />
         </div>
       );
     case 1: // Input type=number
       return (
-        <div className="mb-3">
+        <div>
           <label className="form-label" htmlFor={attribute_title}>
             {attribute_placeholder}
           </label>
@@ -43,11 +47,11 @@ const DynamicAttributeField = ({ data }) => {
           />
         </div>
       );
-    default:
+    case 2:
       // For checkbox or radio based on priority
       if (attribute_priority === 0) {
         return (
-          <div className="mb-3">
+          <div>
             <label className="form-label" htmlFor={attribute_title}>
               {attribute_placeholder}
             </label>
@@ -62,7 +66,7 @@ const DynamicAttributeField = ({ data }) => {
         );
       } else {
         return (
-          <div className="mb-3">
+          <div>
             <label className="form-label" htmlFor={attribute_title}>
               {attribute_placeholder}
             </label>
@@ -83,6 +87,8 @@ const DynamicAttributeField = ({ data }) => {
           </div>
         );
       }
+    default:
+      return "";
   }
 };
 

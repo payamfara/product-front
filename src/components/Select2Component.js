@@ -4,12 +4,14 @@ import Select from "react-select";
 import AsyncSelect from "react-select/async";
 
 const Select2Component = ({
+  name,
   asyncUrl,
   isAsync = false,
   placeholder = "Select an option",
   isMulti = false,
   onChange,
   options = [],
+  defaultValue
 }) => {
   const [defaultOptions, setDefaultOptions] = useState([]);
   const handleOptions = async (inputValue) => {
@@ -32,6 +34,8 @@ const Select2Component = ({
   }, []);
 
   const handleChange = (selectedOption) => {
+    console.log(selectedOption);
+    
     if (onChange) onChange(selectedOption);
   };
 
@@ -50,23 +54,29 @@ const Select2Component = ({
     <div>
       {isAsync ? (
         <AsyncSelect
+          name={name}
           cacheOptions
           loadOptions={handleOptions}
           defaultOptions={defaultOptions}
+          defaultValue={defaultValue} 
           placeholder={placeholder}
           isMulti={isMulti}
           onChange={handleChange}
           getOptionLabel={(e) => e.label || e.name || e.value}
           getOptionValue={(e) => e.id || e.value}
+          classNamePrefix="custom-select"
         />
       ) : (
         <Select
+          name={name}
           options={options}
+          defaultValue={defaultValue} 
           placeholder={placeholder}
           isMulti={isMulti}
           onChange={handleChange}
           getOptionLabel={(e) => e.label || e.name || e.value}
           getOptionValue={(e) => e.id || e.value}
+          classNamePrefix="custom-select"
         />
       )}
     </div>

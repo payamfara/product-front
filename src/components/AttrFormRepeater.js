@@ -1,33 +1,47 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, Fragment } from "react";
 import Select2 from "./Select2Component";
+import DynamicAttributeField from "./DynamicAttributeField";
 
-const AttrFormRepeater = () => {
-  const [attributes, setAttributes] = useState([
-    { type: "", description: "" },
-  ]);
+const emptyAttr = {
+  attribute_id: "",
+  attribute_type: "",
+  attribute_title: "",
+  attribute_value: "",
+  attribute_placeholder: "",
+  attribute_priority: "",
+};
+
+const AttrFormRepeater = ({
+  initialAttributes = [
+    emptyAttr
+  ],
+}) => {
+  const [attributes, setAttributes] = useState(initialAttributes);
+
+  useEffect(() => {
+    setAttributes(initialAttributes);
+  }, [initialAttributes]);
 
   const addAttribute = () => {
-    setAttributes([...attributes, { type: "", description: "" }]);
+    setAttributes([
+      ...attributes,
+      emptyAttr
+    ]);
   };
 
   const removeAttribute = (index) => {
     setAttributes(attributes.filter((_, i) => i !== index));
   };
 
-  const handleChange = (index, field, value) => {
+  const handleChange = (selectedOption, index) => {
     const updatedAttributes = attributes.map((attr, i) =>
-      i === index ? { ...attr, [field]: value } : attr
+      i === index ? { ...attr, ...selectedOption } : attr
     );
     setAttributes(updatedAttributes);
   };
 
-  const handleAttrNameChange = (selectedOption) => {
-    console.log(selectedOption);
-    
-  }
-
   return (
-    <form>
+    <div>
       {attributes.map((attr, index) => (
         <div key={index} className="row align-items-end mb-3">
           <div className="col-4">
@@ -35,25 +49,16 @@ const AttrFormRepeater = () => {
               گزینه‌ها
             </label>
             <Select2
-                asyncUrl="http://localhost:8000/ajax/attributes/"
-                isAsync={true}
-                placeholder="انتخاب ویژگی"
-                onChange={handleAttrNameChange}
+              asyncUrl="http://localhost:8000/ajax/attributes/"
+              isAsync={true}
+              placeholder="انتخاب ویژگی"
+              onChange={(val) => handleChange(val, index)}
+              defaultValue={attr.attribute_id && {id: attr.attribute_id, value: attr.attribute_title}}
             />
           </div>
           <div className="col-6">
-            <label className="form-label invisible" htmlFor={`desc-${index}`}>
-              غیر قابل دیدن
-            </label>
-            <input
-              id={`desc-${index}`}
-              className="form-control"
-              type="text"
-              placeholder="شرح ویژگی"
-              value={attr.description}
-              onChange={(e) =>
-                handleChange(index, "description", e.target.value)
-              }
+            <DynamicAttributeField
+              data={attr}
             />
           </div>
           <div className="col-2">
@@ -67,14 +72,10 @@ const AttrFormRepeater = () => {
           </div>
         </div>
       ))}
-      <button
-        type="button"
-        className="btn btn-primary"
-        onClick={addAttribute}
-      >
+      <button type="button" className="btn btn-primary" onClick={addAttribute}>
         افزودن ویژگی
       </button>
-    </form>
+    </div>
   );
 };
 

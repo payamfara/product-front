@@ -126,7 +126,7 @@ const DropzoneComponent = ({ uploadedFiles = [], uploadUrl }) => {
     <div className="card mb-4">
       <div className="card-header d-flex justify-content-between align-items-center">
         <h5 className="mb-0 card-title">رسانه ها</h5>
-        <a className="fw-medium ql-snow">افزودن از
+        <a className="d-flex align-items-center gap-1 fw-medium ql-snow">افزودن از
           <button onClick={handleOpenAddFromLinkModal} id="showAddLinkModal" type="button" className="rounded-pill lh-sm px-1 border"><svg width="18" height="18" viewBox="0 0 18 18"> <line className="ql-stroke" x1="7" x2="11" y1="7" y2="11"></line> <path className="ql-even ql-stroke" d="M8.9,4.577a3.476,3.476,0,0,1,.36,4.679A3.476,3.476,0,0,1,4.577,8.9C3.185,7.5,2.035,6.4,4.217,4.217S7.5,3.185,8.9,4.577Z"></path> <path className="ql-even ql-stroke" d="M13.423,9.1a3.476,3.476,0,0,0-4.679-.36,3.476,3.476,0,0,0,.36,4.679c1.392,1.392,2.5,2.542,4.679.36S14.815,10.5,13.423,9.1Z"></path> </svg></button>
           <button onClick={handleOpenGalleryModal} id="showAddFromGalleryModal" type="button" className="rounded-pill lh-sm px-1 border"><svg width="18" height="18" viewBox="0 0 18 18"> <rect className="ql-stroke" height="10" width="12" x="3" y="4"></rect> <circle className="ql-fill" cx="6" cy="7" r="1"></circle> <polyline className="ql-even ql-fill" points="5 12 5 11 7 9 8 10 11 7 13 9 13 12 5 12"></polyline> </svg></button>
         </a>
