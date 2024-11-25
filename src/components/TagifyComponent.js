@@ -1,8 +1,9 @@
-"use client";
 import React, { useRef } from "react";
 import Tags from "@yaireo/tagify/dist/react.tagify";
 
 const TagifyComponent = ({
+    name,
+    id,
     placeholder = "Add tags...",
     maxTags = 10,
     whitelist = [],
@@ -28,7 +29,6 @@ const TagifyComponent = ({
             try {
                 const response = await fetch(`${asyncUrl}?term=${input}`);
                 const data = await response.json();
-                console.log(data);
                 tagifyRef.current.settings.whitelist = data.results;
             } catch (error) {
                 console.error("Error fetching suggestions:", error);
@@ -43,6 +43,8 @@ const TagifyComponent = ({
 
     return (
         <Tags
+            name={name}
+            id={id}
             className='form-control'
             tagifyRef={tagifyRef}
             settings={settings}

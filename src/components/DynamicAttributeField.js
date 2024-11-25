@@ -1,88 +1,93 @@
 import Select2 from "./Select2Component";
 
 const DynamicAttributeField = ({ data }) => {
-  console.log(data.attribute_title, data.attribute_value);
 
   const {
-    attribute_type,
-    attribute_title,
-    attribute_placeholder,
-    attribute_value,
-    attribute_priority,
-    attribute_id,
+    type,
+    title_en,
+    title_fa,
+    value,
+    priority,
+    id,
+    help_text,
+    prefix
   } = data;
-  switch (attribute_type) {
+  switch (type) {
     case 0: // Select2
       return (
         <div>
-          <label className="form-label" htmlFor={attribute_title}>
-            {attribute_placeholder}
+          <label className="form-label" htmlFor={title_en}>
+            {title_fa}
           </label>
           <Select2
-            id={attribute_title}
-            name={attribute_title}
-            asyncUrl={`http://localhost:8000/ajax/attrs/${attribute_id}/`}
+            id={title_en}
+            name={prefix ? `${prefix}-${title_en}` : title_en}
+            asyncUrl={`http://localhost:8000/ajax/attrs/${id}/`}
             isAsync={true}
-            placeholder={attribute_placeholder}
+            placeholder={title_fa}
             onChange={(vals) => {
               console.log(vals);
             }}
-            defaultValue={attribute_value}
+            defaultValue={value}
           />
+          <span id="help_part_number_en" className="text-danger fs-tiny form-label">{help_text}</span>
         </div>
       );
     case 1: // Input type=number
       return (
         <div>
-          <label className="form-label" htmlFor={attribute_title}>
-            {attribute_placeholder}
+          <label className="form-label" htmlFor={title_en}>
+            {title_fa}
           </label>
           <input
             type="number"
-            id={attribute_title}
-            name={attribute_title}
+            id={title_en}
+            name={prefix ? `${prefix}-${title_en}` : title_en}
             className="form-control"
-            placeholder={attribute_placeholder}
-            defaultValue={attribute_value}
+            placeholder={title_fa}
+            defaultValue={value}
           />
+          <span id="help_part_number_en" className="text-danger fs-tiny form-label">{help_text}</span>
         </div>
       );
     case 2:
       // For checkbox or radio based on priority
-      if (attribute_priority === 0) {
+      if (priority === 'mandatory') {
         return (
           <div>
-            <label className="form-label" htmlFor={attribute_title}>
-              {attribute_placeholder}
+            <label className="form-label" htmlFor={title_en}>
+              {title_fa}
             </label>
+            <span id="help_part_number_en" className="text-danger fs-tiny form-label">({help_text})</span>
             <input
               type="checkbox"
-              id={attribute_title}
-              name={attribute_title}
+              id={title_en}
+              name={prefix ? `${prefix}-${title_en}` : title_en}
               className="form-check-input"
-              defaultChecked={!!attribute_value}
+              defaultChecked={!!value}
             />
           </div>
         );
       } else {
         return (
           <div>
-            <label className="form-label" htmlFor={attribute_title}>
-              {attribute_placeholder}
+            <label className="form-label" htmlFor={title_en}>
+              {title_fa}
             </label>
+            <span id="help_part_number_en" className="text-danger fs-tiny form-label">({help_text})</span>
             <input
               type="radio"
-              id={`${attribute_title}_1`}
-              name={attribute_title}
+              id={`${title_en}_1`}
+              name={prefix ? `${prefix}-${title_en}` : title_en}
               className="form-radio-input"
-              defaultChecked={attribute_value === "1"}
+              defaultChecked={value === "1"}
             />
             <input
               type="radio"
-              id={`${attribute_title}_2`}
-              name={attribute_title}
+              id={`${title_en}_2`}
+              name={prefix ? `${prefix}-${title_en}` : title_en}
               className="form-radio-input"
-              defaultChecked={attribute_value === "2"}
+              defaultChecked={value === "2"}
             />
           </div>
         );

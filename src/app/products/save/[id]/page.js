@@ -4,7 +4,7 @@ import Select2 from '../../../../components/Select2Component';
 import TagifyComponent from '../../../../components/TagifyComponent';
 import DropzoneComponent from '../../../../components/DropzoneComponent';
 import QuillEditorComponent from '../../../../components/QuillEditorComponent';
-import DynamicAttributeField from '../../../../components/DynamicAttributeField';
+import AttributeTabs from './components/AttributeTabs';
 import axios from "axios";
 import { useParams } from "next/navigation";
 
@@ -13,6 +13,7 @@ const CreateProductPage = () => {
     const [partNumberEn, setPartNumberEn] = useState({});
     const [partNumberFa, setPartNumberFa] = useState({});
     const [partNumberBz, setPartNumberBz] = useState({});
+    const [price, setPrice] = useState({});
     const [status, setStatus] = useState({});
     const [category, setCategory] = useState({});
     const [tags, setTags] = useState([]);
@@ -22,22 +23,24 @@ const CreateProductPage = () => {
     const [loading, setLoading] = useState(true);
     const params = useParams();
     const { id = "" } = params;
+    
     useEffect(() => {
         const requestUrl = `http://localhost:8000/products/save/${id}`
         axios.get(requestUrl)
             .then((res) => {
-                console.log(res);
+                console.log('res', res);
                 
                 setPartNumberIsManual(res.data?.part_number_is_manual)
                 setPartNumberEn(res.data?.part_number_en)
                 setPartNumberFa(res.data?.part_number_fa)
                 setPartNumberBz(res.data?.part_number_bz)
+                setPrice(res.data?.price)
                 setStatus(res.data?.status)
                 setCategory(res.data?.category)
                 setTags(res.data?.tags)
                 setImages(res.data?.images)
                 setDescription(res.data?.description)
-                setAttrs(res.data?.attrs)
+                setAttrs(res.data?.grouped_attrs)
                 setLoading(false);
             })
             .catch((err) => {
@@ -703,12 +706,10 @@ const CreateProductPage = () => {
                                             {/* Variants */}
                                             <div id="category_attrs" className="card mb-4">
                                                 <div className="card-header">
-                                                    <h5 className="card-title mb-0">ویژگی های دسته بندی</h5>
+                                                    <h5 className="card-title mb-0">ویژگی های عادی</h5>
                                                 </div>
                                                 <div id="category_attrs_items" className="gap-3 d-flex flex-column card-body">
-                                                {attrs.map(item=>(
-                                                  <DynamicAttributeField data={item} />
-                                                ))}
+                                                    <AttributeTabs attributes={attrs} />
                                                 </div>
                                             </div>
                                             <div id="variant_attrs" className="card mb-4">
@@ -976,7 +977,7 @@ const CreateProductPage = () => {
                                                     {/* Base Price */}
                                                     <div className="mb-3">
                                                         <label className="form-label" htmlFor="price">قیمت پایه</label>
-                                                        <input aria-label="قیمت محصول" className="form-control" id="price" name="price" placeholder="قیمت" type="number" />
+                                                        <input defaultValue={price} className="form-control" id="price" name="price" placeholder="قیمت" type="number" />
                                                     </div>
 
                                                     {/* Discounted Price */}
@@ -1025,37 +1026,40 @@ const CreateProductPage = () => {
                                                                 className="form-check-input"
                                                                 defaultChecked={!!partNumberIsManual}
                                                             />
-                                                            <label class="form-label" for="part_number_is_manual">پارت نامبر دستی</label>
+                                                            <label className="form-label" htmlFor="part_number_is_manual">پارت نامبر دستی</label>
                                                         </div>
                                                         {/* Part number en */}
                                                         <div>
-                                                            <label class="form-label" for="part_number_en">پارت نامبر انگلیسی</label>
+                                                            <label className="form-label" htmlFor="part_number_en">پارت نامبر انگلیسی</label>
                                                             <input
                                                                 id={'part_number_en'}
                                                                 name={'part_number_en'}
                                                                 className="form-control"
+                                                                defaultValue={partNumberEn}
                                                             />
-                                                            <span id="help_part_number_en" class="fs-tiny form-label"></span>
+                                                            <span id="help_part_number_en" className="fs-tiny form-label"></span>
                                                         </div>
                                                         {/* Part number fa */}
                                                         <div>
-                                                            <label class="form-label" for="part_number_fa">پارت نامبر فارسی</label>
+                                                            <label className="form-label" htmlFor="part_number_fa">پارت نامبر فارسی</label>
                                                             <input
                                                                 id={'part_number_fa'}
                                                                 name={'part_number_fa'}
                                                                 className="form-control"
+                                                                defaultValue={partNumberFa}
                                                             />
-                                                            <span id="help_part_number_fa" class="fs-tiny form-label"></span>
+                                                            <span id="help_part_number_fa" className="fs-tiny form-label"></span>
                                                         </div>
                                                         {/* Part number bz */}
                                                         <div>
-                                                            <label class="form-label" for="part_number_bz">پارت نامبر بازاری</label>
+                                                            <label className="form-label" htmlFor="part_number_bz">پارت نامبر بازاری</label>
                                                             <input
                                                                 id={'part_number_bz'}
                                                                 name={'part_number_bz'}
                                                                 className="form-control"
+                                                                defaultValue={partNumberBz}
                                                             />
-                                                            <span id="help_part_number_bz" class="fs-tiny form-label"></span>
+                                                            <span id="help_part_number_bz" className="fs-tiny form-label"></span>
                                                         </div>
                                                     </div>
                                                     {/* Status */}
@@ -1085,8 +1089,10 @@ const CreateProductPage = () => {
                                                         <input aria-label="برچسب های محصول" className="form-control" id="ecommerce-product-tags" name="ecommerce-product-tags" value="عادی,تخفیف دار,ویژه" />
                                                     </div> */}
                                                     <div className="mb-3">
-                                                        <label className="form-label mb-1" htmlFor="ecommerce-product-tags">برچسب ها</label>
+                                                        <label className="form-label mb-1" htmlFor="tags">برچسب ها</label>
                                                         <TagifyComponent
+                                                            name={'tags'}
+                                                            id={'tags'}
                                                             asyncUrl="http://localhost:8000/ajax/tags/"
                                                             placeholder="Search for tags..."
                                                             onChange={(tags) => { console.log(tags); }}

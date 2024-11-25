@@ -53,7 +53,7 @@ const QuillEditor = ({ id, name, value, toolbarOptions, placeholder, apiSaveImag
                 node.setAttribute("href", data.url);
                 node.setAttribute("target", "_blank");
                 node.setAttribute("style", "white-space: normal !important;");
-                node.innerHTML = `<i class="fs-1 fa-solid fa-file"></i>`;
+                node.innerHTML = `<i className="fs-1 fa-solid fa-file"></i>`;
                 return node;
             }
         }
