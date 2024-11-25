@@ -1,46 +1,50 @@
 "use client"
-import { Fragment, useState, useEffect } from "react";
+import { Fragment, useState, useEffect, useRef } from "react";
 import Select2 from '../../../../components/Select2Component';
 import TagifyComponent from '../../../../components/TagifyComponent';
 import DropzoneComponent from '../../../../components/DropzoneComponent';
 import QuillEditorComponent from '../../../../components/QuillEditorComponent';
-import AttributeTabs from './components/AttributeTabs';
+import TabsWithInputsComponent from '../../../../components/TabsWithInputsComponent';
 import axios from "axios";
 import { useParams } from "next/navigation";
 
 const CreateProductPage = () => {
-    const [partNumberIsManual, setPartNumberIsManual] = useState({});
-    const [partNumberEn, setPartNumberEn] = useState({});
-    const [partNumberFa, setPartNumberFa] = useState({});
-    const [partNumberBz, setPartNumberBz] = useState({});
-    const [price, setPrice] = useState({});
-    const [status, setStatus] = useState({});
-    const [category, setCategory] = useState({});
-    const [tags, setTags] = useState([]);
-    const [images, setImages] = useState([]);
-    const [description, setDescription] = useState('');
-    const [attrs, setAttrs] = useState([]);
+    const tabsWithInputsRef = useRef();
+    const [product, setProduct] = useState({
+        part_number_is_manual: false,
+        part_number_en: "",
+        part_number_fa: "",
+        part_number_bz: "",
+        price: 0,
+        status: "",
+        category: null,
+        tags: [],
+        images: [],
+        description: "",
+        grouped_attrs: [],
+    });
     const [loading, setLoading] = useState(true);
     const params = useParams();
     const { id = "" } = params;
-    
+
     useEffect(() => {
         const requestUrl = `http://localhost:8000/products/save/${id}`
         axios.get(requestUrl)
             .then((res) => {
                 console.log('res', res);
-                
-                setPartNumberIsManual(res.data?.part_number_is_manual)
-                setPartNumberEn(res.data?.part_number_en)
-                setPartNumberFa(res.data?.part_number_fa)
-                setPartNumberBz(res.data?.part_number_bz)
-                setPrice(res.data?.price)
-                setStatus(res.data?.status)
-                setCategory(res.data?.category)
-                setTags(res.data?.tags)
-                setImages(res.data?.images)
-                setDescription(res.data?.description)
-                setAttrs(res.data?.grouped_attrs)
+                setProduct({
+                    part_number_is_manual: res.data?.part_number_is_manual || false,
+                    part_number_en: res.data?.part_number_en || "",
+                    part_number_fa: res.data?.part_number_fa || "",
+                    part_number_bz: res.data?.part_number_bz || "",
+                    price: res.data?.price || 0,
+                    status: res.data?.status || "",
+                    category: res.data?.category || null,
+                    tags: res.data?.tags || [],
+                    images: res.data?.images || [],
+                    description: res.data?.description || "",
+                    grouped_attrs: res.data?.grouped_attrs || [],
+                });
                 setLoading(false);
             })
             .catch((err) => {
@@ -57,20 +61,49 @@ const CreateProductPage = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        const form = e.target; 
-        const formData = new FormData(form); 
-        formData.forEach((value, key) => {
-            console.log(value, key);
+        // const form = e.target;
+        // const formData = new FormData(form);
+        // formData.forEach((value, key) => {
+        //     console.log(value, key);
+        // })
+
+        const newTags = data.tags.filter(tag => !tag.id); 
+        const existingTags = data.tags.filter(tag => tag.id); 
+      
+        const createdTags = await Promise.all(
+          newTags.map(tag =>
+            axios.post('/api/tags/', { value: tag.value }).then(res => res.data)
+          )
+        );
+      
+        const allTagIds = [
+          ...existingTags.map(tag => tag.id),
+          ...createdTags.map(tag => tag.id),
+        ];
+
+        const data = {
+            ...product,
+            'category': product.category.id,
+            'status': product.status.id,
+            'product_attrs': tabsWithInputsRef.current.getValues()
+        }
+        console.log(data);
+
+
+        const method = id ? 'PUT' : 'POST'
+        const url = `http://localhost:8000/api/product/${id}/`
+        axios.request({
+            method,
+            data,
+            url,
         })
-        const requestUrl = `http://localhost:8000/products/save/${id}`
-        axios.post(requestUrl, formData)
-        .then((res) => {
-            console.log(res);
-        })
-        .catch((err) => {
-            console.error('Error fetching tags:', err);
-        })
-        
+            .then((res) => {
+                console.log(res);
+            })
+            .catch((err) => {
+                console.error('Error fetching tags:', err);
+            })
+
     }
 
     return (
@@ -648,7 +681,7 @@ const CreateProductPage = () => {
                                                             isAsync={true}
                                                             placeholder="انتخاب دسته"
                                                             onChange={(vals) => { console.log(vals) }}
-                                                            defaultValue={category}
+                                                            defaultValue={product.category}
                                                         />
                                                     </div>
                                                     <div className="row mb-3">
@@ -687,7 +720,7 @@ const CreateProductPage = () => {
                                                         <QuillEditorComponent
                                                             id="description"
                                                             name="description"
-                                                            value={description}
+                                                            value={product.description}
                                                             toolbarOptions={[
                                                                 'bold', 'italic', 'underline',
                                                                 { 'list': 'ordered' }, { 'list': 'bullet' },
@@ -701,7 +734,7 @@ const CreateProductPage = () => {
                                             </div>
                                             {/* /Product Information */}
                                             {/* Media */}
-                                            <DropzoneComponent uploadedFiles={images} uploadUrl={"http://localhost:8000/api/save_images/products/"} />
+                                            <DropzoneComponent uploadedFiles={product.images} uploadUrl={"http://localhost:8000/api/save_images/products/"} />
                                             {/* /Media */}
                                             {/* Variants */}
                                             <div id="category_attrs" className="card mb-4">
@@ -709,7 +742,7 @@ const CreateProductPage = () => {
                                                     <h5 className="card-title mb-0">ویژگی های عادی</h5>
                                                 </div>
                                                 <div id="category_attrs_items" className="gap-3 d-flex flex-column card-body">
-                                                    <AttributeTabs attributes={attrs} />
+                                                    <TabsWithInputsComponent ref={tabsWithInputsRef} tabs={product.grouped_attrs} />
                                                 </div>
                                             </div>
                                             <div id="variant_attrs" className="card mb-4">
@@ -977,7 +1010,7 @@ const CreateProductPage = () => {
                                                     {/* Base Price */}
                                                     <div className="mb-3">
                                                         <label className="form-label" htmlFor="price">قیمت پایه</label>
-                                                        <input defaultValue={price} className="form-control" id="price" name="price" placeholder="قیمت" type="number" />
+                                                        <input defaultValue={product.price} className="form-control" id="price" name="price" placeholder="قیمت" type="number" />
                                                     </div>
 
                                                     {/* Discounted Price */}
@@ -1024,7 +1057,7 @@ const CreateProductPage = () => {
                                                                 id={'part_number_is_manual'}
                                                                 name={'part_number_is_manual'}
                                                                 className="form-check-input"
-                                                                defaultChecked={!!partNumberIsManual}
+                                                                defaultChecked={!!product.part_number_is_manual}
                                                             />
                                                             <label className="form-label" htmlFor="part_number_is_manual">پارت نامبر دستی</label>
                                                         </div>
@@ -1035,7 +1068,7 @@ const CreateProductPage = () => {
                                                                 id={'part_number_en'}
                                                                 name={'part_number_en'}
                                                                 className="form-control"
-                                                                defaultValue={partNumberEn}
+                                                                defaultValue={product.part_number_en}
                                                             />
                                                             <span id="help_part_number_en" className="fs-tiny form-label"></span>
                                                         </div>
@@ -1046,7 +1079,7 @@ const CreateProductPage = () => {
                                                                 id={'part_number_fa'}
                                                                 name={'part_number_fa'}
                                                                 className="form-control"
-                                                                defaultValue={partNumberFa}
+                                                                defaultValue={product.part_number_fa}
                                                             />
                                                             <span id="help_part_number_fa" className="fs-tiny form-label"></span>
                                                         </div>
@@ -1057,7 +1090,7 @@ const CreateProductPage = () => {
                                                                 id={'part_number_bz'}
                                                                 name={'part_number_bz'}
                                                                 className="form-control"
-                                                                defaultValue={partNumberBz}
+                                                                defaultValue={product.part_number_bz}
                                                             />
                                                             <span id="help_part_number_bz" className="fs-tiny form-label"></span>
                                                         </div>
@@ -1076,10 +1109,10 @@ const CreateProductPage = () => {
                                                         <label className="form-label mb-1" htmlFor="status-org">وضعیت</label>
                                                         <Select2
                                                             name={'status'}
-                                                            asyncUrl="http://localhost:8000/ajax/status-choices/" 
+                                                            asyncUrl="http://localhost:8000/ajax/status-choices/"
                                                             isAsync={true}
                                                             placeholder="وضعیت انتشار"
-                                                            defaultValue={status}
+                                                            defaultValue={product.status}
                                                             onChange={(vals) => { console.log(vals) }}
                                                         />
                                                     </div>
@@ -1096,7 +1129,7 @@ const CreateProductPage = () => {
                                                             asyncUrl="http://localhost:8000/ajax/tags/"
                                                             placeholder="Search for tags..."
                                                             onChange={(tags) => { console.log(tags); }}
-                                                            defaultValue={tags}
+                                                            defaultValue={product.tags}
                                                         />
                                                     </div>
                                                 </div>

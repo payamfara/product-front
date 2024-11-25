@@ -3,6 +3,7 @@ import Tabs from "@/src/components/TabsComponent";
 import DynamicAttributeField from "@/src/components/DynamicAttributeField";
 
 const AttributeTabs = ({ attributes }) => {
+  
   const tabs = attributes.map((attr) => ({
     id: attr.group,
     label: attr.label,

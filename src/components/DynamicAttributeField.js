@@ -1,6 +1,6 @@
 import Select2 from "./Select2Component";
 
-const DynamicAttributeField = ({ data }) => {
+const DynamicAttributeField = ({ data, onChange }) => {
 
   const {
     type,
@@ -10,7 +10,7 @@ const DynamicAttributeField = ({ data }) => {
     priority,
     id,
     help_text,
-    prefix
+    prefix,
   } = data;
   switch (type) {
     case 0: // Select2
@@ -25,9 +25,7 @@ const DynamicAttributeField = ({ data }) => {
             asyncUrl={`http://localhost:8000/ajax/attrs/${id}/`}
             isAsync={true}
             placeholder={title_fa}
-            onChange={(vals) => {
-              console.log(vals);
-            }}
+            onChange={onChange}
             defaultValue={value}
           />
           <span id="help_part_number_en" className="text-danger fs-tiny form-label">{help_text}</span>
@@ -40,6 +38,7 @@ const DynamicAttributeField = ({ data }) => {
             {title_fa}
           </label>
           <input
+            onChange={onChange}
             type="number"
             id={title_en}
             name={prefix ? `${prefix}-${title_en}` : title_en}
@@ -54,12 +53,13 @@ const DynamicAttributeField = ({ data }) => {
       // For checkbox or radio based on priority
       if (priority === 'mandatory') {
         return (
-          <div>
+          <div className="form-check">
             <label className="form-label" htmlFor={title_en}>
               {title_fa}
             </label>
-            <span id="help_part_number_en" className="text-danger fs-tiny form-label">({help_text})</span>
+            <span id="help_part_number_en" className="text-danger fs-tiny form-label"> ({help_text}) </span>
             <input
+              onChange={onChange}
               type="checkbox"
               id={title_en}
               name={prefix ? `${prefix}-${title_en}` : title_en}
@@ -70,12 +70,13 @@ const DynamicAttributeField = ({ data }) => {
         );
       } else {
         return (
-          <div>
+          <div className="form-check">
             <label className="form-label" htmlFor={title_en}>
               {title_fa}
             </label>
-            <span id="help_part_number_en" className="text-danger fs-tiny form-label">({help_text})</span>
+            <span id="help_part_number_en" className="text-danger fs-tiny form-label"> ({help_text}) </span>
             <input
+              onChange={onChange}
               type="radio"
               id={`${title_en}_1`}
               name={prefix ? `${prefix}-${title_en}` : title_en}
@@ -83,6 +84,7 @@ const DynamicAttributeField = ({ data }) => {
               defaultChecked={value === "1"}
             />
             <input
+              onChange={onChange}
               type="radio"
               id={`${title_en}_2`}
               name={prefix ? `${prefix}-${title_en}` : title_en}
