@@ -38,6 +38,9 @@ const TagifyComponent = ({
     };
 
     const handleChange = (e) => {
+        console.log(e);
+        console.log(tagifyRef.current);
+        
         if (onChange) onChange(e.detail.value);
     };
 

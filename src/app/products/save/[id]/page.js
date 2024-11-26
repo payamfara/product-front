@@ -67,25 +67,34 @@ const CreateProductPage = () => {
         //     console.log(value, key);
         // })
 
-        const newTags = data.tags.filter(tag => !tag.id); 
-        const existingTags = data.tags.filter(tag => tag.id); 
+        // const newTags = product.tags.filter(tag => !tag.id); 
+        // const existingTags = product.tags.filter(tag => tag.id); 
       
-        const createdTags = await Promise.all(
-          newTags.map(tag =>
-            axios.post('/api/tags/', { value: tag.value }).then(res => res.data)
-          )
-        );
+        // console.log(newTags);
+        // console.log(existingTags);
+        
+
+        // const createdTags = Promise.all(
+        //     newTags.map(tag =>
+        //       axios.post('/api/tags/', { value: tag.value }).then(res => res.data)
+        //     )
+        //   ).then(data => {
+        //     return data; 
+        //   }).catch(error => {
+        //     console.error('Error creating tags:', error);
+        //   });
       
-        const allTagIds = [
-          ...existingTags.map(tag => tag.id),
-          ...createdTags.map(tag => tag.id),
-        ];
+        // const allTagIds = [
+        //   ...existingTags.map(tag => tag.id),
+        //   ...createdTags.map(tag => tag.id),
+        // ];
 
         const data = {
             ...product,
             'category': product.category.id,
             'status': product.status.id,
-            'product_attrs': tabsWithInputsRef.current.getValues()
+            // 'tags': allTagIds,
+            'product_attrs': tabsWithInputsRef.current.getValues(),
         }
         console.log(data);
 
