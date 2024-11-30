@@ -1,7 +1,7 @@
-import React, { useRef } from "react";
+import React, { useRef, useImperativeHandle, forwardRef } from "react";
 import Tags from "@yaireo/tagify/dist/react.tagify";
 
-const TagifyComponent = ({
+const TagifyComponent = forwardRef(({
     name,
     id,
     placeholder = "Add tags...",
@@ -11,7 +11,9 @@ const TagifyComponent = ({
     onChange,
     onInput,
     defaultValue = [],
-}) => {
+}, ref) => {
+    console.log(ref);
+    
     const tagifyRef = useRef();
     const settings = {
         placeholder,
@@ -22,7 +24,10 @@ const TagifyComponent = ({
             maxItems: 5,
         },
     };
-
+    useImperativeHandle(ref, () => ({
+        getValues: () => tagifyRef.current.value
+    }));
+    
     const handleInput = async (e) => {
         const input = e.detail.value;
         if (asyncUrl) {
@@ -38,9 +43,6 @@ const TagifyComponent = ({
     };
 
     const handleChange = (e) => {
-        console.log(e);
-        console.log(tagifyRef.current);
-        
         if (onChange) onChange(e.detail.value);
     };
 
@@ -56,6 +58,6 @@ const TagifyComponent = ({
             onInput={handleInput}
         />
     );
-};
+});
 
 export default TagifyComponent;

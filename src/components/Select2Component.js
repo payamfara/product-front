@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import Select from "react-select";
 import AsyncSelect from "react-select/async";
+import { baseApiAuth } from "../api/baseApi";
 
 const Select2Component = ({
   name,
@@ -11,45 +12,35 @@ const Select2Component = ({
   isMulti = false,
   onChange,
   options = [],
-  defaultValue
+  defaultValue,
 }) => {
   const [defaultOptions, setDefaultOptions] = useState([]);
+  
   const handleOptions = async (inputValue) => {
+    const requestUrl = `${asyncUrl}?value_en__icontains=${inputValue}`;
+    console.log('requestUrl', requestUrl);
+    
     try {
-      const response = await fetch(`${asyncUrl}?term=${inputValue}`);
-      const data = await response.json();
-      return data.results;
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      return [];
+      const res = await baseApiAuth.get(requestUrl);
+      return res.data.results; 
+    } catch (err) {
+      console.error("Error fetching data:", err);
+      return []; 
     }
   };
 
   useEffect(() => {
     const fetchDefaultOptions = async () => {
-      const options = await handleOptions("");
+      const options = await handleOptions(defaultValue?.value);
       setDefaultOptions(options);
     };
     fetchDefaultOptions();
   }, []);
 
   const handleChange = (selectedOption) => {
-    console.log(selectedOption);
-    
-    if (onChange) onChange(selectedOption);
+    if (onChange) onChange(name, selectedOption);
   };
 
-  const customStyles = {
-    multiValue: (styles) => ({
-      ...styles,
-      backgroundColor: "#e0f7fa",
-      borderRadius: "5px",
-    }),
-    multiValueLabel: (styles) => ({
-      ...styles,
-      color: "#00796b",
-    }),
-  };
   return (
     <div>
       {isAsync ? (
@@ -58,11 +49,11 @@ const Select2Component = ({
           cacheOptions
           loadOptions={handleOptions}
           defaultOptions={defaultOptions}
-          defaultValue={defaultValue} 
-          placeholder={placeholder}
+          defaultValue={defaultValue}
+          placeholder={`انتخاب ${placeholder}`}
           isMulti={isMulti}
           onChange={handleChange}
-          getOptionLabel={(e) => e.label || e.name || e.value}
+          getOptionLabel={(e) => e.value_en || e.label || e.name || e.value}
           getOptionValue={(e) => e.id || e.value}
           classNamePrefix="custom-select"
         />
@@ -70,8 +61,8 @@ const Select2Component = ({
         <Select
           name={name}
           options={options}
-          defaultValue={defaultValue} 
-          placeholder={placeholder}
+          defaultValue={defaultValue}
+          placeholder={`انتخاب ${placeholder}`}
           isMulti={isMulti}
           onChange={handleChange}
           getOptionLabel={(e) => e.label || e.name || e.value}

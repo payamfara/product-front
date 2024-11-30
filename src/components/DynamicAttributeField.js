@@ -1,95 +1,104 @@
 import Select2 from "./Select2Component";
 
 const DynamicAttributeField = ({ data, onChange }) => {
-
+  
   const {
-    type,
-    title_en,
-    title_fa,
-    value,
-    priority,
-    id,
-    help_text,
-    prefix,
+    attribute_type,
+    attribute_name_en,
+    attribute_name_fa,
+    attribute_value,
+    attribute_priority,
+    attribute_id,
+    attribute_category,
+    attribute_prefix,
+    attribute_postfix,
   } = data;
-  switch (type) {
-    case 0: // Select2
+  switch (attribute_type) {
+    case 'Text': // Select2
       return (
         <div>
-          <label className="form-label" htmlFor={title_en}>
-            {title_fa}
-          </label>
+          <div className="d-flex justify-content-between align-items-center">
+            <label className="form-label" htmlFor={attribute_name_en}>
+              {attribute_name_fa}
+            </label>
+            {attribute_category && <span id="help_part_number_en" className="badge text-bg-danger fs-tiny form-label">{attribute_category}</span>}
+          </div>
           <Select2
-            id={title_en}
-            name={prefix ? `${prefix}-${title_en}` : title_en}
-            asyncUrl={`http://localhost:8000/ajax/attrs/${id}/`}
+            id={attribute_name_en}
+            name={attribute_id}
+            asyncUrl={`http://192.168.1.21:8000/ajax/attrs/${attribute_id}/`}
             isAsync={true}
-            placeholder={title_fa}
+            placeholder={attribute_name_fa}
             onChange={onChange}
-            defaultValue={value}
+            defaultValue={attribute_value}
           />
-          <span id="help_part_number_en" className="text-danger fs-tiny form-label">{help_text}</span>
         </div>
       );
-    case 1: // Input type=number
+    case 'Float': // Input type=number
       return (
         <div>
-          <label className="form-label" htmlFor={title_en}>
-            {title_fa}
-          </label>
+          <div className="d-flex justify-content-between align-items-center">
+            <label className="form-label" htmlFor={attribute_name_en}>
+              {attribute_name_fa}
+            </label>
+            {attribute_category && <span id="help_part_number_en" className="badge text-bg-danger fs-tiny form-label">{attribute_category}</span>}
+          </div>
           <input
-            onChange={onChange}
+            onChange={e=>onChange(e.target.name, e.target.value)}
             type="number"
-            id={title_en}
-            name={prefix ? `${prefix}-${title_en}` : title_en}
+            id={attribute_name_en}
+            name={attribute_id}
             className="form-control"
-            placeholder={title_fa}
-            defaultValue={value}
+            placeholder={attribute_name_fa}
+            defaultValue={attribute_value}
           />
-          <span id="help_part_number_en" className="text-danger fs-tiny form-label">{help_text}</span>
         </div>
       );
-    case 2:
+    case 'Boolean':
       // For checkbox or radio based on priority
-      if (priority === 'mandatory') {
+      if (attribute_priority === 'mandatory') {
         return (
           <div className="form-check">
-            <label className="form-label" htmlFor={title_en}>
-              {title_fa}
-            </label>
-            <span id="help_part_number_en" className="text-danger fs-tiny form-label"> ({help_text}) </span>
+            <div className="d-flex justify-content-between align-items-center">
+              <label className="form-label" htmlFor={attribute_name_en}>
+                {attribute_name_fa}
+              </label>
+              {attribute_category && <span id="help_part_number_en" className="badge text-bg-danger fs-tiny form-label">{attribute_category}</span>}
+            </div>
             <input
-              onChange={onChange}
+              onChange={e=>onChange(e.target.name, e.target.value)}
               type="checkbox"
-              id={title_en}
-              name={prefix ? `${prefix}-${title_en}` : title_en}
+              id={attribute_name_en}
+              name={attribute_id}
               className="form-check-input"
-              defaultChecked={!!value}
+              defaultChecked={!!attribute_value}
             />
           </div>
         );
       } else {
         return (
           <div className="form-check">
-            <label className="form-label" htmlFor={title_en}>
-              {title_fa}
-            </label>
-            <span id="help_part_number_en" className="text-danger fs-tiny form-label"> ({help_text}) </span>
+            <div className="d-flex justify-content-between align-items-center">
+              <label className="form-label" htmlFor={attribute_name_en}>
+                {attribute_name_fa}
+              </label>
+              {attribute_category && <span id="help_part_number_en" className="badge text-bg-danger fs-tiny form-label">{attribute_category}</span>}
+            </div>
             <input
-              onChange={onChange}
+              onChange={e=>onChange(e.target.name, e.target.value)}
               type="radio"
-              id={`${title_en}_1`}
-              name={prefix ? `${prefix}-${title_en}` : title_en}
+              id={`${attribute_name_en}_1`}
+              name={attribute_id}
               className="form-radio-input"
-              defaultChecked={value === "1"}
+              defaultChecked={attribute_value === "1"}
             />
             <input
-              onChange={onChange}
+              onChange={e=>onChange(e.target.name, e.target.value)}
               type="radio"
-              id={`${title_en}_2`}
-              name={prefix ? `${prefix}-${title_en}` : title_en}
+              id={`${attribute_name_en}_2`}
+              name={attribute_id}
               className="form-radio-input"
-              defaultChecked={value === "2"}
+              defaultChecked={attribute_value === "2"}
             />
           </div>
         );

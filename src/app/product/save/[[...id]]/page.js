@@ -10,6 +10,7 @@ import { useParams } from "next/navigation";
 
 const CreateProductPage = () => {
     const tabsWithInputsRef = useRef();
+    const tagifyRef = useRef();
     const [product, setProduct] = useState({
         part_number_is_manual: false,
         part_number_en: "",
@@ -21,14 +22,16 @@ const CreateProductPage = () => {
         tags: [],
         images: [],
         description: "",
-        grouped_attrs: [],
+        product_attrs: [],
     });
     const [loading, setLoading] = useState(true);
     const params = useParams();
     const { id = "" } = params;
+    console.log(id);
+    
 
     useEffect(() => {
-        const requestUrl = `http://localhost:8000/products/save/${id}`
+        const requestUrl = `http://192.168.1.21:8000/api/product/${id}`
         axios.get(requestUrl)
             .then((res) => {
                 console.log('res', res);
@@ -43,7 +46,7 @@ const CreateProductPage = () => {
                     tags: res.data?.tags || [],
                     images: res.data?.images || [],
                     description: res.data?.description || "",
-                    grouped_attrs: res.data?.grouped_attrs || [],
+                    product_attrs: [...res.data?.product_attrs, ...res.data?.product_attrs_without_values] || [],
                 });
                 setLoading(false);
             })
@@ -61,11 +64,6 @@ const CreateProductPage = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // const form = e.target;
-        // const formData = new FormData(form);
-        // formData.forEach((value, key) => {
-        //     console.log(value, key);
-        // })
 
         // const newTags = product.tags.filter(tag => !tag.id); 
         // const existingTags = product.tags.filter(tag => tag.id); 
@@ -93,25 +91,25 @@ const CreateProductPage = () => {
             ...product,
             'category': product.category.id,
             'status': product.status.id,
-            // 'tags': allTagIds,
+            'tags': tagifyRef.current.getValues(),
             'product_attrs': tabsWithInputsRef.current.getValues(),
         }
         console.log(data);
 
 
         const method = id ? 'PUT' : 'POST'
-        const url = `http://localhost:8000/api/product/${id}/`
+        const url = `http://192.168.1.21:8000/api/product/${id}/`
         axios.request({
             method,
             data,
             url,
         })
-            .then((res) => {
-                console.log(res);
-            })
-            .catch((err) => {
-                console.error('Error fetching tags:', err);
-            })
+        .then((res) => {
+            console.log('ress', res);
+        })
+        .catch((err) => {
+            console.error('Error fetching tags:', err);
+        })
 
     }
 
@@ -640,7 +638,7 @@ const CreateProductPage = () => {
                                     <span className="text-muted fw-light">تجارت الکترونیک /</span>
                                     افزودن محصول
                                 </h4>
-                                <form action={`http://localhost:8000/products/save/${id}`} onSubmit={handleSubmit} className="app-ecommerce">
+                                <form action={`http://192.168.1.21:8000/products/save/${id}`} onSubmit={handleSubmit} className="app-ecommerce">
                                     {/* Add Product */}
                                     <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3">
                                         <div className="d-flex flex-column justify-content-center">
@@ -686,7 +684,7 @@ const CreateProductPage = () => {
                                                         </label>
                                                         <Select2
                                                             name={'category'}
-                                                            asyncUrl="http://localhost:8000/ajax/category-choices/"
+                                                            asyncUrl="http://192.168.1.21:8000/ajax/category-choices/"
                                                             isAsync={true}
                                                             placeholder="انتخاب دسته"
                                                             onChange={(vals) => { console.log(vals) }}
@@ -736,14 +734,14 @@ const CreateProductPage = () => {
                                                                 'link', 'image', 'gallery'
                                                             ]}
                                                             placeholder="متن خود را وارد کنید..."
-                                                            apiSaveImagesUrl="http://localhost:8000/api/save_images/products/"
+                                                            apiSaveImagesUrl="http://192.168.1.21:8000/api/save_images/products/"
                                                         />
                                                     </div>
                                                 </div>
                                             </div>
                                             {/* /Product Information */}
                                             {/* Media */}
-                                            <DropzoneComponent uploadedFiles={product.images} uploadUrl={"http://localhost:8000/api/save_images/products/"} />
+                                            <DropzoneComponent uploadedFiles={product.images} uploadUrl={"http://192.168.1.21:8000/api/save_images/products/"} />
                                             {/* /Media */}
                                             {/* Variants */}
                                             <div id="category_attrs" className="card mb-4">
@@ -751,7 +749,7 @@ const CreateProductPage = () => {
                                                     <h5 className="card-title mb-0">ویژگی های عادی</h5>
                                                 </div>
                                                 <div id="category_attrs_items" className="gap-3 d-flex flex-column card-body">
-                                                    <TabsWithInputsComponent ref={tabsWithInputsRef} tabs={product.grouped_attrs} />
+                                                    <TabsWithInputsComponent ref={tabsWithInputsRef} inputs={product.product_attrs} />
                                                 </div>
                                             </div>
                                             <div id="variant_attrs" className="card mb-4">
@@ -1118,7 +1116,7 @@ const CreateProductPage = () => {
                                                         <label className="form-label mb-1" htmlFor="status-org">وضعیت</label>
                                                         <Select2
                                                             name={'status'}
-                                                            asyncUrl="http://localhost:8000/ajax/status-choices/"
+                                                            asyncUrl="http://192.168.1.21:8000/ajax/status-choices/"
                                                             isAsync={true}
                                                             placeholder="وضعیت انتشار"
                                                             defaultValue={product.status}
@@ -1133,9 +1131,10 @@ const CreateProductPage = () => {
                                                     <div className="mb-3">
                                                         <label className="form-label mb-1" htmlFor="tags">برچسب ها</label>
                                                         <TagifyComponent
+                                                            ref={tagifyRef}
                                                             name={'tags'}
                                                             id={'tags'}
-                                                            asyncUrl="http://localhost:8000/ajax/tags/"
+                                                            asyncUrl="http://192.168.1.21:8000/ajax/tags/"
                                                             placeholder="Search for tags..."
                                                             onChange={(tags) => { console.log(tags); }}
                                                             defaultValue={product.tags}

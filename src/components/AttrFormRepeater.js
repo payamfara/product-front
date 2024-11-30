@@ -49,7 +49,7 @@ const AttrFormRepeater = ({
               گزینه‌ها
             </label>
             <Select2
-              asyncUrl="http://localhost:8000/ajax/attributes/"
+              asyncUrl="http://192.168.1.21:8000/ajax/attributes/"
               isAsync={true}
               placeholder="انتخاب ویژگی"
               onChange={(val) => handleChange(val, index)}
