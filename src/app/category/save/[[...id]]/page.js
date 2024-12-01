@@ -6,36 +6,33 @@ import { baseApiAuth } from '../../../../api/baseApi';
 import AttributeComponent from './components/AttributeComponent';
 
 const CreateCategoryPage = () => {
-    const [pageData, setPageData] = useState({
-        value_en: "",
-        value_fa: "",
-        value_bz: "",
-        parent: null,
-        category_attrs: [],
-    });
+    const attributeComponentRef = useRef(null);
+    const [pageData, setPageData] = useState({});
+    const [pageStruct, setPageStruct] = useState({});
     const [loading, setLoading] = useState(true);
     const params = useParams();
     const { id = "" } = params;
 
 
     useEffect(() => {
-        baseApiAuth.get(`/category/${id}`)
+        baseApiAuth.get(`/category/?get_structure`)
             .then((res) => {
-                console.log('res', res);
-                console.log('res2', res.data?.category_attrs);
-                
-                setPageData({
-                    value_en: res.data?.value_en || "",
-                    value_fa: res.data?.value_fa || "",
-                    value_bz: res.data?.value_bz || "",
-                    parent: {'id': res.data?.parent, 'value': res.data?.parent_str} || null,
-                    category_attrs: res.data?.category_attrs || [],
-                });
-                setLoading(false);
+                console.log('resSt', res.data);
+                baseApiAuth.get(`/category/${id}`)
+                    .then((res) => {
+                        console.log('res', res.data);
+                        
+                        setPageData(res.data);
+                        setLoading(false);
+                    })
+                    .catch((err) => {
+                        console.error('Error fetching data:', err);
+                        setLoading(false);
+                    })
+                setPageStruct(res.data);
             })
             .catch((err) => {
-                console.error('Error fetching tags:', err);
-                setLoading(false);
+                console.error('Error fetching structure:', err);
             })
     }, [])
 
@@ -46,21 +43,12 @@ const CreateCategoryPage = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        const data = {
-            ...pageData,
-            'parent': pageData.parent.id,
-            // 'category_attrs': tabsWithInputsRef.current.getValues(),
-        }
+        const data = pageData;
+        data['category_attrs'] = attributeComponentRef.current.getValues();
         console.log(data);
 
-
-        const method = id ? 'PUT' : 'POST'
         const url = `/category/${id}/`
-        baseApiAuth.request({
-            method,
-            data,
-            url,
-        })
+        baseApiAuth.post(url, data)
         .then((res) => {
             console.log('ress', res);
         })
@@ -71,7 +59,6 @@ const CreateCategoryPage = () => {
     }
     return (
         <Fragment>
-
             {/* Layout wrapper */}
             <div className="layout-wrapper layout-content-navbar">
                 <div className="layout-container">
@@ -629,7 +616,7 @@ const CreateCategoryPage = () => {
                                                             isAsync={true}
                                                             placeholder="انتخاب دسته"
                                                             onChange={(vals) => { console.log(vals) }}
-                                                            defaultValue={pageData.parent}
+                                                            defaultValue={{'id': pageData.parent, 'value': pageData.parent_str}}
                                                         />
                                                     </div>
                                              
@@ -686,7 +673,7 @@ const CreateCategoryPage = () => {
                                         </div>
                                         {/* /Second column */}
                                         <div className="col-12">
-                                            <AttributeComponent inputs={pageData.category_attrs} />
+                                            <AttributeComponent ref={attributeComponentRef} struct={pageStruct.category_attrs} inputs={pageData.category_attrs} />
                                         </div>
                                     </div>
                                 </form>

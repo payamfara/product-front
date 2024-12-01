@@ -40,7 +40,7 @@ body {
 
 .custom-select__menu {
   z-index: 1050 !important;
-} 
+}
 
 .mn-2 {
   margin: -0.5rem;
@@ -49,11 +49,11 @@ body {
 .action-ribbon {
   position: absolute;
   top: 0;
-  right: -20px; 
+  right: -20px;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 6px; 
+  gap: 6px;
 }
 /* 
 .action-ribbon button {
@@ -65,10 +65,14 @@ body {
 } */
 
 .action-ribbon button:hover {
-  transform: scale(1.1); 
+  transform: scale(1.1);
   transition: transform 0.2s ease-in-out;
 }
 
 .translate-x {
   transform: translateX(100%);
+}
+
+.form-floating > label {
+  left: auto !important;
 }

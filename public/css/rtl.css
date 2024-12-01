@@ -463,7 +463,7 @@ ul.nav li.nav-item .nav-link.py-2 {
     font-family: font-light, "tahoma", serif !important;
 }
 
-.form-floating label {
+.form-floating > label {
     font-family: font-regular, "tahoma", serif !important;
 }
 
