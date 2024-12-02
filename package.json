@@ -12,6 +12,8 @@
     "@yaireo/tagify": "^4.32.0",
     "axios": "^1.7.7",
     "dropzone": "^6.0.0-beta.2",
+    "flatpickr": "^4.6.13",
+    "jdate": "^0.0.2",
     "next": "15.0.3",
     "quill": "^2.0.2",
     "quill-image-resize": "^3.0.9",
