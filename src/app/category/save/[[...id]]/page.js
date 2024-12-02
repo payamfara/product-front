@@ -4,6 +4,7 @@ import Select2 from '../../../../components/Select2Component';
 import { useParams } from "next/navigation";
 import { baseApiAuth } from '../../../../api/baseApi';
 import AttributeComponent from './components/AttributeComponent';
+import DynamicAttributeField from "@/src/components/DynamicAttributeField";
 
 const CreateCategoryPage = () => {
     const attributeComponentRef = useRef(null);
@@ -581,7 +582,7 @@ const CreateCategoryPage = () => {
                                     <span className="text-muted fw-light">تجارت الکترونیک /</span>
                                     افزودن دسته بندی
                                 </h4>
-                                <form action={`http://192.168.1.21:8000/categorys/save/${id}`} onSubmit={handleSubmit} className="app-ecommerce">
+                                <form onSubmit={handleSubmit} className="app-ecommerce">
                                     {/* Add category */}
                                     <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3">
                                         <div className="d-flex flex-column justify-content-center">
@@ -610,13 +611,16 @@ const CreateCategoryPage = () => {
                                                             <span>دسته بندی والد</span>
                                                             <a className="fw-medium" href="javascript:void(0);">اضافه کردن دسته جدید</a>
                                                         </label>
-                                                        <Select2
-                                                            name={'parent'}
-                                                            asyncUrl="http://192.168.1.80:2020/api2/category/"
-                                                            isAsync={true}
-                                                            placeholder="انتخاب دسته"
+                                                        <DynamicAttributeField
                                                             onChange={(vals) => { console.log(vals) }}
-                                                            defaultValue={{'id': pageData.parent, 'value': pageData.parent_str}}
+                                                            data={{
+                                                            attribute_name_en: 'parent',
+                                                            attribute_name_fa: 'دسته',
+                                                            attribute_type: pageStruct['parent'],
+                                                            attribute_value: pageData['parent'],
+                                                            attribute_value_str: pageData[`parent_str`],
+                                                            attribute_url: `/category/`
+                                                            }}
                                                         />
                                                     </div>
                                              

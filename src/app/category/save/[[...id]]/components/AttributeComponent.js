@@ -4,8 +4,6 @@ import RippleButton from "../../../../../components/RippleButton/RippleButton";
 import DynamicAttributeField from "@/src/components/DynamicAttributeField";
 
 const AttributeComponent = forwardRef(({ inputs, struct }, ref) => {
-  console.log(struct);
-  
   const [activeRow, setActiveRow] = useState(-1);
   const [inputValues, setInputValues] = useState(inputs || []);
 
@@ -13,8 +11,7 @@ const AttributeComponent = forwardRef(({ inputs, struct }, ref) => {
     getValues: () => inputValues,
   }));
 
-  const handleInputChange = (e, rowIndex) => {
-    const { name, value } = e.target;
+  const handleInputChange = (name, value, rowIndex) => {
     setInputValues((prevValues) =>
       prevValues.map((row, index) =>
         index === rowIndex ? { ...row, [name]: value } : row
@@ -39,35 +36,36 @@ const AttributeComponent = forwardRef(({ inputs, struct }, ref) => {
       {inputValues.map((rowInputs, rowIndex) => (
         <div
           key={rowIndex}
-          className="z-0 card flex-row flex-wrap p-2 gap-2 position-relative"
+          className="position-relative card flex-row flex-wrap ps-4 p-2 gap-2"
         >
           <div className="d-flex align-items-end flex-wrap w-100 row-cols-4">
             {Object.keys(rowInputs).map((name, index) => (
               (index < 4) || (activeRow === rowIndex && index > 3) ? 
                 <div className="p-2" key={index}>
                   <DynamicAttributeField
-                    onChange={e=>handleInputChange(e, rowIndex)}
+                    onChange={(name,value)=>handleInputChange(name,value, rowIndex)}
                     className='p-2'
                     data={{
                       attribute_name_en: name,
                       attribute_name_fa: name,
                       attribute_type: struct[name],
                       attribute_value: rowInputs[name],
+                      attribute_value_str: rowInputs[`${name}_str`],
                     }}
                   />
                 </div> : null
             ))}
           </div>
-          <div className="z-n1 position-absolute d-flex flex-column justify-content-center gap-1 top-0 start-0 h-100 translate-x">
+          <div className="position-absolute d-flex flex-column justify-content-center gap-4 top-0 start-0 h-100 translate-middle-x">
             <RippleButton
-              className="pe-auto z-1 btn btn-danger btn-sm p-1 d-flex align-items-center justify-content-center"
+              className="ribbon btn btn-danger btn-sm p-1 d-flex align-items-center justify-content-center"
               onClick={() => handleDeleteRow(rowIndex)}
               title="Delete"
             >
               <FaTrash size={16} />
             </RippleButton>
             <RippleButton
-              className={`pe-auto z-1 btn btn-${
+              className={`ribbon btn btn-${
                 activeRow === rowIndex ? "secondary" : "primary"
               } btn-sm p-1 d-flex align-items-center justify-content-center`}
               onClick={() => handleActivateRow(rowIndex)}

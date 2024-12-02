@@ -13,14 +13,17 @@ const Select2Component = ({
   onChange,
   options = [],
   defaultValue,
+  className
 }) => {
   const [defaultOptions, setDefaultOptions] = useState([]);
   
   const handleOptions = async (inputValue) => {
-    const requestUrl = `${asyncUrl}?value_en__icontains=${inputValue}`;
+    const separator = asyncUrl.includes("?") ? "&" : "?";
+    const requestUrl = `${asyncUrl}${separator}value_en__icontains=${inputValue}`;
     
     try {
       const res = await baseApiAuth.get(requestUrl);
+      setDefaultOptions(res.data.results);
       return res.data.results; 
     } catch (err) {
       console.error("Error fetching data:", err);
@@ -28,16 +31,12 @@ const Select2Component = ({
     }
   };
 
-  // useEffect(() => {
-  //   const fetchDefaultOptions = async () => {
-  //     const options = await handleOptions(defaultValue?.value);
-  //     setDefaultOptions(options);
-  //   };
-  //   fetchDefaultOptions();
-  // }, []);
+  useEffect(() => {
+    handleOptions(defaultValue.value);
+  }, []);
 
   const handleChange = (selectedOption) => {
-    if (onChange) onChange(name, selectedOption);
+    if (onChange) onChange(name, selectedOption.id);
   };
 
   return (
@@ -51,10 +50,10 @@ const Select2Component = ({
         placeholder={`انتخاب ${placeholder}`}
         isMulti={isMulti}
         onChange={handleChange}
-        getOptionLabel={(e) => e.value_en || e.label || e.name || e.value}
+        getOptionLabel={(e) => e.value || e.label || e.name || e.value_en}
         getOptionValue={(e) => e.id || e.value}
         classNamePrefix="custom-select"
-        className="h-100"
+        className={className}
       />
     ) : (
       <Select
@@ -67,7 +66,7 @@ const Select2Component = ({
         getOptionLabel={(e) => e.label || e.name || e.value}
         getOptionValue={(e) => e.id || e.value}
         classNamePrefix="custom-select"
-        className="h-100"
+        className={className}
       />
     )
   );
