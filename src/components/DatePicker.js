@@ -1,11 +1,11 @@
 import React, { useRef, useEffect } from "react";
-import flatpickr from "flatpickr";
 import { Persian } from "../../public/js/flatpickr-fa";
 import {JDate} from "../../public/js/jdate"; 
 import "../../public/js/flatpickr-jalali"; 
 import "../../public/css/flatpickr.css"; 
 
 const DatePicker = ({ name, value, onChange }) => {
+  
   const datepickerRef = useRef(null);
 
   useEffect(() => {
@@ -17,7 +17,7 @@ const DatePicker = ({ name, value, onChange }) => {
       altFormat: 'j F Y',
       dateFormat: 'Y/m/d',
       locale: 'fa',
-      defaultDate: value,
+      defaultDate: new Date(),
       onChange: ([selectedDate]) => {
         onChange(selectedDate);
       },
@@ -26,7 +26,7 @@ const DatePicker = ({ name, value, onChange }) => {
     return () => {
       fp.destroy(); 
     };
-  }, [value, onChange]);
+  }, [name, value, onChange]);
 
   return (
     <input
