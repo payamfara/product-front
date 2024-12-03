@@ -6,6 +6,7 @@ import { baseApiAuth } from '../../../../api/baseApi';
 import AttributeComponent from './components/AttributeComponent';
 import DynamicAttributeField from "@/src/components/DynamicAttributeField";
 
+
 const CreateCategoryPage = () => {
     const attributeComponentRef = useRef(null);
     const [pageData, setPageData] = useState({});
@@ -13,7 +14,6 @@ const CreateCategoryPage = () => {
     const [loading, setLoading] = useState(true);
     const params = useParams();
     const { id = "" } = params;
-
 
     useEffect(() => {
         baseApiAuth.get(`/category/?get_structure`)

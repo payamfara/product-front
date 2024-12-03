@@ -15,7 +15,7 @@ const Select2Component = ({
   defaultValue,
   className
 }) => {
-  const [defaultOptions, setDefaultOptions] = useState([]);
+  const [defaultOptions, setDefaultOptions] = useState(options);
   
   const handleOptions = async (inputValue) => {
     const separator = asyncUrl.includes("?") ? "&" : "?";
@@ -32,7 +32,7 @@ const Select2Component = ({
   };
 
   useEffect(() => {
-    handleOptions(defaultValue.value);
+    isAsync && handleOptions(defaultValue?.value);
   }, []);
 
   const handleChange = (selectedOption) => {

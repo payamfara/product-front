@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Persian } from "../../public/js/flatpickr-fa";
 import {JDate} from "../../public/js/jdate"; 
 import "../../public/js/flatpickr-jalali"; 
@@ -7,7 +7,8 @@ import "../../public/css/flatpickr.css";
 const DatePicker = ({ name, value, onChange }) => {
   
   const datepickerRef = useRef(null);
-
+  const [isReady, setIsReady] = useState(false); 
+  
   useEffect(() => {
     flatpickr.localize(Persian);
 
@@ -21,6 +22,9 @@ const DatePicker = ({ name, value, onChange }) => {
       onChange: ([selectedDate]) => {
         onChange(selectedDate);
       },
+      onReady: () => {
+        setIsReady(true);
+      },
     });
 
     return () => {
@@ -31,7 +35,7 @@ const DatePicker = ({ name, value, onChange }) => {
   return (
     <input
       ref={datepickerRef}
-      type="text"
+      type={isReady ? "hidden" : "text"}
       name={name}
       id={name}
       className='form-control'

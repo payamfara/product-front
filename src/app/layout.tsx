@@ -54,12 +54,6 @@ export default function RootLayout({
         <link href="/vendor/libs/dropzone/dropzone.css" rel="stylesheet" />
         <link href="/libs/flatpickr/flatpickr.css" rel="stylesheet" />
         <link href="/vendor/libs/tagify/tagify.css" rel="stylesheet" />
-        {/* Page CSS  */}
-        {/* Helpers  */}
-        {/* <script src="/vendor/js/helpers.js"></script> */}
-        {/* ? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.   */}
-        {/* <script src="/js/config.js"></script> */}
-        {/* Better experience of RTL  */}
         <link href="/css/rtl.css" rel="stylesheet" />
         <link href="/css/jquery.toast.min.css" rel="stylesheet" />
         <link rel="stylesheet" href="/css/styles.css" />
@@ -70,34 +64,9 @@ export default function RootLayout({
       >
         {children}
 
-        {/* <script src="/vendor/libs/jquery/jquery.js"></script>
-        <script src="/vendor/libs/popper/popper.js"></script>
-        <script src="/vendor/js/bootstrap.js"></script>
-        <script src="/vendor/libs/node-waves/node-waves.js"></script>
-        <script src="/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
-        <script src="/vendor/libs/hammer/hammer.js"></script>
-        <script src="/vendor/libs/i18n/i18n.js"></script>
-        <script src="/vendor/libs/typeahead-js/typeahead.js"></script>
-        <script src="/vendor/js/menu.js"></script> */}
-
-        {/* endbuild */} {/* Vendors JS  */}
-        {/* <script src="/vendor/libs/quill/katex.js"></script>
-        <script src="/vendor/libs/select2/select2.js"></script>
-        <script src="/vendor/libs/select2/i18n/fa.js"></script>
-        <script src="/vendor/libs/jquery-repeater/jquery-repeater.js"></script>
-        <script src="/libs/jdate/jdate.js"></script>
-        <script src="/libs/flatpickr/flatpickr-jalali.js"></script>
-        <script src="/libs/flatpickr/l10n/fa.js"></script>
-        <script src="/vendor/libs/tagify/tagify.js"></script>
-        <script src="/js/jquery.toast.min.js"></script> */}
         <script src="/vendor/libs/dropzone/dropzone.min.js"></script>
-
-        {/* Main JS  */}
-        {/* <script src="/js/main.js"></script> */}
-
-        {/* Page JS  */}
-        {/* <script src="/js/app-ecommerce-product-add.js"></script> */}
       </body>
     </html>
   );
+
 }

@@ -12,23 +12,10 @@ import { baseApiAuth } from "../../../../api/baseApi";
 const CreateProductPage = () => {
     const tabsWithInputsRef = useRef();
     const tagifyRef = useRef();
-    const [product, setProduct] = useState({
-        part_number_is_manual: false,
-        part_number_en: "",
-        part_number_fa: "",
-        part_number_bz: "",
-        price: 0,
-        status: "",
-        category: null,
-        tags: [],
-        images: [],
-        description: "",
-        product_attrs: [],
-    });
+    const [pageData, setPageData] = useState({});
     const [loading, setLoading] = useState(true);
     const params = useParams();
     const { id = "" } = params;
-    console.log(id);
     
 
     useEffect(() => {
@@ -36,18 +23,9 @@ const CreateProductPage = () => {
         baseApiAuth.get(requestUrl)
             .then((res) => {
                 console.log('res', res);
-                setProduct({
-                    part_number_is_manual: res.data?.part_number_is_manual || false,
-                    part_number_en: res.data?.part_number_en || "",
-                    part_number_fa: res.data?.part_number_fa || "",
-                    part_number_bz: res.data?.part_number_bz || "",
-                    price: res.data?.price || 0,
-                    status: res.data?.status || "",
-                    category: res.data?.category || null,
-                    tags: res.data?.tags || [],
-                    images: res.data?.images || [],
-                    description: res.data?.description || "",
-                    product_attrs: [...res.data?.product_attrs, ...res.data?.product_attrs_without_values] || [],
+                setPageData({
+                    ...res.data,
+                    non_variant_product_attrs: [...res.data['non_variant_product_attrs'], ...res.data['non_variant_extra_attrs']]
                 });
                 setLoading(false);
             })
@@ -66,8 +44,8 @@ const CreateProductPage = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        // const newTags = product.tags.filter(tag => !tag.id); 
-        // const existingTags = product.tags.filter(tag => tag.id); 
+        // const newTags = pageData.tags.filter(tag => !tag.id); 
+        // const existingTags = pageData.tags.filter(tag => tag.id); 
       
         // console.log(newTags);
         // console.log(existingTags);
@@ -90,8 +68,8 @@ const CreateProductPage = () => {
 
         const data = {
             ...product,
-            'category': product.category.id,
-            'status': product.status.id,
+            'category': pageData.category.id,
+            'status': pageData.status.id,
             'tags': tagifyRef.current.getValues(),
             'product_attrs': tabsWithInputsRef.current.getValues(),
         }
@@ -687,7 +665,7 @@ const CreateProductPage = () => {
                                                             isAsync={true}
                                                             placeholder="انتخاب دسته"
                                                             onChange={(vals) => { console.log(vals) }}
-                                                            defaultValue={product.category}
+                                                            defaultValue={{'id': pageData.category, 'value': pageData.category_str}}
                                                         />
                                                     </div>
                                                     <div className="row mb-3">
@@ -726,7 +704,7 @@ const CreateProductPage = () => {
                                                         <QuillEditorComponent
                                                             id="description"
                                                             name="description"
-                                                            value={product.description}
+                                                            value={pageData.description}
                                                             toolbarOptions={[
                                                                 'bold', 'italic', 'underline',
                                                                 { 'list': 'ordered' }, { 'list': 'bullet' },
@@ -740,7 +718,7 @@ const CreateProductPage = () => {
                                             </div>
                                             {/* /Product Information */}
                                             {/* Media */}
-                                            <DropzoneComponent uploadedFiles={product.images} uploadUrl={"http://192.168.1.21:8000/api/save_images/products/"} />
+                                            <DropzoneComponent uploadedFiles={pageData.images} uploadUrl={"http://192.168.1.21:8000/api/save_images/products/"} />
                                             {/* /Media */}
                                             {/* Variants */}
                                             <div id="category_attrs" className="card mb-4">
@@ -748,7 +726,7 @@ const CreateProductPage = () => {
                                                     <h5 className="card-title mb-0">ویژگی های عادی</h5>
                                                 </div>
                                                 <div id="category_attrs_items" className="gap-3 d-flex flex-column card-body">
-                                                    <TabsWithInputsComponent ref={tabsWithInputsRef} inputs={product.product_attrs} />
+                                                    <TabsWithInputsComponent ref={tabsWithInputsRef} inputs={pageData.non_variant_product_attrs} />
                                                 </div>
                                             </div>
                                             <div id="variant_attrs" className="card mb-4">
@@ -756,6 +734,7 @@ const CreateProductPage = () => {
                                                     <h5 className="card-title mb-0">ویژگی های وریانت</h5>
                                                 </div>
                                                 <div id="variant_attrs_items" className="card-body mxn-2 row row-cols-3">
+                                                    <CardContainer forms={pageData.variant_product_attrs} />
                                                 </div>
                                             </div>
                                             {/* /Variants */}
@@ -1016,7 +995,7 @@ const CreateProductPage = () => {
                                                     {/* Base Price */}
                                                     <div className="mb-3">
                                                         <label className="form-label" htmlFor="price">قیمت پایه</label>
-                                                        <input defaultValue={product.price} className="form-control" id="price" name="price" placeholder="قیمت" type="number" />
+                                                        <input defaultValue={pageData.price} className="form-control" id="price" name="price" placeholder="قیمت" type="number" />
                                                     </div>
 
                                                     {/* Discounted Price */}
@@ -1063,7 +1042,7 @@ const CreateProductPage = () => {
                                                                 id={'part_number_is_manual'}
                                                                 name={'part_number_is_manual'}
                                                                 className="form-check-input"
-                                                                defaultChecked={!!product.part_number_is_manual}
+                                                                defaultChecked={!!pageData.part_number_is_manual}
                                                             />
                                                             <label className="form-label" htmlFor="part_number_is_manual">پارت نامبر دستی</label>
                                                         </div>
@@ -1074,7 +1053,7 @@ const CreateProductPage = () => {
                                                                 id={'part_number_en'}
                                                                 name={'part_number_en'}
                                                                 className="form-control"
-                                                                defaultValue={product.part_number_en}
+                                                                defaultValue={pageData.part_number_en}
                                                             />
                                                             <span id="help_part_number_en" className="fs-tiny form-label"></span>
                                                         </div>
@@ -1085,7 +1064,7 @@ const CreateProductPage = () => {
                                                                 id={'part_number_fa'}
                                                                 name={'part_number_fa'}
                                                                 className="form-control"
-                                                                defaultValue={product.part_number_fa}
+                                                                defaultValue={pageData.part_number_fa}
                                                             />
                                                             <span id="help_part_number_fa" className="fs-tiny form-label"></span>
                                                         </div>
@@ -1096,7 +1075,7 @@ const CreateProductPage = () => {
                                                                 id={'part_number_bz'}
                                                                 name={'part_number_bz'}
                                                                 className="form-control"
-                                                                defaultValue={product.part_number_bz}
+                                                                defaultValue={pageData.part_number_bz}
                                                             />
                                                             <span id="help_part_number_bz" className="fs-tiny form-label"></span>
                                                         </div>
@@ -1118,7 +1097,7 @@ const CreateProductPage = () => {
                                                             asyncUrl="/choice/?title=status"
                                                             isAsync={true}
                                                             placeholder="وضعیت انتشار"
-                                                            defaultValue={product.status}
+                                                            defaultValue={{'id': pageData.status, 'value': pageData.status_str}}
                                                             onChange={(vals) => { console.log(vals) }}
                                                         />
                                                     </div>
@@ -1136,7 +1115,7 @@ const CreateProductPage = () => {
                                                             asyncUrl="/tag/"
                                                             placeholder="Search for tags..."
                                                             onChange={(tags) => { console.log(tags); }}
-                                                            defaultValue={product.tags}
+                                                            defaultValue={pageData.tags}
                                                         />
                                                     </div>
                                                 </div>
