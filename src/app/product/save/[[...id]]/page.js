@@ -70,7 +70,7 @@ const CreateProductPage = () => {
         // ];
 
         const data = {
-            ...product,
+            ...pageDataw,
             'category': pageData.category.id,
             'status': pageData.status.id,
             'tags': tagifyRef.current.getValues(),
@@ -732,17 +732,10 @@ const CreateProductPage = () => {
                                                     <TabsWithInputsComponent ref={tabsWithInputsRef} inputs={pageData.non_variant_product_attrs} />
                                                 </div>
                                             </div>
-                                            <div id="variant_attrs" className="card mb-4">
-                                                <div className="card-header">
-                                                    <h5 className="card-title mb-0">ویژگی های وریانت</h5>
-                                                </div>
-                                                <div className="card-body">
-                                                    <VariantProductContainer 
-                                                        forms={pageData.variant_products} 
-                                                        inputs={pageData.variant_product_attrs}
-                                                    />
-                                                </div>
-                                            </div>
+                                            <VariantProductContainer 
+                                                forms={pageData.variant_products} 
+                                                inputs={pageData.variant_product_attrs}
+                                            />
                                             {/* /Variants */}
                                             {/* Inventory */}
                                             <div className="card mb-4">
