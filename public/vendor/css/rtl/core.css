@@ -8957,10 +8957,10 @@ html:not([dir=rtl]) .nav-align-left .nav-tabs {
   border-radius: 0 0.375rem 0.375rem 0;
 }
 
-.card .nav.nav-tabs {
+/* .card .nav.nav-tabs {
   margin-right: -1.5rem;
   margin-left: -1.5rem;
-}
+} */
 
 .card .nav.nav-pills {
   margin-left: 0rem;

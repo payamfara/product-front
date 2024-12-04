@@ -58,36 +58,59 @@ body {
 .ribbon {
   overflow: visible !important;
 }
+
 .ribbon:hover {
   transform: scale(1.1);
   transition: transform 0.2s ease-in-out;
 }
+
+.ribbon.border-primary::before,
+.ribbon.border-primary::after {
+  border-color: #2d22a6;
+}
+
+.ribbon.border-danger::before,
+.ribbon.border-danger::after {
+  border-color: #b64b4b;
+}
+
 .ribbon::after,
 .ribbon::before {
   position: absolute;
   content: '';
-  border: 6px solid;
-  border-color: inherit;
-  border-right-color: transparent;
+  border: 0.25rem solid;
+  border-right-color: transparent !important;
   right: 0;
-  opacity: 0.9;
-}
-.ribbon::after {
-    border-top-color: transparent;
-    top: 0;
-    transform: translateY(-100%);
-}
-.ribbon::before {
-    border-bottom-color: transparent;
-    bottom: 0;
-    transform: translateY(100%);
+  opacity: 1;
 }
 
-.form-floating > label {
+
+.ribbon::after {
+  border-top-color: transparent !important;
+  top: 0;
+  transform: translateY(-100%);
+}
+
+.ribbon::before {
+  border-bottom-color: transparent !important;
+  bottom: 0;
+  transform: translateY(100%);
+}
+
+.form-floating>label {
   left: auto !important;
 }
 
 .custom-select--nobrorder .custom-select__control {
   border: 0;
   margin: 2px;
+}
+
+.rounded-start-0 {
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+}
+
+.card-img {
+  height: 5rem;
 }

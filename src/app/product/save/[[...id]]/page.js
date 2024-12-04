@@ -8,10 +8,12 @@ import TabsWithInputsComponent from '../../../../components/TabsWithInputsCompon
 import axios from "axios";
 import { useParams } from "next/navigation";
 import { baseApiAuth } from "../../../../api/baseApi";
+import VariantProductContainer from './components/VariantProductContainer';
 
 const CreateProductPage = () => {
     const tabsWithInputsRef = useRef();
     const tagifyRef = useRef();
+    const [pageStruct, setPageStruct] = useState({});
     const [pageData, setPageData] = useState({});
     const [loading, setLoading] = useState(true);
     const params = useParams();
@@ -25,7 +27,8 @@ const CreateProductPage = () => {
                 console.log('res', res);
                 setPageData({
                     ...res.data,
-                    non_variant_product_attrs: [...res.data['non_variant_product_attrs'], ...res.data['non_variant_extra_attrs']]
+                    non_variant_product_attrs: [...res.data['non_variant_product_attrs'], ...res.data['non_variant_extra_attrs']],
+                    variant_product_attrs: [...res.data['variant_product_attrs'], ...res.data['variant_extra_attrs']]
                 });
                 setLoading(false);
             })
@@ -733,8 +736,11 @@ const CreateProductPage = () => {
                                                 <div className="card-header">
                                                     <h5 className="card-title mb-0">ویژگی های وریانت</h5>
                                                 </div>
-                                                <div id="variant_attrs_items" className="card-body mxn-2 row row-cols-3">
-                                                    <CardContainer forms={pageData.variant_product_attrs} />
+                                                <div className="card-body">
+                                                    <VariantProductContainer 
+                                                        forms={pageData.variant_products} 
+                                                        inputs={pageData.variant_product_attrs}
+                                                    />
                                                 </div>
                                             </div>
                                             {/* /Variants */}

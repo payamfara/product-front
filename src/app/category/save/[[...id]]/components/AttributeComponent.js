@@ -56,16 +56,16 @@ const AttributeComponent = forwardRef(({ inputs, struct }, ref) => {
                 </div> : null
             ))}
           </div>
-          <div className="position-absolute d-flex flex-column justify-content-center gap-4 top-0 start-0 h-100 translate-middle-x">
+          <div className="position-absolute d-flex flex-column justify-content-center gap-4 top-0 start-0 h-100 mxn-2">
             <RippleButton
-              className="ribbon btn btn-danger btn-sm p-1 d-flex align-items-center justify-content-center"
+              className="rounded-start-0 border-0 border-danger ribbon btn btn-danger btn-sm p-1 d-flex align-items-center justify-content-center"
               onClick={() => handleDeleteRow(rowIndex)}
               title="Delete"
             >
               <FaTrash size={16} />
             </RippleButton>
             <RippleButton
-              className={`ribbon btn btn-${
+              className={`rounded-start-0 border-0 border-primary ribbon btn btn-${
                 activeRow === rowIndex ? "secondary" : "primary"
               } btn-sm p-1 d-flex align-items-center justify-content-center`}
               onClick={() => handleActivateRow(rowIndex)}
