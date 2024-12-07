@@ -9,27 +9,50 @@ import axios from "axios";
 import { useParams } from "next/navigation";
 import { baseApiAuth } from "../../../../api/baseApi";
 import VariantProductContainer from './components/VariantProductContainer';
+import DynamicAttributeField from "@/src/components/DynamicAttributeField";
 
 const CreateProductPage = () => {
     const tabsWithInputsRef = useRef();
     const tagifyRef = useRef();
-    const [pageStruct, setPageStruct] = useState({});
     const [pageData, setPageData] = useState({});
     const [loading, setLoading] = useState(true);
     const params = useParams();
     const { id = "" } = params;
     
+    const saveProduct = (input) => {
+        const dataWithExtra = {...pageData, ...input}
+        const { variant_products, ...data } = dataWithExtra;
+        
+        console.log(data);
+        
+        const requestUrl = `/api2/product/${input.id}/`
+        baseApiAuth
+        .post(requestUrl, data)
+        .then((res) => {
+            console.log('ress', res);
+        })
+        .catch((err) => {
+            console.error('Error fetching tags:', err);
+        })
+        // toast.success('Successfully!')
+    }
+
+    const handleChange = (name, value) => {
+        setPageData(pageData=>({...pageData, [name]: value}))
+    }
 
     useEffect(() => {
-        const requestUrl = `/product/${id}`
+        const requestUrl = `/api2/product/${id}`
         baseApiAuth.get(requestUrl)
             .then((res) => {
-                console.log('res', res);
+                const { non_variant_extra_attrs, variant_extra_attrs, ...resultData} = res.data;
                 setPageData({
-                    ...res.data,
-                    non_variant_product_attrs: [...res.data['non_variant_product_attrs'], ...res.data['non_variant_extra_attrs']],
-                    variant_product_attrs: [...res.data['variant_product_attrs'], ...res.data['variant_extra_attrs']]
+                    ...resultData,
+                    non_variant_product_attrs: [...resultData['non_variant_product_attrs'], ...non_variant_extra_attrs],
+                    variant_product_attrs: [...resultData['variant_product_attrs'], ...variant_extra_attrs]
                 });
+                console.log('res', res.data);
+                
                 setLoading(false);
             })
             .catch((err) => {
@@ -39,8 +62,6 @@ const CreateProductPage = () => {
     }, [])
 
     if (loading) {
-        console.log('dd1');
-
         return <div>Loading...</div>;
     }
 
@@ -70,7 +91,7 @@ const CreateProductPage = () => {
         // ];
 
         const data = {
-            ...pageDataw,
+            ...pageData,
             'category': pageData.category.id,
             'status': pageData.status.id,
             'tags': tagifyRef.current.getValues(),
@@ -658,17 +679,14 @@ const CreateProductPage = () => {
                                                         </select>
                                                     </div> */}
                                                     <div className="mb-3 col ecommerce-select2-dropdown">
-                                                        <label className="form-label mb-1 d-flex justify-content-between align-items-center" htmlFor="category-org">
-                                                            <span>دسته</span>
-                                                            <a className="fw-medium" href="javascript:void(0);">اضافه کردن دسته جدید</a>
-                                                        </label>
-                                                        <Select2
-                                                            name={'category'}
-                                                            asyncUrl="/category/"
-                                                            isAsync={true}
-                                                            placeholder="انتخاب دسته"
-                                                            onChange={(vals) => { console.log(vals) }}
-                                                            defaultValue={{'id': pageData.category, 'value': pageData.category_str}}
+                                                        <DynamicAttributeField
+                                                            onChange={handleChange}
+                                                            className='p-2'
+                                                            data = {{
+                                                                attribute_name_en: 'دسته',
+                                                                attribute_name_fa: 'category',
+                                                                attr_type: pageData.meta_datas.category
+                                                            }}
                                                         />
                                                     </div>
                                                     <div className="row mb-3">
@@ -735,6 +753,7 @@ const CreateProductPage = () => {
                                             <VariantProductContainer 
                                                 forms={pageData.variant_products} 
                                                 inputs={pageData.variant_product_attrs}
+                                                handleSubmit={saveProduct}
                                             />
                                             {/* /Variants */}
                                             {/* Inventory */}
@@ -1093,7 +1112,7 @@ const CreateProductPage = () => {
                                                         <label className="form-label mb-1" htmlFor="status-org">وضعیت</label>
                                                         <Select2
                                                             name={'status'}
-                                                            asyncUrl="/choice/?title=status"
+                                                            asyncUrl="/api2/choice/?title=status"
                                                             isAsync={true}
                                                             placeholder="وضعیت انتشار"
                                                             defaultValue={{'id': pageData.status, 'value': pageData.status_str}}
@@ -1111,7 +1130,7 @@ const CreateProductPage = () => {
                                                             ref={tagifyRef}
                                                             name={'tags'}
                                                             id={'tags'}
-                                                            asyncUrl="/tag/"
+                                                            asyncUrl="/api2/tag/"
                                                             placeholder="Search for tags..."
                                                             onChange={(tags) => { console.log(tags); }}
                                                             defaultValue={pageData.tags}

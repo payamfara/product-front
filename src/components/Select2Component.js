@@ -15,6 +15,7 @@ const Select2Component = ({
   defaultValue,
   className
 }) => {
+  
   const [defaultOptions, setDefaultOptions] = useState(options);
   
   const handleOptions = async (inputValue) => {
@@ -51,7 +52,7 @@ const Select2Component = ({
         isMulti={isMulti}
         onChange={handleChange}
         getOptionLabel={(e) => e.value || e.label || e.name || e.title_en}
-        getOptionValue={(e) => e.id || e.value}
+        getOptionValue={(e) => e.pk || e.id || e.value}
         classNamePrefix="custom-select"
         className={className}
       />
@@ -59,12 +60,13 @@ const Select2Component = ({
       <Select
         name={name}
         options={options}
+        defaultOptions={options}
         defaultValue={defaultValue}
         placeholder={`انتخاب ${placeholder}`}
         isMulti={isMulti}
         onChange={handleChange}
         getOptionLabel={(e) => e.label || e.name || e.value}
-        getOptionValue={(e) => e.id || e.value}
+        getOptionValue={(e) => e.pk || e.id || e.value}
         classNamePrefix="custom-select"
         className={className}
       />

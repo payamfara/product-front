@@ -1,19 +1,11 @@
-import React, { useState, useImperativeHandle, forwardRef } from "react";
+import React, { useState, useImperativeHandle, forwardRef, useEffect } from "react";
 import DynamicAttributeField from "./DynamicAttributeField";
 
 const TabsWithInputs = forwardRef(({ inputs }, ref) => {
-
-  const sortedInputs = inputs.sort((a, b) => {
-    const aHasValue = a.attr_value ? 1 : 0;
-    const bHasValue = b.attr_value ? 1 : 0;
-
-    if (aHasValue !== bHasValue) {
-      return bHasValue - aHasValue;
-    }
-
-    return b.order - a.order;
-  });
-
+  console.log('ssss');
+  
+  console.log('inputs', inputs);
+  
   const categorizeInputs = (sortedInputs) => {
     const priorities = [
       ...new Set(
@@ -28,14 +20,30 @@ const TabsWithInputs = forwardRef(({ inputs }, ref) => {
         (input) => input.priority === priority
       );
     });
-    
+
     return categorized;
   };
 
-  const [categorizedInputs, setCategorizedInputs] = useState(categorizeInputs(sortedInputs));
-  const [activeTab, setActiveTab] = useState(
-    Object.keys(categorizedInputs)[0] || ""
-  );
+  const [categorizedInputs, setCategorizedInputs] = useState({});
+  const [activeTab, setActiveTab] = useState("");
+
+  useEffect(() => {
+  console.log('ddddddd');
+  const sortedInputs = [...inputs].sort((a, b) => {
+      const aHasValue = a.attr_value ? 1 : 0;
+      const bHasValue = b.attr_value ? 1 : 0;
+
+      if (aHasValue !== bHasValue) {
+        return bHasValue - aHasValue;
+      }
+
+      return b.order - a.order;
+    });
+
+    const categorized = categorizeInputs(sortedInputs);
+    setCategorizedInputs(categorized);
+    setActiveTab(Object.keys(categorized)[0] || "");
+  }, [inputs]);
 
   useImperativeHandle(ref, () => ({
     getValues: () =>
@@ -44,15 +52,6 @@ const TabsWithInputs = forwardRef(({ inputs }, ref) => {
         attribute_value: categorizedInputs[inputName]?.id || categorizedInputs[inputName],
       })),
   }));
-
-  const handleInputChange = (name, value) => {
-    console.log(name, value);
-    
-    setCategorizedInputs((prevValues) => ({
-      ...prevValues,
-      [name]: value,
-    }));
-  };
 
   return (
     <div>
@@ -67,9 +66,7 @@ const TabsWithInputs = forwardRef(({ inputs }, ref) => {
               }`}
               onClick={() => setActiveTab(priorityKey)}
             >
-              {priorityKey == 4 ? 'الزامی'
-              : priorityKey == 5 ? 'مهم'
-              : 'غیر مهم'}
+              {priorityKey == 4 ? "الزامی" : priorityKey == 5 ? "مهم" : "غیر مهم"}
             </button>
           </li>
         ))}
@@ -86,7 +83,6 @@ const TabsWithInputs = forwardRef(({ inputs }, ref) => {
               >
                 {categorizedInputs[priorityKey].map((input, index) => (
                   <DynamicAttributeField
-                    // onChange={handleInputChange}
                     key={input.id || index}
                     data={input}
                     value={input.attr_value || ""}

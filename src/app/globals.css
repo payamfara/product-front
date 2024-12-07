@@ -114,10 +114,15 @@ body {
   height: 5rem;
 }
 
-.mh-24rem {
-  max-height: 24rem;
+.h-24rem {
+  height: 24rem;
 }
 
 .card-sm {
   height: 2rem;
+}
+
+.myn-3 {
+  margin-top: -1rem;
+  margin-bottom: -1rem;
 }
