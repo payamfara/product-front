@@ -1,16 +1,17 @@
-import React, { useState, useImperativeHandle, forwardRef, useEffect } from "react";
+import React, {
+  useState,
+  useImperativeHandle,
+  forwardRef,
+  useEffect,
+} from "react";
 import DynamicAttributeField from "./DynamicAttributeField";
 
 const TabsWithInputs = forwardRef(({ inputs }, ref) => {
-  console.log('ssss');
-  
-  console.log('inputs', inputs);
-  
+  console.log("inputs", inputs);
+
   const categorizeInputs = (sortedInputs) => {
     const priorities = [
-      ...new Set(
-        sortedInputs.map((input) => input.priority)
-      ),
+      ...new Set(sortedInputs.map((input) => input.priority)),
     ];
 
     const categorized = {};
@@ -28,8 +29,8 @@ const TabsWithInputs = forwardRef(({ inputs }, ref) => {
   const [activeTab, setActiveTab] = useState("");
 
   useEffect(() => {
-  console.log('ddddddd');
-  const sortedInputs = [...inputs].sort((a, b) => {
+    console.log("ddddddd");
+    const sortedInputs = [...inputs].sort((a, b) => {
       const aHasValue = a.attr_value ? 1 : 0;
       const bHasValue = b.attr_value ? 1 : 0;
 
@@ -49,7 +50,8 @@ const TabsWithInputs = forwardRef(({ inputs }, ref) => {
     getValues: () =>
       Object.keys(categorizedInputs).map((inputName) => ({
         attribute_id: inputName,
-        attribute_value: categorizedInputs[inputName]?.id || categorizedInputs[inputName],
+        attribute_value:
+          categorizedInputs[inputName]?.id || categorizedInputs[inputName],
       })),
   }));
 
@@ -66,7 +68,11 @@ const TabsWithInputs = forwardRef(({ inputs }, ref) => {
               }`}
               onClick={() => setActiveTab(priorityKey)}
             >
-              {priorityKey == 4 ? "الزامی" : priorityKey == 5 ? "مهم" : "غیر مهم"}
+              {priorityKey == 4
+                ? "الزامی"
+                : priorityKey == 5
+                ? "مهم"
+                : "غیر مهم"}
             </button>
           </li>
         ))}
@@ -85,7 +91,7 @@ const TabsWithInputs = forwardRef(({ inputs }, ref) => {
                   <DynamicAttributeField
                     key={input.id || index}
                     data={input}
-                    value={input.attr_value || ""}
+                    value={input.attribute_name_en || ""}
                   />
                 ))}
               </div>

@@ -17,7 +17,7 @@ const DynamicAttributeField = ({ data, onChange }) => {
   const attribute_prefix = data.attribute_prefix ?? data.prefix;
   const attribute_postfix = data.attribute_postfix ?? data.postfix;
 
-  console.log('attribute_type', attribute_type);
+  // console.log('attribute_type', attribute_type);
   
 
   switch (attribute_type.type) {
@@ -36,7 +36,7 @@ const DynamicAttributeField = ({ data, onChange }) => {
           <label htmlFor={attribute_name_en}>{attribute_name_fa}</label>
           <Select2
             id={attribute_name_en}
-            name={attribute_id || attribute_name_en}
+            name={attribute_name_en}
             asyncUrl={attribute_type.url}
             isAsync={true}
             placeholder={attribute_name_fa}
@@ -60,7 +60,7 @@ const DynamicAttributeField = ({ data, onChange }) => {
           <Select2
             options={attribute_type.choice}
             id={attribute_name_en}
-            name={attribute_id || attribute_name_en}
+            name={attribute_name_en}
             isAsync={false}
             placeholder={attribute_name_fa}
             onChange={(value)=>onChange(attribute_name_en, value)}
@@ -75,7 +75,7 @@ const DynamicAttributeField = ({ data, onChange }) => {
           <input
             onChange={(e) => onChange(e.target.name, e.target.value)}
             id={attribute_name_en}
-            name={attribute_id || attribute_name_en}
+            name={attribute_name_en}
             className="form-control"
             placeholder={attribute_name_fa}
             defaultValue={attribute_value}
@@ -90,7 +90,7 @@ const DynamicAttributeField = ({ data, onChange }) => {
             readOnly
             onChange={(e) => onChange(e.target.name, e.target.value)}
             id={attribute_name_en}
-            name={attribute_id || attribute_name_en}
+            name={attribute_name_en}
             className="form-control"
             placeholder={attribute_name_fa}
             defaultValue={attribute_value}
@@ -107,7 +107,7 @@ const DynamicAttributeField = ({ data, onChange }) => {
             onChange={(e) => onChange(e.target.name, e.target.value)}
             type="number"
             id={attribute_name_en}
-            name={attribute_id || attribute_name_en}
+            name={attribute_name_en}
             className="form-control"
             placeholder={attribute_name_fa}
             defaultValue={attribute_value}
@@ -134,7 +134,7 @@ const DynamicAttributeField = ({ data, onChange }) => {
               type="checkbox"
               onChange={(e) => onChange(e.target.name, e.target.value)}
               id={attribute_name_en}
-              name={attribute_id || attribute_name_en}
+              name={attribute_name_en}
               className="position-absolute bottom-0 mx-3 m-2 form-check-input"
               defaultChecked={!!attribute_value}
             />
@@ -158,7 +158,7 @@ const DynamicAttributeField = ({ data, onChange }) => {
                   onChange={(e) => onChange(e.target.name, true)}
                   type="radio"
                   id={`${attribute_name_en}_true`}
-                  name={attribute_id || attribute_name_en}
+                  name={attribute_name_en}
                   className="form-check-input"
                   defaultChecked={attribute_value === true}
                 />
@@ -169,7 +169,7 @@ const DynamicAttributeField = ({ data, onChange }) => {
                   onChange={(e) => onChange(e.target.name, false)}
                   type="radio"
                   id={`${attribute_name_en}_false`}
-                  name={attribute_id || attribute_name_en}
+                  name={attribute_name_en}
                   className="form-check-input"
                   defaultChecked={attribute_value === false}
                 />
@@ -219,7 +219,7 @@ const DynamicAttributeField = ({ data, onChange }) => {
           <Select2
             options={options}
             id={attribute_name_en}
-            name={attribute_id || attribute_name_en}
+            name={attribute_name_en}
             asyncUrl={asyncUrl}
             isAsync={isAsync}
             placeholder={attribute_name_fa}

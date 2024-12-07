@@ -59,16 +59,16 @@ const VariantProductContainer = forwardRef(
   ({ forms, inputs, handleSubmit }, ref) => {
     const [cards, setCards] = useState(forms);
     const [activeCard, setActiveCard] = useState(null);
-
-    const emptyFrm = inputs.map((input) => ({
-      ...input,
-      attr_value: undefined,
-      attr_value_str: undefined,
-      meta_datas: {
-        ...input.meta_datas,
-        attr_value: { ...input.meta_datas.attr_value, default: undefined },
-      },
-    }));
+    const emptyFrm = inputs
+    // const emptyFrm = inputs.map((input) => ({
+    //   ...input,
+    //   attr_value: undefined,
+    //   attr_value_str: undefined,
+    //   meta_datas: {
+    //     ...input.meta_datas,
+    //     attr_value: { ...input.meta_datas.attr_value, default: undefined },
+    //   },
+    // }));
 
     useImperativeHandle(ref, () => ({
       getValues: () => cards,
@@ -84,6 +84,8 @@ const VariantProductContainer = forwardRef(
     };
 
     const handleCardClick = async (card, index) => {
+      console.log('card', cards);
+      
       if (card.variant_product_attrs) {
         setActiveCard(card);
         return;
@@ -149,14 +151,11 @@ const VariantProductContainer = forwardRef(
                 />
               ))}
             </div>
-            {activeCard?.variant_product_attrs ? (
+            {activeCard ? (
               <div className="position-relative border border-dashed rounded col-9">
                 <TabsWithInputsComponet
                   inputs={activeCard.variant_product_attrs}
                 />
-                {/* <div className="position-absolute bottom-0 end-0 d-flex gap-3 mx-3 myn-3">
-                <RippleButton onClick={()=>handleSubmit(activeCard)} className="btn btn-success">اعمال تغییرات</RippleButton>
-              </div> */}
               </div>
             ) : (
               <div className="border border-dashed rounded col-9">
