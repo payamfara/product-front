@@ -11,30 +11,45 @@ const TagifyComponent = forwardRef(({
     onChange,
     onInput,
     defaultValue = [],
+    valueKey = "id", 
+    displayKey = "value", 
 }, ref) => {
-    console.log(ref);
     
     const tagifyRef = useRef();
     const settings = {
         placeholder,
         maxTags,
-        whitelist,
+        whitelist: whitelist.map(item => ({
+            id: item[valueKey],
+            value: item[displayKey],
+        })),
         dropdown: {
             enabled: 0,
             maxItems: 5,
         },
+        tagTextProp: displayKey, 
+        mapValueToProp: valueKey, 
     };
+
     useImperativeHandle(ref, () => ({
         getValues: () => tagifyRef.current.value
     }));
     
+    const processedDefaultValue = defaultValue.map(item => ({
+        id: item[valueKey],
+        value: item[displayKey],
+    }));
+
     const handleInput = async (e) => {
         const input = e.detail.value;
         if (asyncUrl) {
             try {
-                const response = await fetch(`${asyncUrl}?term=${input}`);
+                const response = await fetch(`${asyncUrl}?q=${input}`);
                 const data = await response.json();
-                tagifyRef.current.settings.whitelist = data.results;
+                tagifyRef.current.settings.whitelist = data.results.map(item => ({
+                    id: item[valueKey],
+                    value: item[displayKey],
+                }));
             } catch (error) {
                 console.error("Error fetching suggestions:", error);
             }
@@ -53,7 +68,7 @@ const TagifyComponent = forwardRef(({
             className='form-control'
             tagifyRef={tagifyRef}
             settings={settings}
-            defaultValue={defaultValue} 
+            defaultValue={processedDefaultValue} 
             onChange={handleChange}
             onInput={handleInput}
         />

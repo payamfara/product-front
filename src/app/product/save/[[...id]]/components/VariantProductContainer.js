@@ -1,15 +1,21 @@
 import RippleButton from "@/src/components/RippleButton/RippleButton";
-import React, { useState, useImperativeHandle, forwardRef } from "react";
-import { FaTrash } from "react-icons/fa";
-import TabsWithInputsComponet from "../../../../../components/TabsWithInputsComponent";
+import React, {
+  useState,
+  useRef,
+  useImperativeHandle,
+  forwardRef,
+} from "react";
+import { FaTrash, FaSquare, FaSquareCheck } from "react-icons/fa";
+import TabsWithInputsComponent from "../../../../../components/TabsWithInputsComponent";
 import { baseApiAuth } from "@/src/api/baseApi";
 
-const Card = ({ form, isActive, onDelete, onClick }) => {
+const Card = ({ form, isWith, isActive, toggleWith, onDelete, onClick }) => {
+  
   return (
     <div
       onClick={onClick}
       className={`p-2 rounded border ${
-        isActive ? "border-primary" : ""
+        isActive ? "border-primary" : isWith ? "border-success" : ""
       } border-dashed position-relative`}
     >
       <div className="position-absolute d-flex flex-column justify-content-center gap-4 top-0 start-0 h-100 mxn-2">
@@ -19,6 +25,13 @@ const Card = ({ form, isActive, onDelete, onClick }) => {
           title="Delete"
         >
           <FaTrash size={16} />
+        </RippleButton>
+        <RippleButton
+          className="z-1 rounded-start-0 border-0 border-success ribbon btn btn-success btn-sm p-1"
+          onClick={()=>toggleWith(isWith)}
+          title="Add"
+        >
+          {isWith ? <FaSquareCheck size={16} /> : <FaSquare size={16} />}
         </RippleButton>
       </div>
       <div className={`card shadow-lg h-100 overflow-hidden`}>
@@ -55,123 +68,156 @@ const PlusButton = ({ onClick }) => {
   );
 };
 
-const VariantProductContainer = forwardRef(
-  ({ forms, inputs, handleSubmit }, ref) => {
-    const [cards, setCards] = useState(forms);
-    const [activeCard, setActiveCard] = useState(null);
-    const emptyFrm = inputs
-    // const emptyFrm = inputs.map((input) => ({
-    //   ...input,
-    //   attr_value: undefined,
-    //   attr_value_str: undefined,
-    //   meta_datas: {
-    //     ...input.meta_datas,
-    //     attr_value: { ...input.meta_datas.attr_value, default: undefined },
-    //   },
-    // }));
+const VariantProductContainer = forwardRef(({ nonVariants, forms, inputs }, ref) => {
+  const [withItems, setWithItems] = useState([]);
+  const tabsWithInputsRef = useRef(null);
+  const [cards, setCards] = useState(forms);
+  const [activeCard, setActiveCard] = useState(-1);
+  const emptyFrm = [...inputs];
+  // const emptyFrm = inputs.map((input) => ({
+  //   ...input,
+  //   attr_value: undefined,
+  //   attr_value_str: undefined,
+  //   meta_datas: {
+  //     ...input.meta_datas,
+  //     attr_value: { ...input.meta_datas.attr_value, default: undefined },
+  //   },
+  // }));
 
-    useImperativeHandle(ref, () => ({
-      getValues: () => cards,
-    }));
+  useImperativeHandle(ref, () => ({
+    getValues: () => cards,
+  }));
 
-    const handleDelete = (index) => {
-      setCards(cards.filter((_, i) => i !== index));
-    };
+  const handleDelete = (index) => {
+    setCards(cards.filter((_, i) => i !== index));
+  };
 
-    const handleAddCard = (newForm) => {
-      setCards([newForm, ...cards]);
-      setActiveCard(newForm);
-    };
+  const handleAddCard = (newForm) => {
+    setCards([newForm, ...cards]);
+    setActiveCard(0);
+  };
 
-    const handleCardClick = async (card, index) => {
-      console.log('card', cards);
-      
-      if (card.variant_product_attrs) {
-        setActiveCard(card);
-        return;
-      }
-
-      const requestUrl = `/api2/product/${card.id}`;
-      baseApiAuth
-        .get(requestUrl)
-        .then((res) => {
-          const updatedCard = {
-            ...card,
-            variant_product_attrs: [
-              ...res.data.variant_product_attrs,
-              ...res.data.variant_extra_attrs,
-            ],
-          };
-          const updatedCards = cards.map((c, i) =>
-            i === index ? updatedCard : c
-          );
-          setCards(updatedCards);
-          setActiveCard(updatedCard);
-        })
-        .catch((err) => {
-          console.error("Error fetching data:", err);
+  const updatePreviousCard = () => {
+    if (activeCard > -1) {
+      const updatedFrm = tabsWithInputsRef.current.getValues();
+      setCards((cards) => {
+        const items = cards.map((card, index) => {
+          return activeCard === index
+            ? { ...cards[activeCard], variant_product_attrs: updatedFrm }
+            : card;
         });
+        return items;
+      });
+    }
+  };
 
-      // try {
-      //   const res = await baseApiAuth.get(requestUrl)
-      //   const newFrm = card.id
-      //     ? (await baseApiAuth.get(requestUrl)).data.variant_product_attrs
-      //     : emptyFrm;
-      // } catch (err) {
-      // }
-    };
+  const handleCardClick = async (index) => {
+    updatePreviousCard();
 
-    return (
-      <div id="variant_attrs" className="card mb-4">
-        <div className="card-header d-flex align-items-center gap-3">
-          <h5 className="card-title mb-0">ویژگی های وریانت</h5>
-          <PlusButton
-            onClick={() =>
-              handleAddCard({
-                part_number_en: "new",
-                images: [],
-                variant_product_attrs: emptyFrm,
-              })
-            }
-          />
-        </div>
-        <div className="card-body">
-          <div className="row">
-            <div
-              dir="ltr"
-              className="h-24rem overflow-scroll variant-carts col-3 d-flex flex-column gap-3"
-            >
-              {cards.map((form, index) => (
-                <Card
-                  key={index}
-                  form={form}
-                  isActive={activeCard?.id === form.id}
-                  onDelete={() => handleDelete(index)}
-                  onClick={() => handleCardClick(form, index)}
-                />
-              ))}
+    if (cards[index].variant_product_attrs) {
+      setActiveCard(index);
+      return;
+    }
+
+    const requestUrl = `/api2/product/${cards[index].id}`;
+    baseApiAuth
+      .get(requestUrl)
+      .then((res) => {
+        const updatedCard = {
+          ...cards[index],
+          variant_product_attrs: [
+            ...res.data.variant_product_attrs,
+            ...res.data.variant_extra_attrs,
+          ],
+        };
+        setCards((cards) =>
+          cards.map((c, i) => (i === index ? updatedCard : c))
+        );
+        setActiveCard(index);
+      })
+      .catch((err) => {
+        console.error("Error fetching data:", err);
+      });
+
+    // try {
+    //   const res = await baseApiAuth.get(requestUrl)
+    //   const newFrm = card.id
+    //     ? (await baseApiAuth.get(requestUrl)).data.variant_product_attrs
+    //     : emptyFrm;
+    // } catch (err) {
+    // }
+  };
+  console.log('nonVariants', nonVariants.length);
+  
+
+  return (
+    <div id="variant_attrs" className="card mb-4">
+      <div className="card-header d-flex align-items-center gap-3">
+        <h5 className="card-title mb-0">ویژگی های وریانت</h5>
+        <PlusButton
+          onClick={() =>
+            handleAddCard({
+              part_number_en: "new",
+              images: [],
+              variant_product_attrs: emptyFrm,
+            })
+          }
+        />
+      </div>
+      <div className="card-body">
+        <div className="row">
+          <div
+            dir="ltr"
+            className="h-24rem overflow-scroll variant-carts col-3 d-flex flex-column gap-3"
+          >
+            {cards.map((form, index) => (
+              <Card
+                key={index}
+                form={form}
+                isActive={activeCard === index}
+                isWith={withItems.includes(index)}
+                onDelete={() => handleDelete(index)}
+                toggleWith={(isWith) =>
+                  isWith
+                    ? setWithItems(
+                        withItems.filter((withItem) => withItem != index)
+                      )
+                    : setWithItems((withItems) => [...withItems, index])
+                }
+                onClick={() => handleCardClick(index)}
+              />
+            ))}
+          </div>
+          {activeCard > -1 ? (
+            <div className="position-relative border border-dashed rounded col-9">
+              <TabsWithInputsComponent
+                ref={tabsWithInputsRef}
+                inputs={cards[activeCard].variant_product_attrs}
+              />
             </div>
-            {activeCard ? (
-              <div className="position-relative border border-dashed rounded col-9">
-                <TabsWithInputsComponet
-                  inputs={activeCard.variant_product_attrs}
-                />
-              </div>
-            ) : (
-              <div className="border border-dashed rounded col-9">
-                <div className="h-100 d-flex flex-column gap-1 justify-content-center align-items-center fs-5">
-                  <div className="opacity-70">فرم ویژگی ها</div>
-                  <div className="opacity-50 text-danger fs-6">
-                    (روی کارت ها کلیک کنید)
-                  </div>
+          ) : Object.keys(nonVariants).length ? (
+            <div className="bg-secondary-subtle border border-dashed rounded col-9">
+              <div className="h-100 d-flex flex-column gap-1 justify-content-center align-items-center fs-5">
+                <div className="opacity-70">فرم ویژگی ها</div>
+                <div className="opacity-100 text-danger fs-6">
+                  (ابتدا فرم <span className="border-bottom border-danger pb-1">ویژگی های عادی</span> را سیو کنید)
                 </div>
               </div>
-            )}
-          </div>
+            </div>
+          ) : (
+            <div className="border border-dashed rounded col-9">
+              <div className="h-100 d-flex flex-column gap-1 justify-content-center align-items-center fs-5">
+                <div className="opacity-70">فرم ویژگی ها</div>
+                <div className="text-danger fs-6">
+                  (روی <span className="border-bottom border-danger pb-1">کارت ها</span> کلیک کنید)
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
-    );
-  }
-);
+    </div>
+  );
+});
 
 export default VariantProductContainer;

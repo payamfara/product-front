@@ -1,31 +1,37 @@
 import Select2 from "./Select2Component";
 import DatePicker from "./DatePicker";
+import { useEffect, useState } from "react";
 
-const DynamicAttributeField = ({ data, onChange }) => {
+const DynamicAttributeField = ({ data, onChange, parentClassName }) => {
+  const [localData, setLocalData] = useState(data);
+
+  useEffect(() => {
+    setLocalData(data);
+  }, [data]);
+
   // <div className="d-flex justify-content-between align-items-center">
   // {attribute_category && <span id="help_part_number_en" className="badge text-bg-danger fs-tiny form-label">{attribute_category}</span>}
-  const attribute_type = data.attr_type ?? data.meta_datas.attr_value;
-  // const attribute_type = data.attribute_type ?? data.attr_type
-  const attribute_name_en = data.attribute_name_en ?? data.title_en;
-  const attribute_name_fa = data.attribute_name_fa ?? data.title_fa;
-  const attribute_value = data.attribute_value ?? data.attr_value;
-  const attribute_value_str = data.attribute_value_str;
-  const attribute_priority = data.attribute_priority ?? data.priority;
-  const attribute_id = data.attribute_id ?? data.attribute;
-  const attribute_url = data.attribute_url;
-  const attribute_category = data.attribute_category ?? data.category;
-  const attribute_prefix = data.attribute_prefix ?? data.prefix;
-  const attribute_postfix = data.attribute_postfix ?? data.postfix;
+  const attribute_type = localData.attr_type ?? localData.meta_datas.attr_value;
+  // const attribute_type = localData.attribute_type ?? localData.attr_type
+  const attribute_name_en = localData.attribute_name_en ?? localData.title_en;
+  const attribute_name_fa = localData.attribute_name_fa ?? localData.title_fa;
+  const attribute_value = localData.attribute_value ?? localData.attr_value;
+  const attribute_value_str = localData.attribute_value_str;
+  const attribute_priority = localData.attribute_priority ?? localData.priority;
+  const attribute_id = localData.attribute_id ?? localData.attribute;
+  const attribute_url = localData.attribute_url;
+  const attribute_category = localData.attribute_category ?? localData.category;
+  const attribute_prefix = localData.attribute_prefix ?? localData.prefix;
+  const attribute_postfix = localData.attribute_postfix ?? localData.postfix;
 
-  // console.log('attribute_type', attribute_type);
-  
+  console.log(attribute_name_en, attribute_value, attribute_value_str);
 
   switch (attribute_type.type) {
     case "Text": // Text
     case "text": // Text
     case "select_2": // Text
       return (
-        <div className="form-floating">
+        <div className={`${parentClassName} form-floating`}>
           <input
             id={`${attribute_name_en}_fake`}
             readOnly
@@ -40,15 +46,15 @@ const DynamicAttributeField = ({ data, onChange }) => {
             asyncUrl={attribute_type.url}
             isAsync={true}
             placeholder={attribute_name_fa}
-            onChange={(value)=>onChange(attribute_name_en, value)}
-            defaultValue={attribute_type.default}
-            className="position-absolute bottom-0 w-100 custom-select--nobrorder"
+            onChange={onChange}
+            value={{'id': attribute_value, 'value': attribute_value_str}}
+            className={`position-absolute bottom-0 w-100 custom-select--nobrorder`}
           />
         </div>
       );
     case "list": // Text
       return (
-        <div className="form-floating">
+        <div className={`${parentClassName} form-floating`}>
           <input
             id={`${attribute_name_en}_fake`}
             readOnly
@@ -63,37 +69,37 @@ const DynamicAttributeField = ({ data, onChange }) => {
             name={attribute_name_en}
             isAsync={false}
             placeholder={attribute_name_fa}
-            onChange={(value)=>onChange(attribute_name_en, value)}
-            defaultValue={attribute_type.default}
-            className="position-absolute bottom-0 w-100 custom-select--nobrorder"
+            onChange={onChange}
+            value={{'id': attribute_value, 'value': attribute_value_str}}
+            className={`position-absolute bottom-0 w-100 custom-select--nobrorder`}
           />
         </div>
       );
     case "": // Text
       return (
-        <div className="form-floating">
+        <div className={`${parentClassName} form-floating`}>
           <input
-            onChange={(e) => onChange(e.target.name, e.target.value)}
+            onChange={(e) => onChange(e.target.value)}
             id={attribute_name_en}
             name={attribute_name_en}
-            className="form-control"
+            className={`form-control`}
             placeholder={attribute_name_fa}
-            defaultValue={attribute_value}
+            value={attribute_value}
           />
           <label htmlFor={attribute_name_en}>{attribute_name_fa}</label>
         </div>
       );
     case "readonly": // Readonly
       return (
-        <div className="form-floating">
+        <div className={`${parentClassName} form-floating`}>
           <input
             readOnly
-            onChange={(e) => onChange(e.target.name, e.target.value)}
+            onChange={(e) => onChange(e.target.value)}
             id={attribute_name_en}
             name={attribute_name_en}
-            className="form-control"
+            className={`form-control`}
             placeholder={attribute_name_fa}
-            defaultValue={attribute_value}
+            value={attribute_value}
           />
           <label htmlFor={attribute_name_en}>{attribute_name_fa}</label>
         </div>
@@ -102,15 +108,15 @@ const DynamicAttributeField = ({ data, onChange }) => {
     case "float": // Input type=number
     case 0:
       return (
-        <div className="form-floating">
+        <div className={`${parentClassName} form-floating`}>
           <input
-            onChange={(e) => onChange(e.target.name, e.target.value)}
+            onChange={(e) => onChange(e.target.value)}
             type="number"
             id={attribute_name_en}
             name={attribute_name_en}
-            className="form-control"
+            className={`form-control`}
             placeholder={attribute_name_fa}
-            defaultValue={attribute_value}
+            value={attribute_value}
           />
           <label htmlFor={attribute_name_en}>{attribute_name_fa}</label>
         </div>
@@ -120,7 +126,7 @@ const DynamicAttributeField = ({ data, onChange }) => {
       // For checkbox or radio based on priority
       if (attribute_priority === "mandatory") {
         return (
-          <div className="position-relative form-floating">
+          <div className={`${parentClassName} position-relative form-floating`}>
             <input
               id={`${attribute_name_en}_fake`}
               readOnly
@@ -132,17 +138,17 @@ const DynamicAttributeField = ({ data, onChange }) => {
             </label>
             <input
               type="checkbox"
-              onChange={(e) => onChange(e.target.name, e.target.value)}
+              onChange={(e) => onChange(e.target.value)}
               id={attribute_name_en}
               name={attribute_name_en}
-              className="position-absolute bottom-0 mx-3 m-2 form-check-input"
+              className={`position-absolute bottom-0 mx-3 m-2 form-check-input`}
               defaultChecked={!!attribute_value}
             />
           </div>
         );
       } else {
         return (
-          <div className="form-floating">
+          <div className={`${parentClassName} form-floating`}>
             <input
               id={`${attribute_name_en}_fake`}
               readOnly
@@ -155,22 +161,22 @@ const DynamicAttributeField = ({ data, onChange }) => {
             <div className="position-absolute bottom-0 m-2 mx-3">
               <div className="form-check form-check-inline">
                 <input
-                  onChange={(e) => onChange(e.target.name, true)}
+                  onChange={(e) => onChange(true)}
                   type="radio"
                   id={`${attribute_name_en}_true`}
                   name={attribute_name_en}
-                  className="form-check-input"
+                  className={`form-check-input`}
                   defaultChecked={attribute_value === true}
                 />
                 <label htmlFor={`${attribute_name_en}_true`}>بله</label>
               </div>
               <div className="form-check form-check-inline">
                 <input
-                  onChange={(e) => onChange(e.target.name, false)}
+                  onChange={(e) => onChange(false)}
                   type="radio"
                   id={`${attribute_name_en}_false`}
                   name={attribute_name_en}
-                  className="form-check-input"
+                  className={`form-check-input`}
                   defaultChecked={attribute_value === false}
                 />
                 <label htmlFor={`${attribute_name_en}_false`}>خیر</label>
@@ -184,7 +190,7 @@ const DynamicAttributeField = ({ data, onChange }) => {
       let isAsync, inputValue, asyncUrl, options;
       if (typeof (attribute_type === "object")) {
         isAsync = attribute_type.type === "select_2";
-        inputValue = attribute_type.default;
+        inputValue = {'id': attribute_value, 'value': attribute_value_str};
         asyncUrl = `/strvalue/?list_id=${attribute_type.list_id}`;
         options = attribute_type.choice;
       } else {
@@ -198,7 +204,7 @@ const DynamicAttributeField = ({ data, onChange }) => {
               : `/${match[1]}/`;
         } else {
           return (
-            <div className="form-floating">
+            <div className={`${parentClassName} form-floating`}>
               <DatePicker name={attribute_name_en} />
               <label htmlFor={attribute_name_en}>{attribute_name_en}</label>
             </div>
@@ -207,7 +213,7 @@ const DynamicAttributeField = ({ data, onChange }) => {
       }
 
       return (
-        <div className="form-floating">
+        <div className={`${parentClassName} form-floating`}>
           <input
             id={`${attribute_name_en}_fake`}
             readOnly
@@ -223,9 +229,9 @@ const DynamicAttributeField = ({ data, onChange }) => {
             asyncUrl={asyncUrl}
             isAsync={isAsync}
             placeholder={attribute_name_fa}
-            onChange={(value)=>onChange(attribute_name_en, value)}
-            defaultValue={inputValue}
-            className="position-absolute bottom-0 w-100 custom-select--nobrorder"
+            onChange={onChange}
+            value={inputValue}
+            className={`position-absolute bottom-0 w-100 custom-select--nobrorder`}
           />
         </div>
       );

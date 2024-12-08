@@ -74,6 +74,11 @@ body {
   border-color: #b64b4b;
 }
 
+.ribbon.border-success::before,
+.ribbon.border-success::after {
+  border-color: #15723f;
+}
+
 .ribbon::after,
 .ribbon::before {
   position: absolute;
@@ -125,4 +130,20 @@ body {
 .myn-3 {
   margin-top: -1rem;
   margin-bottom: -1rem;
+}
+
+.form-floating.warning > .form-control:focus ~ label,
+.form-floating.warning > .form-control:not(:placeholder-shown) ~ label,
+.form-floating.warning > .form-select ~ label {
+  color: rgba(var(--bs-warning-rgb)) !important;
+}
+.form-floating.warning > input,
+.form-floating.warning > input:focus {
+  border-color: #f5dfca !important;
+  color: rgba(var(--bs-warning-rgb)) !important;
+}
+.form-floating.warning .custom-select__control,
+.form-floating.warning .custom-select__control:focus {
+  box-shadow: 0 0 0 1px rgba(var(--bs-warning-rgb)) !important;
+  color: rgba(var(--bs-warning-rgb)) !important;
 }

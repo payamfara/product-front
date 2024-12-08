@@ -19,6 +19,14 @@ const CreateProductPage = () => {
     const params = useParams();
     const { id = "" } = params;
     
+    const [nonVariants, setNonVariant] = useState({});
+    const handleNonVariantChange = (attr_id, newValue) => {
+        setNonVariant(nonVariants=>({
+            nonVariants,
+            [attr_id]: newValue
+        }))
+    }
+
     const saveProduct = (input) => {
         const dataWithExtra = {...pageData, ...input}
         const { variant_products, ...data } = dataWithExtra;
@@ -327,10 +335,10 @@ const CreateProductPage = () => {
                                                     <li className="list-group-item list-group-item-action dropdown-notifications-item">
                                                         <div className="d-flex">
                                                             <div className="flex-shrink-0 me-3">
-                                                                <div className="avatar">
+                                                                {/* <div className="avatar">
                                                                     <img className="h-auto rounded-circle"
                                                                         src="../../assets/img/avatars/1.png" />
-                                                                </div>
+                                                                </div> */}
                                                             </div>
                                                             <div className="flex-grow-1">
                                                                 <h6 className="mb-2">تبریک به شما 🎉</h6>
@@ -372,10 +380,10 @@ const CreateProductPage = () => {
                                                     <li className="list-group-item list-group-item-action dropdown-notifications-item marked-as-read">
                                                         <div className="d-flex">
                                                             <div className="flex-shrink-0 me-3">
-                                                                <div className="avatar">
+                                                                {/* <div className="avatar">
                                                                     <img className="h-auto rounded-circle"
                                                                         src="../../assets/img/avatars/2.png" />
-                                                                </div>
+                                                                </div> */}
                                                             </div>
                                                             <div className="flex-grow-1">
                                                                 <h6 className="mb-2">پیام جدید از بهاره ✉️</h6>
@@ -419,10 +427,10 @@ const CreateProductPage = () => {
                                                     <li className="list-group-item list-group-item-action dropdown-notifications-item marked-as-read">
                                                         <div className="d-flex">
                                                             <div className="flex-shrink-0 me-3">
-                                                                <div className="avatar">
+                                                                {/* <div className="avatar">
                                                                     <img className="h-auto rounded-circle"
                                                                         src="../../assets/img/avatars/9.png" />
-                                                                </div>
+                                                                </div> */}
                                                             </div>
                                                             <div className="flex-grow-1">
                                                                 <h6 className="mb-2">اپلیکیشن بروزرسانی شد 🚀</h6>
@@ -466,10 +474,10 @@ const CreateProductPage = () => {
                                                     <li className="list-group-item list-group-item-action dropdown-notifications-item marked-as-read">
                                                         <div className="d-flex">
                                                             <div className="flex-shrink-0 me-3">
-                                                                <div className="avatar">
+                                                                {/* <div className="avatar">
                                                                     <img className="h-auto rounded-circle"
                                                                         src="../../assets/img/avatars/5.png" />
-                                                                </div>
+                                                                </div> */}
                                                             </div>
                                                             <div className="flex-grow-1">
                                                                 <h6 className="mb-2">ارسال درخواست همکاری</h6>
@@ -489,10 +497,10 @@ const CreateProductPage = () => {
                                                     <li className="list-group-item list-group-item-action dropdown-notifications-item">
                                                         <div className="d-flex">
                                                             <div className="flex-shrink-0 me-3">
-                                                                <div className="avatar">
+                                                                {/* <div className="avatar">
                                                                     <img className="h-auto rounded-circle"
                                                                         src="../../assets/img/avatars/6.png" />
-                                                                </div>
+                                                                </div> */}
                                                             </div>
                                                             <div className="flex-grow-1">
                                                                 <h6 className="mb-2">پیام جدید از ترانه</h6>
@@ -548,19 +556,19 @@ const CreateProductPage = () => {
                                     <li className="nav-item navbar-dropdown dropdown-user dropdown">
                                         <a className="nav-link dropdown-toggle hide-arrow" data-bs-toggle="dropdown"
                                             href="javascript:void(0);">
-                                            <div className="avatar avatar-online">
+                                            {/* <div className="avatar avatar-online">
                                                 <img className="h-auto rounded-circle" src="../../assets/img/avatars/1.png" />
-                                            </div>
+                                            </div> */}
                                         </a>
                                         <ul className="dropdown-menu dropdown-menu-end">
                                             <li>
                                                 <a className="dropdown-item" href="pages-account-settings-account.html">
                                                     <div className="d-flex">
                                                         <div className="flex-shrink-0 me-3">
-                                                            <div className="avatar avatar-online">
+                                                            {/* <div className="avatar avatar-online">
                                                                 <img className="h-auto rounded-circle"
                                                                     src="../../assets/img/avatars/1.png" />
-                                                            </div>
+                                                            </div> */}
                                                         </div>
                                                         <div className="flex-grow-1">
                                                             <span className="fw-semibold d-block mb-1">نوید محمدزاده</span>
@@ -685,7 +693,9 @@ const CreateProductPage = () => {
                                                             data = {{
                                                                 attribute_name_en: 'دسته',
                                                                 attribute_name_fa: 'category',
-                                                                attr_type: pageData.meta_datas.category
+                                                                attr_type: pageData.meta_datas.category,
+                                                                attr_value: pageData.category,
+                                                                attribute_value_str: pageData.category_str
                                                             }}
                                                         />
                                                     </div>
@@ -747,13 +757,13 @@ const CreateProductPage = () => {
                                                     <h5 className="card-title mb-0">ویژگی های عادی</h5>
                                                 </div>
                                                 <div id="category_attrs_items" className="gap-3 d-flex flex-column card-body">
-                                                    <TabsWithInputsComponent ref={tabsWithInputsRef} inputs={pageData.non_variant_product_attrs} />
+                                                    <TabsWithInputsComponent nonVariants={nonVariants} onChange={handleNonVariantChange} ref={tabsWithInputsRef} inputs={pageData.non_variant_product_attrs} />
                                                 </div>
                                             </div>
                                             <VariantProductContainer 
                                                 forms={pageData.variant_products} 
                                                 inputs={pageData.variant_product_attrs}
-                                                handleSubmit={saveProduct}
+                                                nonVariants={nonVariants}
                                             />
                                             {/* /Variants */}
                                             {/* Inventory */}
@@ -1110,13 +1120,16 @@ const CreateProductPage = () => {
                                                     </div> */}
                                                     <div className="mb-3 col ecommerce-select2-dropdown">
                                                         <label className="form-label mb-1" htmlFor="status-org">وضعیت</label>
-                                                        <Select2
-                                                            name={'status'}
-                                                            asyncUrl="/api2/choice/?title=status"
-                                                            isAsync={true}
-                                                            placeholder="وضعیت انتشار"
-                                                            defaultValue={{'id': pageData.status, 'value': pageData.status_str}}
-                                                            onChange={(vals) => { console.log(vals) }}
+                                                        <DynamicAttributeField
+                                                            onChange={handleChange}
+                                                            className='p-2'
+                                                            data = {{
+                                                                attribute_name_en: 'وضعیت انتشار',
+                                                                attribute_name_fa: 'status',
+                                                                attr_type: pageData.meta_datas.status,
+                                                                attr_value: pageData.status,
+                                                                attribute_value_str: pageData.status_str
+                                                            }}
                                                         />
                                                     </div>
                                                     {/* Tags */}
@@ -1132,8 +1145,10 @@ const CreateProductPage = () => {
                                                             id={'tags'}
                                                             asyncUrl="/api2/tag/"
                                                             placeholder="Search for tags..."
-                                                            onChange={(tags) => { console.log(tags); }}
+                                                            onChange={(tags) => {  }}
                                                             defaultValue={pageData.tags}
+                                                            valueKey="id"
+                                                            displayKey="tag_title"
                                                         />
                                                     </div>
                                                 </div>

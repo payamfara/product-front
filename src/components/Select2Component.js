@@ -12,7 +12,7 @@ const Select2Component = ({
   isMulti = false,
   onChange,
   options = [],
-  defaultValue,
+  value,
   className
 }) => {
   
@@ -33,12 +33,8 @@ const Select2Component = ({
   };
 
   useEffect(() => {
-    isAsync && handleOptions(defaultValue?.value);
+    isAsync && handleOptions(value?.value);
   }, []);
-
-  const handleChange = (selectedOption) => {
-    if (onChange) onChange(name, selectedOption.id);
-  };
 
   return (
     isAsync ? (
@@ -47,10 +43,10 @@ const Select2Component = ({
         cacheOptions
         loadOptions={handleOptions}
         defaultOptions={defaultOptions}
-        defaultValue={defaultValue}
+        value={value}
         placeholder={`انتخاب ${placeholder}`}
         isMulti={isMulti}
-        onChange={handleChange}
+        onChange={onChange}
         getOptionLabel={(e) => e.value || e.label || e.name || e.title_en}
         getOptionValue={(e) => e.pk || e.id || e.value}
         classNamePrefix="custom-select"
@@ -61,10 +57,10 @@ const Select2Component = ({
         name={name}
         options={options}
         defaultOptions={options}
-        defaultValue={defaultValue}
+        value={value}
         placeholder={`انتخاب ${placeholder}`}
         isMulti={isMulti}
-        onChange={handleChange}
+        onChange={onChange}
         getOptionLabel={(e) => e.label || e.name || e.value}
         getOptionValue={(e) => e.pk || e.id || e.value}
         classNamePrefix="custom-select"
