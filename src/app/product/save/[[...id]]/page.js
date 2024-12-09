@@ -17,7 +17,9 @@ const CreateProductPage = () => {
     const [loading, setLoading] = useState(true);
     const params = useParams();
     const { id = "" } = params;
-    
+
+    const updateFiles = (newFiles) => setPageData(pageData=>({...pageData, 'images': newFiles}))
+
     const [nonVariants, setNonVariant] = useState({});
     const handleNonVariantChange = (attr_id, newValue) => {
         setNonVariant(nonVariants=>({
@@ -26,8 +28,8 @@ const CreateProductPage = () => {
         }))
     }
 
-    const saveProduct = (data) => {
-        const requestUrl = `/api2/product/${input.id}/`
+    const saveProduct = (data, id='') => {
+        const requestUrl = `/api2/product/${id}/`
         baseApiAuth
         .post(requestUrl, data)
         .then((res) => {
@@ -75,40 +77,15 @@ const CreateProductPage = () => {
         return <div>Loading...</div>;
     }
 
+
     const handleSubmit = (e) => {
         e.preventDefault();
-
-        // const newTags = pageData.tags.filter(tag => !tag.id); 
-        // const existingTags = pageData.tags.filter(tag => tag.id); 
-      
-        // console.log(newTags);
-        // console.log(existingTags);
         
-
-        // const createdTags = Promise.all(
-        //     newTags.map(tag =>
-        //       axios.post('/api/tags/', { value: tag.value }).then(res => res.data)
-        //     )
-        //   ).then(data => {
-        //     return data; 
-        //   }).catch(error => {
-        //     console.error('Error creating tags:', error);
-        //   });
-      
-        // const allTagIds = [
-        //   ...existingTags.map(tag => tag.id),
-        //   ...createdTags.map(tag => tag.id),
-        // ];
-
-        const dataWithExtra = {
-            ...pageData,
-            'tags': tagifyRef.current.getValues(),
-        }
-        const { variant_products, ...data } = dataWithExtra;
+        const preparedData = Object.fromEntries(Object.entries(pageData).filter(([name,dict])=>!pageData.meta_datas[name]?.read_only));
+        const { variant_products, ...data } = preparedData;
         // const withItems = VariantProductContainerRef.current.getWithItems();
-        
         console.log(data);
-        // saveProduct(data)
+        saveProduct(data, pageData.id)
 
     }
 
@@ -732,7 +709,7 @@ const CreateProductPage = () => {
                                             </div>
                                             {/* /Product Information */}
                                             {/* Media */}
-                                            <DropzoneComponent uploadedFiles={pageData.images} uploadUrl={"http://192.168.1.21:8000/api/save_images/products/"} />
+                                            <DropzoneComponent files={pageData.images} updateFiles={updateFiles} uploadUrl={"http://192.168.1.21:8000/api/save_images/products/"} />
                                             {/* /Media */}
                                             {/* Variants */}
                                             <div id="category_attrs" className="card mb-4">

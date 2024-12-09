@@ -74,14 +74,16 @@ const TagifyComponent = forwardRef(
         <input
           id={`${name}_fake`}
           readOnly
-          type="text"
-          className="pb-4dot5rem form-control"
+          type="hidden"
+          className="form-control"
         />
-        <label htmlFor={name}>{name}</label>
+        <label htmlFor={name}>
+          {name}
+        </label>
         <Tags
           name={name}
           id={id}
-          className={`position-absolute bottom-0 inner form-control`}
+          className={`form-control pt-4`}
           tagifyRef={tagifyRef}
           settings={settings}
           defaultValue={processedvalue}
