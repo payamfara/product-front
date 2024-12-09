@@ -6,9 +6,8 @@ import GalleryModal from "./GalleryModal";
 
 Quill.register("modules/imageResize", ImageResize);
 window.Quill = Quill;
-const QuillEditor = ({ id, name, value, toolbarOptions, placeholder, apiSaveImagesUrl }) => {
+const QuillEditor = ({ id, name, value, toolbarOptions, placeholder, onChange, apiSaveImagesUrl }) => {
     const editorRef = useRef(null);
-    const textareaRef = useRef(null);
     const qeInstanceRef = useRef(null);
     const isInitialized = useRef(false);
 
@@ -130,7 +129,8 @@ const QuillEditor = ({ id, name, value, toolbarOptions, placeholder, apiSaveImag
 
         editor.root.innerHTML = value;
         editor.on("text-change", () => {
-            textareaRef.current.value = editor.root.innerHTML;
+            onChange(editor.root.innerHTML)
+            // textareaRef.current.value = editor.root.innerHTML;
         });
 
 
@@ -143,7 +143,7 @@ const QuillEditor = ({ id, name, value, toolbarOptions, placeholder, apiSaveImag
     return (
         <div className="form-control p-0 pt-1">
             <div ref={editorRef} id={id} className="comment-editor border-0 pb-4"></div>
-            <textarea ref={textareaRef} name={name} style={{ display: "none" }} defaultValue={value}></textarea>
+            <textarea name={name} style={{ display: "none" }} onChange={onChange} value={value}></textarea>
             <GalleryModal
                 show={isGalleryModalOpen}
                 onHide={handleCloseGalleryModal}

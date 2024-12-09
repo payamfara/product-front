@@ -5,9 +5,10 @@ import React, {
   useImperativeHandle,
   forwardRef,
 } from "react";
-import { FaTrash, FaSquare, FaSquareCheck } from "react-icons/fa";
+import { FaTrash, FaSquare } from "react-icons/fa";
 import TabsWithInputsComponent from "../../../../../components/TabsWithInputsComponent";
 import { baseApiAuth } from "@/src/api/baseApi";
+import { FaSquareCheck } from "react-icons/fa6";
 
 const Card = ({ form, isWith, isActive, toggleWith, onDelete, onClick }) => {
   
@@ -15,7 +16,7 @@ const Card = ({ form, isWith, isActive, toggleWith, onDelete, onClick }) => {
     <div
       onClick={onClick}
       className={`p-2 rounded border ${
-        isActive ? "border-primary" : isWith ? "border-success" : ""
+        isWith ? "border-success" : isActive ? "border-primary" : ""
       } border-dashed position-relative`}
     >
       <div className="position-absolute d-flex flex-column justify-content-center gap-4 top-0 start-0 h-100 mxn-2">
@@ -73,19 +74,19 @@ const VariantProductContainer = forwardRef(({ nonVariants, forms, inputs }, ref)
   const tabsWithInputsRef = useRef(null);
   const [cards, setCards] = useState(forms);
   const [activeCard, setActiveCard] = useState(-1);
-  const emptyFrm = [...inputs];
-  // const emptyFrm = inputs.map((input) => ({
-  //   ...input,
-  //   attr_value: undefined,
-  //   attr_value_str: undefined,
-  //   meta_datas: {
-  //     ...input.meta_datas,
-  //     attr_value: { ...input.meta_datas.attr_value, default: undefined },
-  //   },
-  // }));
+  const emptyFrm = inputs.map((input) => ({
+    ...input,
+    attr_value: undefined,
+    attr_value_str: undefined,
+    meta_datas: {
+      ...input.meta_datas,
+      attr_value: { ...input.meta_datas.attr_value, default: undefined },
+    },
+  }));
 
   useImperativeHandle(ref, () => ({
     getValues: () => cards,
+    getWithItems: () => withItems,
   }));
 
   const handleDelete = (index) => {
@@ -98,17 +99,17 @@ const VariantProductContainer = forwardRef(({ nonVariants, forms, inputs }, ref)
   };
 
   const updatePreviousCard = () => {
-    if (activeCard > -1) {
-      const updatedFrm = tabsWithInputsRef.current.getValues();
-      setCards((cards) => {
-        const items = cards.map((card, index) => {
-          return activeCard === index
-            ? { ...cards[activeCard], variant_product_attrs: updatedFrm }
-            : card;
-        });
-        return items;
+    if (!tabsWithInputsRef.current) return;
+    if (activeCard < 0) return;
+    const updatedFrm = tabsWithInputsRef.current.getValues();
+    setCards((cards) => {
+      const items = cards.map((card, index) => {
+        return activeCard === index
+          ? { ...cards[activeCard], variant_product_attrs: updatedFrm }
+          : card;
       });
-    }
+      return items;
+    });
   };
 
   const handleCardClick = async (index) => {
@@ -147,8 +148,6 @@ const VariantProductContainer = forwardRef(({ nonVariants, forms, inputs }, ref)
     // } catch (err) {
     // }
   };
-  console.log('nonVariants', nonVariants.length);
-  
 
   return (
     <div id="variant_attrs" className="card mb-4">
@@ -188,7 +187,7 @@ const VariantProductContainer = forwardRef(({ nonVariants, forms, inputs }, ref)
               />
             ))}
           </div>
-          {activeCard > -1 ? (
+          {activeCard > -1 && withItems.includes(activeCard) ? (
             <div className="position-relative border border-dashed rounded col-9">
               <TabsWithInputsComponent
                 ref={tabsWithInputsRef}

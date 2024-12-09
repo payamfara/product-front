@@ -7,6 +7,7 @@ import React, {
 import DynamicAttributeField from "./DynamicAttributeField";
 
 const TabsWithInputs = forwardRef(({ nonVariants, inputs, onChange }, ref) => {
+
   const categorizeInputs = (sortedInputs) => {
     const priorities = [
       ...new Set(sortedInputs.map((input) => input.priority)),
@@ -27,7 +28,6 @@ const TabsWithInputs = forwardRef(({ nonVariants, inputs, onChange }, ref) => {
   const [activeTab, setActiveTab] = useState("");
 
   useEffect(() => {
-    
     const sortedInputs = inputs.sort((a, b) => {
       const aHasValue = a.attr_value ? 1 : 0;
       const bHasValue = b.attr_value ? 1 : 0;
@@ -48,20 +48,23 @@ const TabsWithInputs = forwardRef(({ nonVariants, inputs, onChange }, ref) => {
     getValues: () => Object.values(categorizedInputs).flat(),
   }));
 
- const handleChange = (priorityKey, index, newValue) => {
-  const value = typeof(newValue) === 'object' ? newValue.id : newValue
-  const value_str = typeof(newValue) === 'object' ? newValue.value : undefined
-  setCategorizedInputs((prevState) => {
-    const updated = { ...prevState };
-    updated[priorityKey][index] = {
-      ...updated[priorityKey][index],
-      attr_value: value,
-      attribute_value_str: value_str,
-    };
-    return updated;
-  });
-  if (onChange) onChange(categorizedInputs[priorityKey][index].attribute, newValue)
-};
+  const handleChange = (priorityKey, index, newValue) => {
+    console.log(index, newValue);
+    
+    const value = typeof newValue === "object" ? newValue.id : newValue;
+    const value_str = typeof newValue === "object" ? (newValue.value || newValue.label || newValue.name || newValue.title_en) : undefined;
+    setCategorizedInputs((prevState) => {
+      const updated = { ...prevState };
+      updated[priorityKey][index] = {
+        ...updated[priorityKey][index],
+        attr_value: value,
+        attribute_value_str: value_str,
+      };
+      return updated;
+    });
+    if (onChange)
+      onChange(categorizedInputs[priorityKey][index].attribute, newValue);
+  };
   return (
     <div>
       {/* Tab Navigation */}
@@ -95,15 +98,24 @@ const TabsWithInputs = forwardRef(({ nonVariants, inputs, onChange }, ref) => {
                 className="d-flex flex-column gap-3 tab-pane show active"
               >
                 {categorizedInputs[priorityKey].map((input, index) => {
-                  return <DynamicAttributeField
-                    key={index}
-                    data={input}
-                    parentClassName={Object.keys(nonVariants).includes(input.attribute.toString()) ? 'warning' : ''}
-                    onChange={(value) =>
-                      handleChange(priorityKey, index, value)
-                    }
-                  />
-})}
+                  return (
+                    <DynamicAttributeField
+                      key={index}
+                      data={input}
+                      parentClassName={
+                        nonVariants &&
+                        Object.keys(nonVariants).includes(
+                          input.attribute.toString()
+                        )
+                          ? "warning"
+                          : ""
+                      }
+                      onChange={(value) =>
+                        handleChange(priorityKey, index, value)
+                      }
+                    />
+                  );
+                })}
               </div>
             )
         )}

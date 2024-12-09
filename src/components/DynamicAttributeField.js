@@ -23,8 +23,9 @@ const DynamicAttributeField = ({ data, onChange, parentClassName }) => {
   const attribute_category = localData.attribute_category ?? localData.category;
   const attribute_prefix = localData.attribute_prefix ?? localData.prefix;
   const attribute_postfix = localData.attribute_postfix ?? localData.postfix;
+  const attribute_placeholder = localData.attribute_placeholder ?? attribute_name_fa;
 
-  console.log(attribute_name_en, attribute_value, attribute_value_str);
+  // console.log(attribute_name_en, attribute_value, attribute_value_str);
 
   switch (attribute_type.type) {
     case "Text": // Text
@@ -45,7 +46,7 @@ const DynamicAttributeField = ({ data, onChange, parentClassName }) => {
             name={attribute_name_en}
             asyncUrl={attribute_type.url}
             isAsync={true}
-            placeholder={attribute_name_fa}
+            placeholder={attribute_placeholder}
             onChange={onChange}
             value={{'id': attribute_value, 'value': attribute_value_str}}
             className={`position-absolute bottom-0 w-100 custom-select--nobrorder`}
@@ -68,14 +69,14 @@ const DynamicAttributeField = ({ data, onChange, parentClassName }) => {
             id={attribute_name_en}
             name={attribute_name_en}
             isAsync={false}
-            placeholder={attribute_name_fa}
+            placeholder={attribute_placeholder}
             onChange={onChange}
             value={{'id': attribute_value, 'value': attribute_value_str}}
             className={`position-absolute bottom-0 w-100 custom-select--nobrorder`}
           />
         </div>
       );
-    case "": // Text
+    case "string": // Text
       return (
         <div className={`${parentClassName} form-floating`}>
           <input
@@ -83,7 +84,7 @@ const DynamicAttributeField = ({ data, onChange, parentClassName }) => {
             id={attribute_name_en}
             name={attribute_name_en}
             className={`form-control`}
-            placeholder={attribute_name_fa}
+            placeholder={attribute_placeholder}
             value={attribute_value}
           />
           <label htmlFor={attribute_name_en}>{attribute_name_fa}</label>
@@ -98,7 +99,7 @@ const DynamicAttributeField = ({ data, onChange, parentClassName }) => {
             id={attribute_name_en}
             name={attribute_name_en}
             className={`form-control`}
-            placeholder={attribute_name_fa}
+            placeholder={attribute_placeholder}
             value={attribute_value}
           />
           <label htmlFor={attribute_name_en}>{attribute_name_fa}</label>
@@ -115,16 +116,16 @@ const DynamicAttributeField = ({ data, onChange, parentClassName }) => {
             id={attribute_name_en}
             name={attribute_name_en}
             className={`form-control`}
-            placeholder={attribute_name_fa}
+            placeholder={attribute_placeholder}
             value={attribute_value}
           />
           <label htmlFor={attribute_name_en}>{attribute_name_fa}</label>
         </div>
       );
     case false:
-    case "boolean":
+    case "bool":
       // For checkbox or radio based on priority
-      if (attribute_priority === "mandatory") {
+      if (attribute_priority === "mandatory" || attribute_type.required) {
         return (
           <div className={`${parentClassName} position-relative form-floating`}>
             <input
@@ -134,7 +135,7 @@ const DynamicAttributeField = ({ data, onChange, parentClassName }) => {
               className="form-control"
             />
             <label htmlFor={`${attribute_name_en}_fake`}>
-              {attribute_name_en}
+              {attribute_name_fa}
             </label>
             <input
               type="checkbox"
@@ -156,7 +157,7 @@ const DynamicAttributeField = ({ data, onChange, parentClassName }) => {
               className="form-control"
             />
             <label htmlFor={`${attribute_name_en}_fake`}>
-              {attribute_name_en}
+              {attribute_name_fa}
             </label>
             <div className="position-absolute bottom-0 m-2 mx-3">
               <div className="form-check form-check-inline">
@@ -228,7 +229,7 @@ const DynamicAttributeField = ({ data, onChange, parentClassName }) => {
             name={attribute_name_en}
             asyncUrl={asyncUrl}
             isAsync={isAsync}
-            placeholder={attribute_name_fa}
+            placeholder={attribute_placeholder}
             onChange={onChange}
             value={inputValue}
             className={`position-absolute bottom-0 w-100 custom-select--nobrorder`}

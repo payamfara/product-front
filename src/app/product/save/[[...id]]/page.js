@@ -1,11 +1,9 @@
 "use client"
 import { Fragment, useState, useEffect, useRef } from "react";
-import Select2 from '../../../../components/Select2Component';
 import TagifyComponent from '../../../../components/TagifyComponent';
 import DropzoneComponent from '../../../../components/DropzoneComponent';
 import QuillEditorComponent from '../../../../components/QuillEditorComponent';
 import TabsWithInputsComponent from '../../../../components/TabsWithInputsComponent';
-import axios from "axios";
 import { useParams } from "next/navigation";
 import { baseApiAuth } from "../../../../api/baseApi";
 import VariantProductContainer from './components/VariantProductContainer';
@@ -13,6 +11,7 @@ import DynamicAttributeField from "@/src/components/DynamicAttributeField";
 
 const CreateProductPage = () => {
     const tabsWithInputsRef = useRef();
+    const VariantProductContainerRef = useRef();
     const tagifyRef = useRef();
     const [pageData, setPageData] = useState({});
     const [loading, setLoading] = useState(true);
@@ -22,17 +21,12 @@ const CreateProductPage = () => {
     const [nonVariants, setNonVariant] = useState({});
     const handleNonVariantChange = (attr_id, newValue) => {
         setNonVariant(nonVariants=>({
-            nonVariants,
+            ...nonVariants,
             [attr_id]: newValue
         }))
     }
 
-    const saveProduct = (input) => {
-        const dataWithExtra = {...pageData, ...input}
-        const { variant_products, ...data } = dataWithExtra;
-        
-        console.log(data);
-        
+    const saveProduct = (data) => {
         const requestUrl = `/api2/product/${input.id}/`
         baseApiAuth
         .post(requestUrl, data)
@@ -46,7 +40,15 @@ const CreateProductPage = () => {
     }
 
     const handleChange = (name, value) => {
-        setPageData(pageData=>({...pageData, [name]: value}))
+        if (typeof(value) === 'object') {
+            setPageData(pageData=>({
+                ...pageData,
+                [name]: (value.pk || value.id || value.value),
+                [name+'_str']: (value.value || value.label || value.name || value.title_en)
+            }))
+        } else {
+            setPageData(pageData=>({...pageData, [name]: value}))
+        }
     }
 
     useEffect(() => {
@@ -98,27 +100,15 @@ const CreateProductPage = () => {
         //   ...createdTags.map(tag => tag.id),
         // ];
 
-        const data = {
+        const dataWithExtra = {
             ...pageData,
-            'category': pageData.category.id,
-            'status': pageData.status.id,
             'tags': tagifyRef.current.getValues(),
-            'product_attrs': tabsWithInputsRef.current.getValues(),
         }
+        const { variant_products, ...data } = dataWithExtra;
+        // const withItems = VariantProductContainerRef.current.getWithItems();
+        
         console.log(data);
-
-
-        const url = `/product/${id}/`
-        baseApiAuth.post({
-            url,
-            data,
-        })
-        .then((res) => {
-            console.log('ress', res);
-        })
-        .catch((err) => {
-            console.error('Error fetching tags:', err);
-        })
+        // saveProduct(data)
 
     }
 
@@ -670,7 +660,7 @@ const CreateProductPage = () => {
                                                 <div className="card-header">
                                                     <h5 className="card-tile mb-0">اطلاعات محصول</h5>
                                                 </div>
-                                                <div className="card-body">
+                                                <div className="card-body d-flex flex-column gap-3">
                                                     {/* Category */}
                                                     {/* <div className="mb-3 col ecommerce-select2-dropdown">
                                                         <label className="form-label mb-1 d-flex justify-content-between align-items-center" htmlFor="category-org">
@@ -686,62 +676,55 @@ const CreateProductPage = () => {
                                                             <option value="Automotive">خودرو</option>
                                                         </select>
                                                     </div> */}
-                                                    <div className="mb-3 col ecommerce-select2-dropdown">
+                                                    <div className="col ecommerce-select2-dropdown">
                                                         <DynamicAttributeField
-                                                            onChange={handleChange}
+                                                            onChange={(value)=>handleChange('category', value)}
                                                             className='p-2'
                                                             data = {{
-                                                                attribute_name_en: 'دسته',
-                                                                attribute_name_fa: 'category',
+                                                                attribute_name_en: 'category',
+                                                                attribute_name_fa: 'دسته',
                                                                 attr_type: pageData.meta_datas.category,
                                                                 attr_value: pageData.category,
                                                                 attribute_value_str: pageData.category_str
                                                             }}
                                                         />
                                                     </div>
-                                                    <div className="row mb-3">
+                                                    <div className="row">
                                                         <div className="col">
-                                                            <label className="form-label" htmlFor="ecommerce-product-sku">کد محصول</label>
-                                                            <input aria-label="محصول SKU" className="form-control"
-                                                                id="ecommerce-product-sku" name="productSku" placeholder="SKU"
-                                                                type="number" />
+                                                            <DynamicAttributeField
+                                                                className='p-2'
+                                                                data = {{
+                                                                    attribute_name_en: 'sku',
+                                                                    attribute_name_fa: 'کد محصول',
+                                                                    attr_type: pageData.meta_datas.price,
+                                                                }}
+                                                            />
                                                         </div>
                                                         <div className="col">
-                                                            <label className="form-label" htmlFor="ecommerce-product-barcode">بارکد</label>
-                                                            <input aria-label="بارکد محصول" className="form-control"
-                                                                id="ecommerce-product-barcode" name="productBarcode"
-                                                                placeholder="0123-4567" type="text" />
+                                                            <DynamicAttributeField
+                                                                className='p-2'
+                                                                data = {{
+                                                                    attribute_name_en: 'sku',
+                                                                    attribute_name_fa: 'بارکد محصول',
+                                                                    attribute_placeholder: '0123-4567',
+                                                                    attr_type: pageData.meta_datas.price,
+                                                                }}
+                                                            />
                                                         </div>
                                                     </div>
                                                     {/* Description */}
                                                     <div>
-                                                        <label className="form-label">توضیح (اختیاری)</label>
-                                                        {/* <div className="form-control p-0 pt-1">
-                                                            <div className="comment-toolbar border-0 border-bottom">
-                                                                <div className="d-flex justify-content-start">
-                                                                    <span className="ql-formats me-0">
-                                                                        <button className="ql-bold"></button>
-                                                                        <button className="ql-italic"></button>
-                                                                        <button className="ql-underline"></button>
-                                                                        <button className="ql-list" value="ordered"></button>
-                                                                        <button className="ql-list" value="bullet"></button>
-                                                                        <button className="ql-link"></button>
-                                                                        <button className="ql-image"></button>
-                                                                    </span>
-                                                                </div>
-                                                            </div>
-                                                            <div className="comment-editor border-0 pb-4" id="ecommerce-category-description"></div>
-                                                        </div> */}
                                                         <QuillEditorComponent
                                                             id="description"
                                                             name="description"
+                                                            onChange={(value)=>handleChange('description', value)}
                                                             value={pageData.description}
                                                             toolbarOptions={[
                                                                 'bold', 'italic', 'underline',
                                                                 { 'list': 'ordered' }, { 'list': 'bullet' },
                                                                 'link', 'image', 'gallery'
                                                             ]}
-                                                            placeholder="متن خود را وارد کنید..."
+                                                            placeholder="توضیح (اختیاری)"
                                                             apiSaveImagesUrl="http://192.168.1.21:8000/api/save_images/products/"
                                                         />
                                                     </div>
@@ -761,6 +744,7 @@ const CreateProductPage = () => {
                                                 </div>
                                             </div>
                                             <VariantProductContainer 
+                                                ref={VariantProductContainerRef}
                                                 forms={pageData.variant_products} 
                                                 inputs={pageData.variant_product_attrs}
                                                 nonVariants={nonVariants}
@@ -1019,23 +1003,29 @@ const CreateProductPage = () => {
                                                 <div className="card-header">
                                                     <h5 className="card-title mb-0">قیمت گذاری</h5>
                                                 </div>
-                                                <div className="card-body">
+                                                <div className="card-body d-flex flex-column gap-3">
                                                     {/* Base Price */}
-                                                    <div className="mb-3">
-                                                        <label className="form-label" htmlFor="price">قیمت پایه</label>
-                                                        <input defaultValue={pageData.price} className="form-control" id="price" name="price" placeholder="قیمت" type="number" />
-                                                    </div>
-
+                                                    <DynamicAttributeField
+                                                        onChange={(value)=>handleChange('price', value)}
+                                                        className='p-2'
+                                                        data = {{
+                                                            attribute_name_fa: 'قیمت پایه',
+                                                            attribute_name_en: 'price',
+                                                            attr_type: pageData.meta_datas.price,
+                                                            attr_value: pageData.price,
+                                                        }}
+                                                    />
                                                     {/* Discounted Price */}
-                                                    <div className="mb-3">
-                                                        <label className="form-label" htmlFor="ecommerce-product-discount-price">قیمت با
-                                                            تخفیف</label>
-                                                        <input aria-label="محصول قیمت با تخفیف" className="form-control"
-                                                            id="ecommerce-product-discount-price" name="productDiscountedPrice"
-                                                            placeholder="قیمت با تخفیف" type="number" />
-                                                    </div>
+                                                    <DynamicAttributeField
+                                                        className='p-2'
+                                                        data = {{
+                                                            attribute_name_fa: 'قیمت با تخفیف',
+                                                            attribute_name_en: 'discountedPrice',
+                                                            attr_type: pageData.meta_datas.price,
+                                                        }}
+                                                    />
                                                     {/* Charge tax check box */}
-                                                    <div className="form-check mb-2">
+                                                    <div className="form-check">
                                                         <input defaultChecked className="form-check-input" id="price-charge-tax"
                                                             type="checkbox" value="" />
                                                         <label className="form-label" htmlFor="price-charge-tax"> دارای مالیات</label>
@@ -1061,96 +1051,84 @@ const CreateProductPage = () => {
                                                 <div className="card-header">
                                                     <h5 className="card-title mb-0">جزئیات</h5>
                                                 </div>
-                                                <div className="card-body">
-                                                    <div className="d-flex flex-column gap-3 border border-dashed p-3 mb-3">
-                                                        {/* Part number manual */}
-                                                        <div className="form-check m-0">
-                                                            <input
-                                                                type="checkbox"
-                                                                id={'part_number_is_manual'}
-                                                                name={'part_number_is_manual'}
-                                                                className="form-check-input"
-                                                                defaultChecked={!!pageData.part_number_is_manual}
-                                                            />
-                                                            <label className="form-label" htmlFor="part_number_is_manual">پارت نامبر دستی</label>
-                                                        </div>
-                                                        {/* Part number en */}
-                                                        <div>
-                                                            <label className="form-label" htmlFor="part_number_en">پارت نامبر انگلیسی</label>
-                                                            <input
-                                                                id={'part_number_en'}
-                                                                name={'part_number_en'}
-                                                                className="form-control"
-                                                                defaultValue={pageData.part_number_en}
-                                                            />
-                                                            <span id="help_part_number_en" className="fs-tiny form-label"></span>
-                                                        </div>
-                                                        {/* Part number fa */}
-                                                        <div>
-                                                            <label className="form-label" htmlFor="part_number_fa">پارت نامبر فارسی</label>
-                                                            <input
-                                                                id={'part_number_fa'}
-                                                                name={'part_number_fa'}
-                                                                className="form-control"
-                                                                defaultValue={pageData.part_number_fa}
-                                                            />
-                                                            <span id="help_part_number_fa" className="fs-tiny form-label"></span>
-                                                        </div>
-                                                        {/* Part number bz */}
-                                                        <div>
-                                                            <label className="form-label" htmlFor="part_number_bz">پارت نامبر بازاری</label>
-                                                            <input
-                                                                id={'part_number_bz'}
-                                                                name={'part_number_bz'}
-                                                                className="form-control"
-                                                                defaultValue={pageData.part_number_bz}
-                                                            />
-                                                            <span id="help_part_number_bz" className="fs-tiny form-label"></span>
-                                                        </div>
-                                                    </div>
-                                                    {/* Status */}
-                                                    {/* <div className="mb-3 col ecommerce-select2-dropdown">
-                                                        <label className="form-label mb-1" htmlFor="status-org">وضعیت</label>
-                                                        <select className="select2 form-select" data-placeholder="وضعیت انتشار" id="status-org">
-                                                            <option value="">انتخاب وضعیت</option>
-                                                            <option value="Published">منتشر شده</option>
-                                                            <option value="Scheduled">انتشار زمان‌دار</option>
-                                                            <option value="Inactive">غیر فعال</option>
-                                                        </select>
-                                                    </div> */}
-                                                    <div className="mb-3 col ecommerce-select2-dropdown">
-                                                        <label className="form-label mb-1" htmlFor="status-org">وضعیت</label>
+                                                <div className="card-body d-flex flex-column gap-3">
+                                                    {/* Part number manual */}
+                                                    <DynamicAttributeField
+                                                        onChange={(value)=>handleChange('part_number_is_manual', value)}
+                                                        className='p-2'
+                                                        data = {{
+                                                            attribute_name_en: 'part_number_is_manual',
+                                                            attribute_name_fa: 'پارت نامبر دستی',
+                                                            attr_type: pageData.meta_datas.part_number_is_manual,
+                                                            attr_value: pageData.part_number_is_manual
+                                                        }}
+                                                    />
+                                                    {/* Part number en */}
+                                                    <div>
                                                         <DynamicAttributeField
-                                                            onChange={handleChange}
+                                                            onChange={(value)=>handleChange('part_number_en', value)}
                                                             className='p-2'
                                                             data = {{
-                                                                attribute_name_en: 'وضعیت انتشار',
-                                                                attribute_name_fa: 'status',
-                                                                attr_type: pageData.meta_datas.status,
-                                                                attr_value: pageData.status,
-                                                                attribute_value_str: pageData.status_str
+                                                                attribute_name_en: 'part_number_en',
+                                                                attribute_name_fa: 'پارت نامبر انگلیسی',
+                                                                attr_type: pageData.meta_datas.part_number_en,
+                                                                attr_value: pageData.part_number_en
                                                             }}
                                                         />
+                                                        <span id="help_part_number_en" className="fs-tiny form-label"></span>
                                                     </div>
-                                                    {/* Tags */}
-                                                    {/* <div className="mb-3">
-                                                        <label className="form-label mb-1" htmlFor="ecommerce-product-tags">برچسب ها</label>
-                                                        <input aria-label="برچسب های محصول" className="form-control" id="ecommerce-product-tags" name="ecommerce-product-tags" value="عادی,تخفیف دار,ویژه" />
-                                                    </div> */}
-                                                    <div className="mb-3">
-                                                        <label className="form-label mb-1" htmlFor="tags">برچسب ها</label>
-                                                        <TagifyComponent
-                                                            ref={tagifyRef}
-                                                            name={'tags'}
-                                                            id={'tags'}
-                                                            asyncUrl="/api2/tag/"
-                                                            placeholder="Search for tags..."
-                                                            onChange={(tags) => {  }}
-                                                            defaultValue={pageData.tags}
-                                                            valueKey="id"
-                                                            displayKey="tag_title"
+                                                    {/* Part number fa */}
+                                                    <div>
+                                                        <DynamicAttributeField
+                                                            onChange={(value)=>handleChange('part_number_fa', value)}
+                                                            className='p-2'
+                                                            data = {{
+                                                                attribute_name_en: 'part_number_fa',
+                                                                attribute_name_fa: 'پارت نامبر فارسی',
+                                                                attr_type: pageData.meta_datas.part_number_fa,
+                                                                attr_value: pageData.part_number_fa
+                                                            }}
                                                         />
+                                                        <span id="help_part_number_fa" className="fs-tiny form-label"></span>
                                                     </div>
+                                                    {/* Part number bz */}
+                                                    <div>
+                                                        <DynamicAttributeField
+                                                            onChange={(value)=>handleChange('part_number_bz', value)}
+                                                            className='p-2'
+                                                            data = {{
+                                                                attribute_name_en: 'part_number_bz',
+                                                                attribute_name_fa: 'پارت نامبر بازاری',
+                                                                attr_type: pageData.meta_datas.part_number_bz,
+                                                                attr_value: pageData.part_number_bz
+                                                            }}
+                                                        />
+                                                        <span id="help_part_number_bz" className="fs-tiny form-label"></span>
+                                                    </div>
+                                                    {/* Status */}
+                                                    <DynamicAttributeField
+                                                        onChange={(value)=>handleChange('status', value)}
+                                                        className='p-2'
+                                                        data = {{
+                                                            attribute_name_en: 'status',
+                                                            attribute_name_fa: 'وضعیت انتشار',
+                                                            attr_type: pageData.meta_datas.status,
+                                                            attr_value: pageData.status,
+                                                            attribute_value_str: pageData.status_str
+                                                        }}
+                                                    />
+                                                    {/* Tags */}
+                                                    <TagifyComponent
+                                                        ref={tagifyRef}
+                                                        name={'برچسب ها'}
+                                                        id={'tags'}
+                                                        asyncUrl="/api2/tag/"
+                                                        placeholder="افزودن..."
+                                                        onChange={(value) => {handleChange('tags', value)}}
+                                                        value={pageData.tags}
+                                                        valueKey="id"
+                                                        displayKey="tag_title"
+                                                    />
                                                 </div>
                                             </div>
                                             {/* /Organize Card */}

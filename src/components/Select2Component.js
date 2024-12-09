@@ -33,7 +33,7 @@ const Select2Component = ({
   };
 
   useEffect(() => {
-    isAsync && handleOptions(value?.value);
+    isAsync && handleOptions(value?.value || "");
   }, []);
 
   return (
@@ -61,7 +61,7 @@ const Select2Component = ({
         placeholder={`انتخاب ${placeholder}`}
         isMulti={isMulti}
         onChange={onChange}
-        getOptionLabel={(e) => e.label || e.name || e.value}
+        getOptionLabel={(e) => e.value || e.label || e.name || e.title_en}
         getOptionValue={(e) => e.pk || e.id || e.value}
         classNamePrefix="custom-select"
         className={className}

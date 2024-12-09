@@ -145,5 +145,18 @@ body {
 .form-floating.warning .custom-select__control,
 .form-floating.warning .custom-select__control:focus {
   box-shadow: 0 0 0 1px rgba(var(--bs-warning-rgb)) !important;
+}
+.form-floating.warning .custom-select__single-value {
   color: rgba(var(--bs-warning-rgb)) !important;
+}
+
+.inner {
+  width: calc(100% - 2px) !important;
+  margin-right: 1px;
+  margin-bottom: 1px;
+  border: none !important;
+}
+
+.pb-4dot5rem {
+  padding-bottom: 4.5rem !important;
 }
