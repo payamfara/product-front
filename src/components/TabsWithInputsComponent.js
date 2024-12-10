@@ -6,8 +6,7 @@ import React, {
 } from "react";
 import DynamicAttributeField from "./DynamicAttributeField";
 
-const TabsWithInputs = forwardRef(({ nonVariants, inputs, onChange }, ref) => {
-
+const TabsWithInputs = forwardRef(({ onChange, inputs }, ref) => {
   const categorizeInputs = (sortedInputs) => {
     const priorities = [
       ...new Set(sortedInputs.map((input) => input.priority)),
@@ -29,14 +28,11 @@ const TabsWithInputs = forwardRef(({ nonVariants, inputs, onChange }, ref) => {
 
   useEffect(() => {
     const sortedInputs = inputs.sort((a, b) => {
-      const aHasValue = a.attr_value ? 1 : 0;
-      const bHasValue = b.attr_value ? 1 : 0;
-
-      if (aHasValue !== bHasValue) {
-        return bHasValue - aHasValue;
+      if (a.order !== b.order) {
+        return a.order - b.order;
       }
 
-      return b.order - a.order;
+      return a.title_en.localeCompare(b.title_en, "fa");
     });
 
     const categorized = categorizeInputs(sortedInputs);
@@ -49,8 +45,6 @@ const TabsWithInputs = forwardRef(({ nonVariants, inputs, onChange }, ref) => {
   }));
 
   const handleChange = (priorityKey, index, newValue) => {
-    console.log(index, newValue);
-    
     const value = typeof newValue === "object" ? newValue.id : newValue;
     const value_str = typeof newValue === "object" ? (newValue.value || newValue.label || newValue.name || newValue.title_en) : undefined;
     setCategorizedInputs((prevState) => {
@@ -62,8 +56,16 @@ const TabsWithInputs = forwardRef(({ nonVariants, inputs, onChange }, ref) => {
       };
       return updated;
     });
-    if (onChange)
-      onChange(categorizedInputs[priorityKey][index].attribute, newValue);
+    
+    if (onChange) 
+      onChange((prevData, updateKey)=>({
+        ...prevData,
+        [updateKey]: prevData[updateKey].map(nonVariant=>
+            nonVariant.attribute === categorizedInputs[priorityKey][index].attribute
+            ? {...nonVariant, attr_value: value, attribute_value_str: value_str, changed: true}
+            : nonVariant
+        )
+    }))
   };
   return (
     <div>
@@ -103,10 +105,7 @@ const TabsWithInputs = forwardRef(({ nonVariants, inputs, onChange }, ref) => {
                       key={index}
                       data={input}
                       parentClassName={
-                        nonVariants &&
-                        Object.keys(nonVariants).includes(
-                          input.attribute.toString()
-                        )
+                        input.changed
                           ? "warning"
                           : ""
                       }

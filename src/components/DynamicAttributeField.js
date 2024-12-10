@@ -15,8 +15,8 @@ const DynamicAttributeField = ({ data, onChange, parentClassName }) => {
   // const attribute_type = localData.attribute_type ?? localData.attr_type
   const attribute_name_en = localData.attribute_name_en ?? localData.title_en;
   const attribute_name_fa = localData.attribute_name_fa ?? localData.title_fa;
-  const attribute_value = localData.attribute_value ?? localData.attr_value;
-  const attribute_value_str = localData.attribute_value_str;
+  const attribute_value = localData.attribute_value ?? localData.attr_value ?? "";
+  const attribute_value_str = localData.attribute_value_str ?? "";
   const attribute_priority = localData.attribute_priority ?? localData.priority;
   const attribute_id = localData.attribute_id ?? localData.attribute;
   const attribute_url = localData.attribute_url;
@@ -39,7 +39,6 @@ const DynamicAttributeField = ({ data, onChange, parentClassName }) => {
             type="text"
             className="form-control"
           />
-          {/* <label htmlFor={`${attribute_name_en}_fake`}>{attribute_name_en}</label> */}
           <label htmlFor={attribute_name_en}>{attribute_name_fa}</label>
           <Select2
             id={attribute_name_en}
@@ -62,7 +61,6 @@ const DynamicAttributeField = ({ data, onChange, parentClassName }) => {
             type="text"
             className="form-control"
           />
-          {/* <label htmlFor={`${attribute_name_en}_fake`}>{attribute_name_en}</label> */}
           <label htmlFor={attribute_name_en}>{attribute_name_fa}</label>
           <Select2
             options={attribute_type.choice}
@@ -221,7 +219,6 @@ const DynamicAttributeField = ({ data, onChange, parentClassName }) => {
             type="text"
             className="form-control"
           />
-          {/* <label htmlFor={`${attribute_name_en}_fake`}>{attribute_name_en}</label> */}
           <label htmlFor={attribute_name_en}>{attribute_name_fa}</label>
           <Select2
             options={options}

@@ -8,6 +8,7 @@ import { useParams } from "next/navigation";
 import { baseApiAuth } from "../../../../api/baseApi";
 import VariantProductContainer from './components/VariantProductContainer';
 import DynamicAttributeField from "@/src/components/DynamicAttributeField";
+import toast from "react-hot-toast";
 
 const CreateProductPage = () => {
     const tabsWithInputsRef = useRef();
@@ -20,25 +21,22 @@ const CreateProductPage = () => {
 
     const updateFiles = (newFiles) => setPageData(pageData=>({...pageData, 'images': newFiles}))
 
-    const [nonVariants, setNonVariant] = useState({});
-    const handleNonVariantChange = (attr_id, newValue) => {
-        setNonVariant(nonVariants=>({
-            ...nonVariants,
-            [attr_id]: newValue
-        }))
-    }
+    const updateNonVariantAttrs = (updateNonVariantAttrsFunction) => setPageData(pageData=>updateNonVariantAttrsFunction(pageData, 'non_variant_product_attrs'));
+    const updateVariantAttrs = (updateVariantAttrsFunction) => setPageData(pageData=>({...pageData, 'variant_products': updateVariantAttrsFunction(pageData.variant_products)}));
+    const updateVariants = (updateVariantsFunction) => setPageData(pageData=>({...pageData, 'variant_products': updateVariantsFunction(pageData.variant_products)}));
+
 
     const saveProduct = (data, id='') => {
         const requestUrl = `/api2/product/${id}/`
         baseApiAuth
         .post(requestUrl, data)
         .then((res) => {
+            toast.success('موفقیت آمیز بود!')
             console.log('ress', res);
         })
         .catch((err) => {
             console.error('Error fetching tags:', err);
         })
-        // toast.success('Successfully!')
     }
 
     const handleChange = (name, value) => {
@@ -717,14 +715,16 @@ const CreateProductPage = () => {
                                                     <h5 className="card-title mb-0">ویژگی های عادی</h5>
                                                 </div>
                                                 <div id="category_attrs_items" className="gap-3 d-flex flex-column card-body">
-                                                    <TabsWithInputsComponent nonVariants={nonVariants} onChange={handleNonVariantChange} ref={tabsWithInputsRef} inputs={pageData.non_variant_product_attrs} />
+                                                    <TabsWithInputsComponent onChange={updateNonVariantAttrs} inputs={pageData.non_variant_product_attrs} />
                                                 </div>
                                             </div>
-                                            <VariantProductContainer 
+                                            <VariantProductContainer
                                                 ref={VariantProductContainerRef}
-                                                forms={pageData.variant_products} 
+                                                cards={pageData.variant_products} 
                                                 inputs={pageData.variant_product_attrs}
-                                                nonVariants={nonVariants}
+                                                onChange={updateVariantAttrs}
+                                                updateVariants={updateVariants}
+                                                nonVariants={pageData.non_variant_product_attrs}
                                             />
                                             {/* /Variants */}
                                             {/* Inventory */}

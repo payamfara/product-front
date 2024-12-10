@@ -56,7 +56,6 @@ export default function RootLayout({
         <link href="/libs/flatpickr/flatpickr.css" rel="stylesheet" />
         <link href="/vendor/libs/tagify/tagify.css" rel="stylesheet" />
         <link href="/css/rtl.css" rel="stylesheet" />
-        <link href="/css/jquery.toast.min.css" rel="stylesheet" />
         <link rel="stylesheet" href="/css/styles.css" />
       </head>
 
@@ -65,7 +64,6 @@ export default function RootLayout({
       >
         {children}
         <Toaster />
-        <script src="/vendor/libs/dropzone/dropzone.min.js"></script>
       </body>
     </html>
   );

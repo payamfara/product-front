@@ -47,9 +47,12 @@ const DropzoneComponent = ({ files = [], updateFiles, uploadUrl }) => {
     dictMaxFilesExceeded: "امکان ارسال فایل دیگری وجود ندارد.",
   };
 
-  const addFile = (fileUrl) => {
-    const newFiles = [...files, fileUrl];
-    updateFiles(newFiles);
+  const addFile = (file) => {
+    if (!isFirstRender) {
+      const newFiles = [...files, file.url];
+      updateFiles(newFiles);
+    }
+    dzInstanceRef.current.files.push(file)
   };
   const removeFile = (fileUrl) => {
     const newFiles = files.filter((f) => f !== fileUrl);
@@ -80,11 +83,12 @@ const DropzoneComponent = ({ files = [], updateFiles, uploadUrl }) => {
     const dz = new Dropzone(dropzoneRef.current, options);
     dzInstanceRef.current = dz;
     files.forEach(addLocalImage);
-    setIsFirstRender(firstRender=>!firstRender)
+    setIsFirstRender(isFirstRender=>!isFirstRender)
     dz.on("success", function (file, response) {
       const url = response?.url || file.url;
       file.previewElement.querySelector("img[data-dz-thumbnail]").src = url;
-      addFile(url);
+      file.url = url;
+      addFile(file);
     });
 
     // return () => dz.destroy();
@@ -121,7 +125,7 @@ const DropzoneComponent = ({ files = [], updateFiles, uploadUrl }) => {
       dzInstanceRef.current.emit("addedfile", mockFile);
       dzInstanceRef.current.emit("thumbnail", mockFile, url);
       dzInstanceRef.current.emit("complete", mockFile);
-      addFile(url);
+      addFile(mockFile);
     }
   };
 

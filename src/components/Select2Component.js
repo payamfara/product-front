@@ -33,7 +33,13 @@ const Select2Component = ({
   };
 
   useEffect(() => {
-    isAsync && handleOptions(value?.value || "");
+    isAsync && handleOptions(value.value || "")
+    // if (!isAsync) return
+    // const fetchData = async () => {
+    //   const options = await handleOptions(value?.value || "");
+    //   setDefaultOptions(options);
+    // };
+    // fetchData();
   }, []);
 
   return (
@@ -43,7 +49,7 @@ const Select2Component = ({
         cacheOptions
         loadOptions={handleOptions}
         defaultOptions={defaultOptions}
-        value={value}
+        value={defaultOptions.find((option) => option.id === value.id)} 
         placeholder={`انتخاب ${placeholder}`}
         isMulti={isMulti}
         onChange={onChange}
