@@ -1,16 +1,17 @@
 import RippleButton from "@/src/components/RippleButton/RippleButton";
 import React, {
   useState,
-  useRef,
   useImperativeHandle,
   forwardRef,
+  useEffect,
 } from "react";
 import { FaTrash, FaSquare } from "react-icons/fa";
 import TabsWithInputsComponent from "../../../../../components/TabsWithInputsComponent";
 import { baseApiAuth } from "@/src/api/baseApi";
 import { FaSquareCheck } from "react-icons/fa6";
+import DropzoneComponent from "@/src/components/DropzoneComponent";
 
-const Card = ({ card, isActive, toggleLink, onDelete, onClick }) => {
+const Card = ({ card, isActive, toggleLink, isLinkable, onDelete, onClick }) => {
   return (
     <div
       onClick={onClick}
@@ -26,13 +27,13 @@ const Card = ({ card, isActive, toggleLink, onDelete, onClick }) => {
         >
           <FaTrash size={16} />
         </RippleButton>
-        <RippleButton
+        {card.id && isLinkable && <RippleButton
           className="z-1 rounded-start-0 border-0 border-success ribbon btn btn-success btn-sm p-1"
           onClick={toggleLink}
           title="Add"
         >
           {card.linked ? <FaSquareCheck size={16} /> : <FaSquare size={16} />}
-        </RippleButton>
+        </RippleButton>}
       </div>
       <div className={`card shadow-lg h-100 overflow-hidden`}>
         <div className="card-img card-body p-0">
@@ -71,34 +72,52 @@ const PlusButton = ({ onClick }) => {
 const VariantProductContainer = forwardRef(
   ({ nonVariants, updateVariants, onChange, cards, inputs }, ref) => {
     const [activeCard, setActiveCard] = useState(-1);
-    const emptyFrm = inputs.map((input) => ({
-      ...input,
-      attr_value: undefined,
-      attr_value_str: undefined,
-      meta_datas: {
-        ...input.meta_datas,
-        attr_value: { ...input.meta_datas.attr_value, default: undefined },
-      },
-    }));
+    const [isAttributeFrm, setIsAttributeFrm] = useState(true);
+    const toggleIsAttributeFrm = () =>
+      setIsAttributeFrm((isAttributeFrm) => !isAttributeFrm);
+
+    const emptyFrm = inputs.map((input) => {
+      const { id, ...inputData } = input;
+      return {
+        ...inputData,
+        attr_value: undefined,
+        attribute_value_str: undefined,
+        meta_datas: {
+          ...inputData.meta_datas,
+          attr_value: {
+            ...inputData.meta_datas.attr_value,
+            default: undefined,
+          },
+        },
+      };
+    });
 
     useImperativeHandle(ref, () => ({
       getValues: () => cards,
     }));
 
     const handleDelete = (index) => {
+      setActiveCard((activeCard) => activeCard - 1);
+      setIsAttributeFrm(true);
       updateVariants((cards) => cards.filter((_, i) => i !== index));
     };
 
     const handleAddCard = (newCard) => {
       updateVariants((cards) => [newCard, ...cards]);
       setActiveCard(0);
+      setIsAttributeFrm(true);
     };
+
+    useEffect(() => {
+      toggleLink(0);
+    }, []);
 
     const handleCardClick = async (index) => {
       console.log(index);
-      
+
       if (cards[index].variant_product_attrs) {
         setActiveCard(index);
+        setIsAttributeFrm(true);
         return;
       }
 
@@ -115,43 +134,51 @@ const VariantProductContainer = forwardRef(
                       ...res.data.variant_product_attrs,
                       ...res.data.variant_extra_attrs,
                     ],
+                    non_variant_product_attrs: [
+                      ...res.data.non_variant_product_attrs,
+                      ...res.data.non_variant_extra_attrs,
+                    ],
                   }
                 : c
             )
           );
           setActiveCard(index);
+          setIsAttributeFrm(true);
         })
         .catch((err) => {
           console.error("Error fetching data:", err);
         });
-
-      // try {
-      //   const res = await baseApiAuth.get(requestUrl)
-      //   const newFrm = card.id
-      //     ? (await baseApiAuth.get(requestUrl)).data.variant_product_attrs
-      //     : emptyFrm;
-      // } catch (err) {
-      // }
     };
 
     const updateAttrValues = (updateAttrValuesFunction) =>
-      onChange((cards) => 
+      onChange((cards) =>
         cards.map((card, index) =>
           index === activeCard
             ? updateAttrValuesFunction(card, "variant_product_attrs")
             : card
         )
-      )
-    const toggleLink = (index) => 
-      onChange((cards) => 
+      );
+    const toggleLink = (index) =>
+      onChange((cards) =>
         cards.map((card, i) =>
-          i === index
-            ? {...card, linked: !card.linked}
-            : card
+          i === index ? { ...card, linked: !card.linked } : card
+        )
+      );
+    console.log("cards", cards);
+    const updateFiles = (newFiles) => {
+      console.log('ss');
+      
+      updateVariants((cards) =>
+        cards.map((c, i) =>
+          i === activeCard
+            ? {
+                ...cards[activeCard],
+                'images': newFiles,
+              }
+            : c
         )
       )
-    console.log('cards', cards);
-    
+    }
 
     return (
       <div id="variant_attrs" className="card mb-4">
@@ -161,8 +188,11 @@ const VariantProductContainer = forwardRef(
             onClick={() =>
               handleAddCard({
                 part_number_en: "new",
+                part_number_fa: "new",
+                part_number_bz: "",
                 images: [],
                 variant_product_attrs: emptyFrm,
+                linked: true,
               })
             }
           />
@@ -177,19 +207,53 @@ const VariantProductContainer = forwardRef(
                 <Card
                   key={index}
                   card={card}
+                  isLinkable={nonVariants.some((nonVariant) => nonVariant.changed)}
                   isActive={activeCard === index}
                   onDelete={() => handleDelete(index)}
-                  toggleLink={()=>toggleLink(index)}
+                  toggleLink={() => toggleLink(index)}
                   onClick={() => handleCardClick(index)}
                 />
               ))}
             </div>
-            {activeCard > -1 && cards[activeCard].linked ? (
+            {activeCard >= -1 &&
+            activeCard <= cards.length - 1 &&
+            cards[activeCard] &&
+            (cards[activeCard].linked || !nonVariants.some((nonVariant) => nonVariant.changed)) ? (
               <div className="position-relative border border-dashed rounded col-9">
-                <TabsWithInputsComponent
-                  inputs={cards[activeCard].variant_product_attrs}
-                  onChange={updateAttrValues}
-                />
+                <div className="position-absolute end-0 top-0 myn-3 mx-3 d-flex gap-3">
+                  <RippleButton
+                    className={`z-1 rounded-start-0 border-success btn ${
+                      !isAttributeFrm
+                        ? "btn-success border-1"
+                        : "btn-white border-0"
+                    } btn-sm p-1`}
+                    onClick={toggleIsAttributeFrm}
+                    title="Information Form"
+                  >
+                    فرم اطلاعات
+                  </RippleButton>
+                  <RippleButton
+                    className={`z-1 rounded-start-0 border-danger btn ${
+                      isAttributeFrm
+                        ? "btn-danger border-1"
+                        : "btn-white border-0"
+                    } btn-sm p-1`}
+                    onClick={toggleIsAttributeFrm}
+                    title="Attributes Form"
+                  >
+                    فرم ویژگی ها
+                  </RippleButton>
+                </div>
+                {isAttributeFrm ? (
+                  <TabsWithInputsComponent
+                    inputs={cards[activeCard].variant_product_attrs}
+                    onChange={updateAttrValues}
+                  />
+                ) : (
+                  <div>
+                    <DropzoneComponent files={cards[activeCard].images} updateFiles={updateFiles} uploadUrl={"http://192.168.1.21:8000/api/save_images/products/"} />
+                  </div>
+                )}
               </div>
             ) : nonVariants.some((nonVariant) => nonVariant.changed) ? (
               <div className="bg-secondary-subtle border border-dashed rounded col-9">

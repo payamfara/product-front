@@ -48,6 +48,8 @@ const DropzoneComponent = ({ files = [], updateFiles, uploadUrl }) => {
   };
 
   const addFile = (file) => {
+    
+    console.log(isFirstRender);
     if (!isFirstRender) {
       const newFiles = [...files, file.url];
       updateFiles(newFiles);
@@ -83,7 +85,9 @@ const DropzoneComponent = ({ files = [], updateFiles, uploadUrl }) => {
     const dz = new Dropzone(dropzoneRef.current, options);
     dzInstanceRef.current = dz;
     files.forEach(addLocalImage);
-    setIsFirstRender(isFirstRender=>!isFirstRender)
+    setIsFirstRender(false)
+    console.log('ssssssssss');
+    
     dz.on("success", function (file, response) {
       const url = response?.url || file.url;
       file.previewElement.querySelector("img[data-dz-thumbnail]").src = url;

@@ -6,8 +6,9 @@ const DynamicAttributeField = ({ data, onChange, parentClassName }) => {
   const [localData, setLocalData] = useState(data);
 
   useEffect(() => {
-    setLocalData(data);
+  setLocalData(data);
   }, [data]);
+
 
   // <div className="d-flex justify-content-between align-items-center">
   // {attribute_category && <span id="help_part_number_en" className="badge text-bg-danger fs-tiny form-label">{attribute_category}</span>}

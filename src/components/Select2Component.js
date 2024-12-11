@@ -35,6 +35,8 @@ const Select2Component = ({
   useEffect(() => {
     // isAsync && handleOptions(value.value || "")
     if (!isAsync) return
+    console.log(name, value);
+    
     const fetchData = async () => {
       const options = await handleOptions(value?.value || "");
       setDefaultOptions(options);

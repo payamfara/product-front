@@ -28,11 +28,13 @@ const CreateProductPage = () => {
 
     const saveProduct = (data) => {
         const id = data.id;
-        const preparedData = Object.fromEntries(Object.entries(pageData).filter(([name,dict])=>!pageData.meta_datas[name]?.read_only));
+        const preparedData = Object.fromEntries(Object.entries(data).filter(([name,dict])=>!data.meta_datas[name]?.read_only));
+        console.log(id, preparedData);
         const { variant_products, ...requestData } = preparedData;
-        console.log(id, requestData);
         
-        const requestUrl = `/api2/product/${id}/`
+        const requestUrl = id 
+            ? `/api2/product/${id}/`
+            : `/api2/product/`
         baseApiAuth
         .post(requestUrl, requestData)
         .then((res) => {
@@ -86,15 +88,37 @@ const CreateProductPage = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
         
-        const linkedProducts = pageData.variant_products.filter(vp=>vp.linked || vp.id===pageData.id)
+        const linkedProducts = pageData.non_variant_product_attrs.some((nonVariant) => nonVariant.changed)
+        ? pageData.variant_products.filter(vp=>vp.linked || vp.id===pageData.id)
+        : pageData.variant_products;
         const linkedProductsAppended = linkedProducts.map(linkedProduct=>({
             ...linkedProduct,
-            non_variant_product_attrs: pageData.non_variant_product_attrs
+            non_variant_product_attrs: linkedProduct.non_variant_product_attrs
+            ? linkedProduct.non_variant_product_attrs.map(nonVariant=> {
+                const foundItem = pageData.non_variant_product_attrs.find(nv=>nv.attribute === nonVariant.attribute);
+                return foundItem.changed
+                    ? {...nonVariant, attr_value: foundItem.attr_value, attr_value_str: foundItem.attr_value_str}
+                    : nonVariant
+            })
+            : pageData.non_variant_product_attrs.map(nv=>{
+                const {id, ...nvData} = nv;
+                return nvData;
+            }),
+            meta_datas: pageData.meta_datas,
+            category: pageData.category,
+            part_number_bz: pageData.part_number_bz,
         }))
+        const finalLinkedProducts = linkedProductsAppended.map(fd=>{
+            console.log('final', fd);
+            return {
+            ...fd,
+            non_variant_product_attrs: fd.non_variant_product_attrs?.filter(nv=>nv.attr_value !== null),
+            variant_product_attrs: fd.variant_product_attrs?.filter(v=>v.attr_value !== null)
+        }})
         console.log('linkedProducts', linkedProducts);
         console.log('linkedProductsAppended', linkedProductsAppended);
-        
-        linkedProductsAppended.forEach(saveProduct)
+        console.log('finalLinkedProducts', finalLinkedProducts);
+        finalLinkedProducts.forEach(saveProduct)
     }
 
     return (
