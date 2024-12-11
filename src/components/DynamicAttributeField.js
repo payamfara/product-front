@@ -105,11 +105,11 @@ const DynamicAttributeField = ({ data, onChange, parentClassName }) => {
       );
     case "Float": // Input type=number
     case "float": // Input type=number
-    case 0:
+    case 5:
       return (
         <div className={`${parentClassName} form-floating`}>
           <input
-            onChange={(e) => onChange(e.target.value)}
+            onChange={(e) => onChange(parseFloat(e.target.value))}
             type="number"
             id={attribute_name_en}
             name={attribute_name_en}

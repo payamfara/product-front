@@ -26,10 +26,15 @@ const CreateProductPage = () => {
     const updateVariants = (updateVariantsFunction) => setPageData(pageData=>({...pageData, 'variant_products': updateVariantsFunction(pageData.variant_products)}));
 
 
-    const saveProduct = (data, id='') => {
+    const saveProduct = (data) => {
+        const id = data.id;
+        const preparedData = Object.fromEntries(Object.entries(pageData).filter(([name,dict])=>!pageData.meta_datas[name]?.read_only));
+        const { variant_products, ...requestData } = preparedData;
+        console.log(id, requestData);
+        
         const requestUrl = `/api2/product/${id}/`
         baseApiAuth
-        .post(requestUrl, data)
+        .post(requestUrl, requestData)
         .then((res) => {
             toast.success('موفقیت آمیز بود!')
             console.log('ress', res);
@@ -40,7 +45,9 @@ const CreateProductPage = () => {
     }
 
     const handleChange = (name, value) => {
-        if (typeof(value) === 'object') {
+        console.log(name, value);
+        
+        if (typeof(value) === 'object' && name != 'tags') {
             setPageData(pageData=>({
                 ...pageData,
                 [name]: (value.pk || value.id || value.value),
@@ -79,12 +86,15 @@ const CreateProductPage = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
         
-        const preparedData = Object.fromEntries(Object.entries(pageData).filter(([name,dict])=>!pageData.meta_datas[name]?.read_only));
-        const { variant_products, ...data } = preparedData;
-        // const withItems = VariantProductContainerRef.current.getWithItems();
-        console.log(data);
-        saveProduct(data, pageData.id)
-
+        const linkedProducts = pageData.variant_products.filter(vp=>vp.linked || vp.id===pageData.id)
+        const linkedProductsAppended = linkedProducts.map(linkedProduct=>({
+            ...linkedProduct,
+            non_variant_product_attrs: pageData.non_variant_product_attrs
+        }))
+        console.log('linkedProducts', linkedProducts);
+        console.log('linkedProductsAppended', linkedProductsAppended);
+        
+        linkedProductsAppended.forEach(saveProduct)
     }
 
     return (

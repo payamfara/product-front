@@ -24,7 +24,7 @@ const Select2Component = ({
     
     try {
       const res = await baseApiAuth.get(requestUrl);
-      setDefaultOptions(res.data.results);
+      // setDefaultOptions(res.data.results);
       return res.data.results; 
     } catch (err) {
       console.error("Error fetching data:", err);
@@ -33,13 +33,13 @@ const Select2Component = ({
   };
 
   useEffect(() => {
-    isAsync && handleOptions(value.value || "")
-    // if (!isAsync) return
-    // const fetchData = async () => {
-    //   const options = await handleOptions(value?.value || "");
-    //   setDefaultOptions(options);
-    // };
-    // fetchData();
+    // isAsync && handleOptions(value.value || "")
+    if (!isAsync) return
+    const fetchData = async () => {
+      const options = await handleOptions(value?.value || "");
+      setDefaultOptions(options);
+    };
+    fetchData();
   }, []);
 
   return (
@@ -49,7 +49,7 @@ const Select2Component = ({
         cacheOptions
         loadOptions={handleOptions}
         defaultOptions={defaultOptions}
-        value={defaultOptions.find((option) => option.id === value.id)} 
+        value={value} 
         placeholder={`انتخاب ${placeholder}`}
         isMulti={isMulti}
         onChange={onChange}

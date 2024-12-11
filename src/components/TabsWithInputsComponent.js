@@ -45,6 +45,8 @@ const TabsWithInputs = forwardRef(({ onChange, inputs }, ref) => {
   }));
 
   const handleChange = (priorityKey, index, newValue) => {
+    console.log(index, newValue);
+    
     const value = typeof newValue === "object" ? newValue.id : newValue;
     const value_str = typeof newValue === "object" ? (newValue.value || newValue.label || newValue.name || newValue.title_en) : undefined;
     setCategorizedInputs((prevState) => {
@@ -60,7 +62,7 @@ const TabsWithInputs = forwardRef(({ onChange, inputs }, ref) => {
     if (onChange) 
       onChange((prevData, updateKey)=>({
         ...prevData,
-        [updateKey]: prevData[updateKey].map(nonVariant=>
+        [updateKey]: prevData[updateKey].map(nonVariant=> 
             nonVariant.attribute === categorizedInputs[priorityKey][index].attribute
             ? {...nonVariant, attr_value: value, attribute_value_str: value_str, changed: true}
             : nonVariant
