@@ -14,7 +14,6 @@ const DropzoneComponent = ({ files = [], updateFiles, uploadUrl }) => {
   const dropzoneRef = useRef(null);
   const dzInstanceRef = useRef(null);
   const isInitialized = useRef(false);
-  const [isFirstRender, setIsFirstRender] = useState(true);
 
   const previewTemplate = `<div class="dz-preview dz-file-preview">
       <div class="dz-details">
@@ -49,8 +48,7 @@ const DropzoneComponent = ({ files = [], updateFiles, uploadUrl }) => {
 
   const addFile = (file) => {
     
-    console.log(isFirstRender);
-    if (!isFirstRender) {
+    if (isInitialized.current) {
       const newFiles = [...files, file.url];
       updateFiles(newFiles);
     }
@@ -66,7 +64,6 @@ const DropzoneComponent = ({ files = [], updateFiles, uploadUrl }) => {
 
   useEffect(() => {
     if (!dropzoneRef.current || isInitialized.current) return;
-    isInitialized.current = true;
 
     const options = {
       url: uploadUrl,
@@ -85,8 +82,7 @@ const DropzoneComponent = ({ files = [], updateFiles, uploadUrl }) => {
     const dz = new Dropzone(dropzoneRef.current, options);
     dzInstanceRef.current = dz;
     files.forEach(addLocalImage);
-    setIsFirstRender(false)
-    console.log('ssssssssss');
+    isInitialized.current = true;
     
     dz.on("success", function (file, response) {
       const url = response?.url || file.url;
@@ -116,7 +112,7 @@ const DropzoneComponent = ({ files = [], updateFiles, uploadUrl }) => {
   };
 
   const addLocalImage = (url) => {
-    if (isFirstRender || !isDuplicateFile(url)) {
+    if (!isInitialized.current || !isDuplicateFile(url)) {
       const fileType = getFileTypeFromURL(url);
 
       var mockFile = {

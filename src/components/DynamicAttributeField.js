@@ -6,14 +6,14 @@ const DynamicAttributeField = ({ data, onChange, parentClassName }) => {
   const [localData, setLocalData] = useState(data);
 
   useEffect(() => {
-  setLocalData(data);
+    setLocalData(data);
   }, [data]);
 
 
   // <div className="d-flex justify-content-between align-items-center">
   // {attribute_category && <span id="help_part_number_en" className="badge text-bg-danger fs-tiny form-label">{attribute_category}</span>}
-  const attribute_type = localData.attr_type ?? localData.meta_datas.attr_value;
-  // const attribute_type = localData.attribute_type ?? localData.attr_type
+  console.log(localData.attribute_name_en, localData.attr_type);
+  const attribute_type = localData.attr_type ?? localData.meta_datas?.attr_value;
   const attribute_name_en = localData.attribute_name_en ?? localData.title_en;
   const attribute_name_fa = localData.attribute_name_fa ?? localData.title_fa;
   const attribute_value = localData.attribute_value ?? localData.attr_value ?? "";
@@ -26,12 +26,8 @@ const DynamicAttributeField = ({ data, onChange, parentClassName }) => {
   const attribute_postfix = localData.attribute_postfix ?? localData.postfix;
   const attribute_placeholder = localData.attribute_placeholder ?? attribute_name_fa;
 
-  // console.log(attribute_name_en, attribute_value, attribute_value_str);
-
-  switch (attribute_type.type) {
-    case "Text": // Text
-    case "text": // Text
-    case "select_2": // Text
+  switch (attribute_type?.type) {
+    case "select_2": // Select_2
       return (
         <div className={`${parentClassName} form-floating`}>
           <input
@@ -48,12 +44,12 @@ const DynamicAttributeField = ({ data, onChange, parentClassName }) => {
             isAsync={true}
             placeholder={attribute_placeholder}
             onChange={onChange}
-            value={{'id': attribute_value, 'value': attribute_value_str}}
+            value={{ 'id': attribute_value, 'value': attribute_value_str }}
             className={`position-absolute bottom-0 w-100 custom-select--nobrorder`}
           />
         </div>
       );
-    case "list": // Text
+    case "list": // Select_2
       return (
         <div className={`${parentClassName} form-floating`}>
           <input
@@ -70,12 +66,13 @@ const DynamicAttributeField = ({ data, onChange, parentClassName }) => {
             isAsync={false}
             placeholder={attribute_placeholder}
             onChange={onChange}
-            value={{'id': attribute_value, 'value': attribute_value_str}}
+            value={{ 'id': attribute_value, 'value': attribute_value_str }}
             className={`position-absolute bottom-0 w-100 custom-select--nobrorder`}
           />
         </div>
       );
     case "string": // Text
+    case "other": // Text
       return (
         <div className={`${parentClassName} form-floating`}>
           <input
@@ -104,9 +101,7 @@ const DynamicAttributeField = ({ data, onChange, parentClassName }) => {
           <label htmlFor={attribute_name_en}>{attribute_name_fa}</label>
         </div>
       );
-    case "Float": // Input type=number
     case "float": // Input type=number
-    case 5:
       return (
         <div className={`${parentClassName} form-floating`}>
           <input
@@ -121,7 +116,6 @@ const DynamicAttributeField = ({ data, onChange, parentClassName }) => {
           <label htmlFor={attribute_name_en}>{attribute_name_fa}</label>
         </div>
       );
-    case false:
     case "bool":
       // For checkbox or radio based on priority
       if (attribute_priority === "mandatory" || attribute_type.required) {
@@ -185,55 +179,62 @@ const DynamicAttributeField = ({ data, onChange, parentClassName }) => {
           </div>
         );
       }
-    default:
-      // debugger
-      let isAsync, inputValue, asyncUrl, options;
-      if (typeof (attribute_type === "object")) {
-        isAsync = attribute_type.type === "select_2";
-        inputValue = {'id': attribute_value, 'value': attribute_value_str};
-        asyncUrl = `/strvalue/?list_id=${attribute_type.list_id}`;
-        options = attribute_type.choice;
-      } else {
-        const match = attribute_type?.match(/\(([^)]+)\)/);
-        if (match) {
-          isAsync = true;
-          inputValue = { id: attribute_value, value: attribute_value_str };
-          asyncUrl =
-            match[1] == "choice"
-              ? `/choice/?title=${attribute_name_en}`
-              : `/${match[1]}/`;
-        } else {
-          return (
-            <div className={`${parentClassName} form-floating`}>
-              <DatePicker name={attribute_name_en} />
-              <label htmlFor={attribute_name_en}>{attribute_name_en}</label>
-            </div>
-          );
-        }
-      }
-
+    case "date_time":
       return (
         <div className={`${parentClassName} form-floating`}>
-          <input
-            id={`${attribute_name_en}_fake`}
-            readOnly
-            type="text"
-            className="form-control"
-          />
-          <label htmlFor={attribute_name_en}>{attribute_name_fa}</label>
-          <Select2
-            options={options}
-            id={attribute_name_en}
-            name={attribute_name_en}
-            asyncUrl={asyncUrl}
-            isAsync={isAsync}
-            placeholder={attribute_placeholder}
-            onChange={onChange}
-            value={inputValue}
-            className={`position-absolute bottom-0 w-100 custom-select--nobrorder`}
-          />
+          <DatePicker name={attribute_name_en} />
+          <label htmlFor={attribute_name_en}>{attribute_name_en}</label>
         </div>
-      );
+      )
+    default: return undefined;
+      // debugger
+      // let isAsync, inputValue, asyncUrl, options;
+      // if (typeof (attribute_type === "object")) {
+      //   isAsync = attribute_type.type === "select_2";
+      //   inputValue = { 'id': attribute_value, 'value': attribute_value_str };
+      //   asyncUrl = `/strvalue/?list_id=${attribute_type.list_id}`;
+      //   options = attribute_type.choice;
+      // } else {
+      //   const match = attribute_type?.match(/\(([^)]+)\)/);
+      //   if (match) {
+      //     isAsync = true;
+      //     inputValue = { id: attribute_value, value: attribute_value_str };
+      //     asyncUrl =
+      //       match[1] == "choice"
+      //         ? `/choice/?title=${attribute_name_en}`
+      //         : `/${match[1]}/`;
+      //   } else {
+      //     return (
+      //       <div className={`${parentClassName} form-floating`}>
+      //         <DatePicker name={attribute_name_en} />
+      //         <label htmlFor={attribute_name_en}>{attribute_name_en}</label>
+      //       </div>
+      //     );
+      //   }
+      // }
+
+      // return (
+      //   <div className={`${parentClassName} form-floating`}>
+      //     <input
+      //       id={`${attribute_name_en}_fake`}
+      //       readOnly
+      //       type="text"
+      //       className="form-control"
+      //     />
+      //     <label htmlFor={attribute_name_en}>{attribute_name_fa}</label>
+      //     <Select2
+      //       options={options}
+      //       id={attribute_name_en}
+      //       name={attribute_name_en}
+      //       asyncUrl={asyncUrl}
+      //       isAsync={isAsync}
+      //       placeholder={attribute_placeholder}
+      //       onChange={onChange}
+      //       value={inputValue}
+      //       className={`position-absolute bottom-0 w-100 custom-select--nobrorder`}
+      //     />
+      //   </div>
+      // );
   }
 };
 

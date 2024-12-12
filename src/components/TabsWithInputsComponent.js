@@ -1,12 +1,10 @@
 import React, {
   useState,
-  useImperativeHandle,
-  forwardRef,
   useEffect,
 } from "react";
 import DynamicAttributeField from "./DynamicAttributeField";
 
-const TabsWithInputs = forwardRef(({ onChange, inputs }, ref) => {
+const TabsWithInputs = ({ onChange, inputs }) => {
   const categorizeInputs = (sortedInputs) => {
     const priorities = [
       ...new Set(sortedInputs.map((input) => input.priority)),
@@ -40,13 +38,9 @@ const TabsWithInputs = forwardRef(({ onChange, inputs }, ref) => {
     setActiveTab(Object.keys(categorized)[0] || "");
   }, [inputs]);
 
-  useImperativeHandle(ref, () => ({
-    getValues: () => Object.values(categorizedInputs).flat(),
-  }));
-
   const handleChange = (priorityKey, index, newValue) => {
     console.log(index, newValue);
-    
+
     const value = typeof newValue === "object" ? newValue.id : newValue;
     const value_str = typeof newValue === "object" ? (newValue.value || newValue.label || newValue.name || newValue.title_en) : undefined;
     setCategorizedInputs((prevState) => {
@@ -58,16 +52,16 @@ const TabsWithInputs = forwardRef(({ onChange, inputs }, ref) => {
       };
       return updated;
     });
-    
-    if (onChange) 
-      onChange((prevData, updateKey)=>({
+
+    if (onChange)
+      onChange((prevData, updateKey) => ({
         ...prevData,
-        [updateKey]: prevData[updateKey].map(nonVariant=> 
-            nonVariant.attribute === categorizedInputs[priorityKey][index].attribute
-            ? {...nonVariant, attr_value: value, attribute_value_str: value_str, changed: true}
+        [updateKey]: prevData[updateKey].map(nonVariant =>
+          nonVariant.attribute === categorizedInputs[priorityKey][index].attribute
+            ? { ...nonVariant, attr_value: value, attribute_value_str: value_str, changed: true }
             : nonVariant
         )
-    }))
+      }))
   };
   return (
     <div>
@@ -77,16 +71,15 @@ const TabsWithInputs = forwardRef(({ onChange, inputs }, ref) => {
           <li key={priorityKey} className="nav-item">
             <button
               type="button"
-              className={`nav-link ${
-                activeTab === priorityKey ? "active" : ""
-              }`}
+              className={`nav-link ${activeTab === priorityKey ? "active" : ""
+                }`}
               onClick={() => setActiveTab(priorityKey)}
             >
               {priorityKey == 4
                 ? "الزامی"
                 : priorityKey == 5
-                ? "مهم"
-                : "غیر مهم"}
+                  ? "مهم"
+                  : "غیر مهم"}
             </button>
           </li>
         ))}
@@ -123,6 +116,6 @@ const TabsWithInputs = forwardRef(({ onChange, inputs }, ref) => {
       </div>
     </div>
   );
-});
+}
 
 export default TabsWithInputs;

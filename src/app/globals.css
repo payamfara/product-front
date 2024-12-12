@@ -79,6 +79,11 @@ body {
   border-color: #15723f;
 }
 
+.ribbon.border-secondary::before,
+.ribbon.border-secondary::after {
+  border-color: #616161;
+}
+
 .ribbon::after,
 .ribbon::before {
   position: absolute;
