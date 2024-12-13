@@ -106,7 +106,7 @@ body {
   transform: translateY(100%);
 }
 
-.form-floating > label {
+.form-floating>label {
   left: auto !important;
 }
 
@@ -137,20 +137,46 @@ body {
   margin-bottom: -1rem;
 }
 
-.form-floating.warning > .form-control:focus ~ label,
-.form-floating.warning > .form-control:not(:placeholder-shown) ~ label,
-.form-floating.warning > .form-select ~ label {
+.form-floating > label {
+  height: auto !important;
+  max-width: 100%;
+}
+
+.form-floating>.form-control:focus~label,
+.form-floating>.form-control:not(:placeholder-shown)~label {
+  padding: 0 0.5rem !important;
+  right: 0.5rem;
+  background-color: white;
+}
+
+.form-floating.warning>.form-control:focus~label,
+.form-floating.warning>.form-control:not(:placeholder-shown)~label,
+.form-floating.warning>.form-select~label {
   color: rgba(var(--bs-warning-rgb)) !important;
 }
-.form-floating.warning > input,
-.form-floating.warning > input:focus {
+
+.form-floating.warning>input,
+.form-floating.warning>input:focus {
   border-color: #f5dfca !important;
   color: rgba(var(--bs-warning-rgb)) !important;
 }
+
 .form-floating.warning .custom-select__control,
 .form-floating.warning .custom-select__control:focus {
   box-shadow: 0 0 0 1px rgba(var(--bs-warning-rgb)) !important;
 }
+
 .form-floating.warning .custom-select__single-value {
   color: rgba(var(--bs-warning-rgb)) !important;
+}
+
+.hover-shadow-sm,
+.hover-shadow-lg {
+  transition: all .2s ease-in-out;
+}
+.hover-shadow-sm:hover {
+  box-shadow: var(--bs-box-shadow-sm) !important;
+}
+.hover-shadow-lg:hover {
+  box-shadow: var(--bs-box-shadow-lg) !important;
 }

@@ -8,7 +8,6 @@ import DynamicAttributeField from "@/src/components/DynamicAttributeField";
 
 const CreateCategoryPage = () => {
     const [pageData, setPageData] = useState({});
-    const [pageStruct, setPageStruct] = useState({});
     const [loading, setLoading] = useState(true);
     const params = useParams();
     const { id = "" } = params;
@@ -80,14 +79,14 @@ const CreateCategoryPage = () => {
                                 </div>
                                 <div className="row">
                                     {/* First colum */}
-                                    <div className="col-12 col-lg-8">
+                                    <div className="col-12">
                                         {/* category Information */}
                                         <div className="card mb-4">
                                             <div className="card-header">
                                                 <h5 className="card-tile mb-0">اطلاعات دسته</h5>
                                             </div>
-                                            <div className="card-body">
-                                                <div className="mb-3 col ecommerce-select2-dropdown">
+                                            <div className="card-body row row-cols-4">
+                                                <div>
                                                     <DynamicAttributeField
                                                         onChange={(vals) => { console.log(vals) }}
                                                         data={{
@@ -99,70 +98,61 @@ const CreateCategoryPage = () => {
                                                         }}
                                                     />
                                                 </div>
-
+                                                {/* Part number en */}
+                                                <div>
+                                                    <DynamicAttributeField
+                                                        onChange={(value) => handleChange('title_en', value)}
+                                                        className='p-2'
+                                                        data={{
+                                                            attribute_name_en: 'title_en',
+                                                            attribute_name_fa: 'مقدار انگلیسی',
+                                                            attr_type: pageData.meta_datas.title_en,
+                                                            attr_value: pageData.title_en
+                                                        }}
+                                                    />
+                                                    <span id="help_value_en" className="fs-tiny form-label"></span>
+                                                </div>
+                                                {/* Part number fa */}
+                                                <div>
+                                                    <DynamicAttributeField
+                                                        onChange={(value) => handleChange('title_fa', value)}
+                                                        className='p-2'
+                                                        data={{
+                                                            attribute_name_en: 'title_fa',
+                                                            attribute_name_fa: 'مقدار فارسی',
+                                                            attr_type: pageData.meta_datas.title_fa,
+                                                            attr_value: pageData.title_fa
+                                                        }}
+                                                    />
+                                                    <span id="help_value_en" className="fs-tiny form-label"></span>
+                                                </div>
+                                                {/* Part number bz */}
+                                                <div>
+                                                    <DynamicAttributeField
+                                                        onChange={(value) => handleChange('title_bz', value)}
+                                                        className='p-2'
+                                                        data={{
+                                                            attribute_name_en: 'title_bz',
+                                                            attribute_name_fa: 'مقدار بازاری',
+                                                            attr_type: pageData.meta_datas.title_bz,
+                                                            attr_value: pageData.title_bz
+                                                        }}
+                                                    />
+                                                    <span id="help_value_en" className="fs-tiny form-label"></span>
+                                                </div>
                                             </div>
                                         </div>
                                         {/* /category Information */}
                                     </div>
-                                    {/* {/* /Second column Second column */}
-                                    <div className="col-12 col-lg-4">
-                                        {/* {/* /Pricing Card Organize Card */}
+                                    <div className="col-12">
                                         <div className="card mb-4">
                                             <div className="card-header">
-                                                <h5 className="card-title mb-0">جزئیات</h5>
+                                                <h5 className="card-tile mb-0">ویژگی های دسته</h5>
                                             </div>
                                             <div className="card-body">
-                                                <div className="d-flex flex-column gap-3 border border-dashed p-3 mb-3">
-                                                    {/* Part number en */}
-                                                    <div>
-                                                        <DynamicAttributeField
-                                                            onChange={(value) => handleChange('title_en', value)}
-                                                            className='p-2'
-                                                            data={{
-                                                                attribute_name_en: 'title_en',
-                                                                attribute_name_fa: 'مقدار انگلیسی',
-                                                                attr_type: pageData.meta_datas.title_en,
-                                                                attr_value: pageData.title_en
-                                                            }}
-                                                        />
-                                                        <span id="help_value_en" className="fs-tiny form-label"></span>
-                                                    </div>
-                                                    {/* Part number fa */}
-                                                    <div>
-                                                        <DynamicAttributeField
-                                                            onChange={(value) => handleChange('title_fa', value)}
-                                                            className='p-2'
-                                                            data={{
-                                                                attribute_name_en: 'title_fa',
-                                                                attribute_name_fa: 'مقدار فارسی',
-                                                                attr_type: pageData.meta_datas.title_fa,
-                                                                attr_value: pageData.title_fa
-                                                            }}
-                                                        />
-                                                        <span id="help_value_en" className="fs-tiny form-label"></span>
-                                                    </div>
-                                                    {/* Part number bz */}
-                                                    <div>
-                                                        <DynamicAttributeField
-                                                            onChange={(value) => handleChange('title_bz', value)}
-                                                            className='p-2'
-                                                            data={{
-                                                                attribute_name_en: 'title_bz',
-                                                                attribute_name_fa: 'مقدار بازاری',
-                                                                attr_type: pageData.meta_datas.title_bz,
-                                                                attr_value: pageData.title_bz
-                                                            }}
-                                                        />
-                                                        <span id="help_value_en" className="fs-tiny form-label"></span>
-                                                    </div>
-                                                </div>
+                                                <AttrListComponent updateAttrList={updateAttrList} inputs={pageData.category_attrs} />
                                             </div>
                                         </div>
-                                        {/* /Organize Card */}
-                                    </div>
-                                    {/* /Second column */}
-                                    <div className="col-12">
-                                        <AttrListComponent updateAttrList={updateAttrList} inputs={pageData.category_attrs} />
                                     </div>
                                 </div>
                             </form>

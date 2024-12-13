@@ -12,7 +12,6 @@ const DynamicAttributeField = ({ data, onChange, parentClassName }) => {
 
   // <div className="d-flex justify-content-between align-items-center">
   // {attribute_category && <span id="help_part_number_en" className="badge text-bg-danger fs-tiny form-label">{attribute_category}</span>}
-  console.log(localData.attribute_name_en, localData.attr_type);
   const attribute_type = localData.attr_type ?? localData.meta_datas?.attr_value;
   const attribute_name_en = localData.attribute_name_en ?? localData.title_en;
   const attribute_name_fa = localData.attribute_name_fa ?? localData.title_fa;
@@ -102,6 +101,7 @@ const DynamicAttributeField = ({ data, onChange, parentClassName }) => {
         </div>
       );
     case "float": // Input type=number
+    case "int": // Input type=number
       return (
         <div className={`${parentClassName} form-floating`}>
           <input
