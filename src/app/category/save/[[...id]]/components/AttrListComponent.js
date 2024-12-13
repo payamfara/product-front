@@ -1,17 +1,16 @@
 import React, { Fragment, useState, useRef, useEffect } from "react";
 import { FaTrash, FaExpandAlt, FaCompressAlt } from "react-icons/fa";
 import RippleButton from "../../../../../components/RippleButton/RippleButton";
-import DynamicAttributeField from "@/src/components/DynamicAttributeField";
+import AttrCollapsed from './AttrCollapsed';
+import AttrExpanded from './AttrExpanded';
 
 const AttrListComponent = ({ inputs, updateAttrList }) => {
   const [activeRow, setActiveRow] = useState(-1);
   const [hoverRow, setHoverRow] = useState(-1);
 
-  // Refs for each row
   const rowRefs = useRef([]);
 
   useEffect(() => {
-    // Scroll to active row when it changes
     if (activeRow !== -1 && rowRefs.current[activeRow]) {
       rowRefs.current[activeRow].scrollIntoView({
         behavior: "smooth",
@@ -21,6 +20,8 @@ const AttrListComponent = ({ inputs, updateAttrList }) => {
   }, [activeRow]);
 
   const handleInputChange = (name, value, rowIndex) => {
+    console.log(name, value);
+
     updateAttrList((prevValues) =>
       prevValues.map((row, index) =>
         index === rowIndex ? { ...row, [name]: value } : row
@@ -40,11 +41,7 @@ const AttrListComponent = ({ inputs, updateAttrList }) => {
     );
   };
 
-  const handleHoverRow = (rowIndex) => {
-    setHoverRow((prevHoverRow) =>
-      prevHoverRow === rowIndex ? -1 : rowIndex
-    );
-  };
+  const handleHoverRow = (rowIndex) => setHoverRow(rowIndex);
 
   return (
     <div className={`ps-3 d-flex flex-wrap`}>
@@ -56,7 +53,7 @@ const AttrListComponent = ({ inputs, updateAttrList }) => {
               <div className={`col-3 p-2 order-${rowIndex}`}></div>
             )}
             <div
-              ref={(el) => (rowRefs.current[rowIndex] = el)} // Assign ref to each row
+              ref={(el) => (rowRefs.current[rowIndex] = el)} 
               className={`${activeRow === rowIndex
                 ? `col-12 order-${Math.min(inputs.length, rowIndex + 4 - (rowIndex % 4))}`
                 : `order-${rowIndex} col-3`
@@ -66,36 +63,29 @@ const AttrListComponent = ({ inputs, updateAttrList }) => {
                 onMouseEnter={() => handleHoverRow(rowIndex)}
                 onMouseLeave={() => handleHoverRow(-1)}
                 role="button"
-                key={rowIndex}
-                className={`position-relative card border ${activeRow === rowIndex ? "border-success" : "border-primary "
-                  } ${hoverRow === rowIndex ? "shadow-lg" : "shadow-sm"
-                  } flex-row flex-wrap ps-4 p-2 gap-2`}
+                className={`ps-4 p-2 position-relative card border ${activeRow === rowIndex ? "border-success" : rowInputs.id ? "border-primary" : "border-warning"
+                  } ${hoverRow === rowIndex ? "shadow-lg" : "shadow-sm"}`}
               >
                 <div
-                  className={`d-flex align-items-end flex-wrap w-100 ${activeRow === rowIndex ? "row-cols-5" : "row-cols-2"
+                  className={`d-flex align-items-start flex-wrap w-100 ${activeRow === rowIndex ? "row-cols-5" : "row-cols-2"
                     } `}
                 >
-                  {Object.keys(rowInputs).map((name, index) =>
-                    index < 4 || (activeRow === rowIndex && index > 3) ? (
-                      <div className="p-2" key={index}>
-                        {meta_datas[name] && (
-                          <DynamicAttributeField
-                            onChange={(name, value) =>
-                              handleInputChange(name, value, rowIndex)
-                            }
-                            className="p-2"
-                            data={{
-                              attribute_name_en: name,
-                              attribute_name_fa: meta_datas[name].verbose_name,
-                              attr_type: meta_datas[name],
-                              attribute_value: rowInputs[name],
-                              attribute_value_str: rowInputs[`${name}_str`],
-                            }}
-                          />
-                        )}
-                      </div>
-                    ) : null
-                  )}
+                  {activeRow === rowIndex
+                    ? <AttrExpanded
+                      rowIndex={rowIndex}
+                      items={rowInputs}
+                      meta_datas={meta_datas}
+                      onChange={(name, value) =>
+                        handleInputChange(name, value, rowIndex)
+                      } />
+                    : <AttrCollapsed
+                      rowIndex={rowIndex}
+                      items={rowInputs}
+                      meta_datas={meta_datas}
+                      onChange={(name, value) =>
+                        handleInputChange(name, value, rowIndex)
+                      } />
+                  }
                 </div>
                 {(hoverRow === rowIndex || activeRow === rowIndex) && (
                   <div className="position-absolute d-flex flex-column justify-content-center gap-4 top-0 start-0 h-100 mxn-2">

@@ -4,7 +4,8 @@ import { useParams } from "next/navigation";
 import { baseApiAuth } from '../../../../api/baseApi';
 import AttrListComponent from './components/AttrListComponent';
 import DynamicAttributeField from "@/src/components/DynamicAttributeField";
-
+import toast from "react-hot-toast/headless";
+import PlusButton from '../../../../components/PlusButton';
 
 const CreateCategoryPage = () => {
     const [pageData, setPageData] = useState({});
@@ -12,6 +13,7 @@ const CreateCategoryPage = () => {
     const params = useParams();
     const { id = "" } = params;
     const updateAttrList = (updateAttrListFunction) => setPageData(pageData => ({ ...pageData, category_attrs: updateAttrListFunction(pageData.category_attrs) }))
+    const handleAddCard = () => {setPageData(pageData=>({...pageData, category_attrs: [emptyFrm, ...pageData.category_attrs]}))}
 
     const handleChange = (name, value) => {
         setPageData(pageData => ({ ...pageData, [name]: value }))
@@ -29,6 +31,190 @@ const CreateCategoryPage = () => {
             })
     }, [])
 
+    const emptyFrm = {
+        "title_en": "",
+        "title_fa": "",
+        "title_bz": "",
+        "is_variant": false,
+        "is_editable_by_warehouse": false,
+        "is_part_of_part_number": true,
+        "is_searchable": true,
+        "is_filterable": true,
+        "description": "",
+        "weight": 0,
+        "prefix": null,
+        "postfix": null,
+        "order": 0,
+        "priority": 4,
+        "type": 7,
+        "list_id": 3,
+        "priority_str": "mandatory",
+        "type_str": "Text",
+        "list_id_str": "made",
+        "meta_datas": {
+            "id": {
+                "type": "other",
+                "verbose_name": "ID",
+                "required": false,
+                "validators": [],
+                "read_only": true
+            },
+            "created_at": {
+                "type": "date_time",
+                "verbose_name": "تاریخ ایجاد",
+                "required": false,
+                "validators": [],
+                "read_only": true
+            },
+            "updated_at": {
+                "type": "date_time",
+                "verbose_name": "تاریخ بروزرسانی",
+                "required": false,
+                "validators": [],
+                "read_only": true
+            },
+            "title_en": {
+                "type": "string",
+                "verbose_name": "عنوان ویژگی (انگلیسی)",
+                "required": true,
+                "validators": [],
+                "read_only": false
+            },
+            "title_fa": {
+                "type": "string",
+                "verbose_name": "عنوان ویژگی (فارسی)",
+                "required": true,
+                "validators": [],
+                "read_only": false
+            },
+            "title_bz": {
+                "type": "string",
+                "verbose_name": "عنوان ویژگی (محلی)",
+                "required": true,
+                "validators": [],
+                "read_only": false
+            },
+            "is_variant": {
+                "type": "bool",
+                "verbose_name": "متغیر است",
+                "required": false,
+                "validators": [],
+                "read_only": false
+            },
+            "is_editable_by_warehouse": {
+                "type": "bool",
+                "verbose_name": "قابل ویرایش توسط انبار",
+                "required": false,
+                "validators": [],
+                "read_only": false
+            },
+            "is_part_of_part_number": {
+                "type": "bool",
+                "verbose_name": "جزء شماره قطعه",
+                "required": false,
+                "validators": [],
+                "read_only": false
+            },
+            "is_searchable": {
+                "type": "bool",
+                "verbose_name": "قابل جستجو",
+                "required": false,
+                "validators": [],
+                "read_only": false
+            },
+            "is_filterable": {
+                "type": "bool",
+                "verbose_name": "قابل فیلتر",
+                "required": false,
+                "validators": [],
+                "read_only": false
+            },
+            "priority": {
+                "type": "select_2",
+                "verbose_name": "اولویت",
+                "required": false,
+                "validators": [],
+                "default": {
+                    "id": 4,
+                    "value": "mandatory"
+                },
+                "url": "/api2/myapp-choice/?title=priority",
+                "read_only": false
+            },
+            "category": {
+                "type": "select_2",
+                "verbose_name": "دسته",
+                "required": false,
+                "validators": [],
+                "default": {
+                    "id": 3,
+                    "value": "ceramic"
+                },
+                "url": "/api2/myapp-category/?",
+                "read_only": true
+            },
+            "type": {
+                "type": "select_2",
+                "verbose_name": "نوع",
+                "required": false,
+                "validators": [],
+                "default": {
+                    "id": 7,
+                    "value": "Text"
+                },
+                "url": "/api2/myapp-choice/?title=type",
+                "read_only": false
+            },
+            "list_id": {
+                "type": "select_2",
+                "verbose_name": "شناسه لیست",
+                "required": false,
+                "validators": [],
+                "default": {
+                    "id": 3,
+                    "value": "made"
+                },
+                "url": "/api2/myapp-listid/?",
+                "read_only": false
+            },
+            "description": {
+                "type": "other",
+                "verbose_name": "توضیحات",
+                "required": false,
+                "validators": [],
+                "read_only": false
+            },
+            "weight": {
+                "type": "int",
+                "verbose_name": "وزن",
+                "required": false,
+                "validators": [],
+                "read_only": false
+            },
+            "prefix": {
+                "type": "string",
+                "verbose_name": "پیشوند",
+                "required": false,
+                "validators": [],
+                "read_only": false
+            },
+            "postfix": {
+                "type": "string",
+                "verbose_name": "پسوند",
+                "required": false,
+                "validators": [],
+                "read_only": false
+            },
+            "order": {
+                "type": "int",
+                "verbose_name": "ترتیب",
+                "required": false,
+                "validators": [],
+                "read_only": false
+            }
+        }
+    }
+
     if (loading) {
         return <div>Loading...</div>;
     }
@@ -36,12 +222,16 @@ const CreateCategoryPage = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        const data = pageData;
-        console.log(data);
+        const { created_at, updated_at, ...data } = pageData;
+        data.category_attrs = data.category_attrs.map(ca => {
+            const { created_at, updated_at, ...mainData } = ca;
+            return mainData;
+        })
 
-        const url = `/category/${id}/`
+        const url = id ? `/api2/category/${id}/` : `/api2/category/`
         baseApiAuth.post(url, data)
             .then((res) => {
+                toast.success('موفقیت آمیز بود!')
                 console.log('ress', res);
             })
             .catch((err) => {
@@ -67,8 +257,14 @@ const CreateCategoryPage = () => {
                                 {/* Add category */}
                                 <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3">
                                     <div className="d-flex flex-column justify-content-center">
-                                        <h4 className="mb-1 mt-3">یک دسته بندی جدید اضافه کنید</h4>
-                                        <p className="text-muted">سفارش هایی که در سراسر فروشگاه شما ثبت می شود</p>
+                                        {pageData.id 
+                                            ? <h4 className="mb-1 mt-3">ویرایش دسته بندی</h4>
+                                            : <h4 className="mb-1 mt-3">ایجاد دسته بندی</h4>
+                                        }
+                                        {pageData.id
+                                            ? <p className="text-muted">{pageData.title_fa}</p>
+                                            : <p className="text-muted">سفارش هایی که در سراسر فروشگاه شما ثبت می شود</p>
+                                        }
                                     </div>
                                     <div className="d-flex align-content-center flex-wrap gap-3">
                                         <div className="d-flex gap-3">
@@ -146,8 +342,9 @@ const CreateCategoryPage = () => {
                                     </div>
                                     <div className="col-12">
                                         <div className="card mb-4">
-                                            <div className="card-header">
+                                            <div className="card-header d-flex align-items-center gap-3">
                                                 <h5 className="card-tile mb-0">ویژگی های دسته</h5>
+                                                <PlusButton onClick={handleAddCard} />
                                             </div>
                                             <div className="card-body">
                                                 <AttrListComponent updateAttrList={updateAttrList} inputs={pageData.category_attrs} />

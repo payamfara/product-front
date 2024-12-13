@@ -8,6 +8,7 @@ import TabsWithInputsComponent from "../../../../../components/TabsWithInputsCom
 import { baseApiAuth } from "@/src/api/baseApi";
 import { FaSquareCheck } from "react-icons/fa6";
 import DropzoneComponent from "@/src/components/DropzoneComponent";
+import PlusButton from '../../../../../components/PlusButton';
 
 const Card = ({ card, isActive, toggleLink, isLinkable, onDelete, onClick }) => {
   return (
@@ -52,16 +53,6 @@ const Card = ({ card, isActive, toggleLink, isLinkable, onDelete, onClick }) => 
           </p>
         </div>
       </div>
-    </div>
-  );
-};
-
-const PlusButton = ({ onClick }) => {
-  return (
-    <div className="lh-1 card shadow-sm p-2">
-      <RippleButton onClick={onClick} type="button">
-        <i className="lh-1 fs-4 fa-solid fa-plus"></i>
-      </RippleButton>
     </div>
   );
 };

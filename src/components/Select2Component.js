@@ -20,7 +20,7 @@ const Select2Component = ({
   
   const handleOptions = async (inputValue) => {
     const separator = asyncUrl.includes("?") ? "&" : "?";
-    const requestUrl = `${asyncUrl}${separator}title_en__icontains=${inputValue}`;
+    const requestUrl = `${asyncUrl}${separator}title_en__icontains=${inputValue}&title__icontains=${inputValue}`;
     
     try {
       const res = await baseApiAuth.get(requestUrl);
@@ -35,8 +35,6 @@ const Select2Component = ({
   useEffect(() => {
     // isAsync && handleOptions(value.value || "")
     if (!isAsync) return
-    console.log(name, value);
-    
     const fetchData = async () => {
       const options = await handleOptions(value?.value || "");
       setDefaultOptions(options);
@@ -55,7 +53,7 @@ const Select2Component = ({
         placeholder={`انتخاب ${placeholder}`}
         isMulti={isMulti}
         onChange={onChange}
-        getOptionLabel={(e) => e.value || e.label || e.name || e.title_en}
+        getOptionLabel={(e) => e.value || e.label || e.name || e.title_en || e.title}
         getOptionValue={(e) => e.pk || e.id || e.value}
         classNamePrefix="custom-select"
         className={className}
@@ -69,7 +67,7 @@ const Select2Component = ({
         placeholder={`انتخاب ${placeholder}`}
         isMulti={isMulti}
         onChange={onChange}
-        getOptionLabel={(e) => e.value || e.label || e.name || e.title_en}
+        getOptionLabel={(e) => e.value || e.label || e.name || e.title_en || e.title}
         getOptionValue={(e) => e.pk || e.id || e.value}
         classNamePrefix="custom-select"
         className={className}

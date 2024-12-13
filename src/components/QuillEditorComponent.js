@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import Quill from "quill";
-import "quill/dist/quill.snow.css";
 import ImageResize from "quill-image-resize";
 import GalleryModal from "./GalleryModal";
 
@@ -141,8 +140,16 @@ const QuillEditor = ({ id, name, value, toolbarOptions, placeholder, onChange, a
     }, [toolbarOptions, value, apiSaveImagesUrl, placeholder]);
 
     return (
-        <div className="form-control p-0 pt-1">
+        <div className="form-control p-0 pt-1 form-floating">
             <div ref={editorRef} id={id} className="comment-editor border-0 pb-4"></div>
+            <input
+              id={`${name}_fake`}
+              type="hidden"
+              className="form-control"
+            />
+            <label htmlFor={`${name}_fake`}>
+              توضیحات
+            </label>
             <textarea name={name} style={{ display: "none" }} onChange={onChange} value={value}></textarea>
             <GalleryModal
                 show={isGalleryModalOpen}

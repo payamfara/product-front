@@ -142,8 +142,14 @@ const CreateProductPage = () => {
                                 {/* Add Product */}
                                 <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3">
                                     <div className="d-flex flex-column justify-content-center">
-                                        <h4 className="mb-1 mt-3">یک محصول جدید اضافه کنید</h4>
-                                        <p className="text-muted">سفارش هایی که در سراسر فروشگاه شما ثبت می شود</p>
+                                        {pageData.id
+                                            ? <h4 className="mb-1 mt-3">ویرایش محصول</h4>
+                                            : <h4 className="mb-1 mt-3">ایجاد محصول</h4>
+                                        }
+                                        {pageData.id
+                                            ? <p className="text-muted">{pageData.part_number_fa}</p>
+                                            : <p className="text-muted">محصولاتی که در سراسر فروشگاه شما ثبت می شود</p>
+                                        }
                                     </div>
                                     <div className="d-flex align-content-center flex-wrap gap-3">
                                         <div className="d-flex gap-3">
@@ -160,7 +166,7 @@ const CreateProductPage = () => {
                                             <div className="card-header">
                                                 <h5 className="card-tile mb-0">اطلاعات محصول</h5>
                                             </div>
-                                            <div className="card-body d-flex flex-column gap-3">
+                                            <div className="card-body d-flex flex-wrap gap-3">
                                                 {/* Category */}
                                                 <div className="col ecommerce-select2-dropdown">
                                                     <DynamicAttributeField
@@ -168,27 +174,25 @@ const CreateProductPage = () => {
                                                         className='p-2'
                                                         data={{
                                                             attribute_name_en: 'category',
-                                                            attribute_name_fa: 'دسته',
+                                                            attribute_name_fa: 'دسته بندی',
                                                             attr_type: pageData.meta_datas.category,
                                                             attr_value: pageData.category,
                                                             attribute_value_str: pageData.category_str
                                                         }}
                                                     />
                                                 </div>
-                                                <div className="row">
-                                                    <div className="col">
-                                                        <DynamicAttributeField
-                                                            className='p-2'
-                                                            data={{
-                                                                attribute_name_en: 'sku',
-                                                                attribute_name_fa: 'کد محصول',
-                                                                attr_type: pageData.meta_datas.price,
-                                                            }}
-                                                        />
-                                                    </div>
+                                                <div className="col">
+                                                    <DynamicAttributeField
+                                                        className='p-2'
+                                                        data={{
+                                                            attribute_name_en: 'sku',
+                                                            attribute_name_fa: 'کد محصول',
+                                                            attr_type: pageData.meta_datas.price,
+                                                        }}
+                                                    />
                                                 </div>
                                                 {/* Description */}
-                                                <div>
+                                                <div className="col-12">
                                                     <QuillEditorComponent
                                                         id="description"
                                                         name="description"
@@ -582,18 +586,6 @@ const CreateProductPage = () => {
                                                     />
                                                     <span id="help_part_number_bz" className="fs-tiny form-label"></span>
                                                 </div>
-                                                {/* Status */}
-                                                <DynamicAttributeField
-                                                    onChange={(value) => handleChange('status', value)}
-                                                    className='p-2'
-                                                    data={{
-                                                        attribute_name_en: 'status',
-                                                        attribute_name_fa: 'وضعیت انتشار',
-                                                        attr_type: pageData.meta_datas.status,
-                                                        attr_value: pageData.status,
-                                                        attribute_value_str: pageData.status_str
-                                                    }}
-                                                />
                                                 {/* Tags */}
                                                 <TagifyComponent
                                                     ref={tagifyRef}
