@@ -9,6 +9,7 @@ import { baseApiAuth } from "../../../../api/baseApi";
 import VariantProductContainer from './components/VariantProductContainer';
 import DynamicAttributeField from "@/src/components/DynamicAttributeField";
 import toast from "react-hot-toast";
+import { updatePartNumbers } from '@/src/utils/funcs';
 
 const CreateProductPage = () => {
     const tagifyRef = useRef();
@@ -19,10 +20,22 @@ const CreateProductPage = () => {
 
     const updateFiles = (newFiles) => setPageData(pageData => ({ ...pageData, 'images': newFiles }))
 
-    const updateNonVariantAttrs = (updateNonVariantAttrsFunction) => setPageData(pageData => updateNonVariantAttrsFunction(pageData, 'non_variant_product_attrs'));
+    const updateNonVariantAttrs = (updateNonVariantAttrsFunction) => {
+        setPageData(pageData => {
+            const updatedPageData = updateNonVariantAttrsFunction(pageData, 'non_variant_product_attrs');
+            const updatedVariantProducts = pageData.variant_products.map(vp => {
+                if (!vp.linked && vp.id !== pageData.id && vp.part_number_is_manual) return vp;
+                const attrs = [...updatedPageData.non_variant_product_attrs, ...(vp.variant_product_attrs ?? updatedPageData.variant_product_attrs)]
+                const partNumbers = updatePartNumbers(attrs);
+                console.log(partNumbers);
+                
+                return { ...vp, ...partNumbers }
+            })
+            return { ...updatedPageData, 'variant_products': updatedVariantProducts }
+        })
+    };
     const updateVariantAttrs = (updateVariantAttrsFunction) => setPageData(pageData => ({ ...pageData, 'variant_products': updateVariantAttrsFunction(pageData.variant_products) }));
     const updateVariants = (updateVariantsFunction) => setPageData(pageData => ({ ...pageData, 'variant_products': updateVariantsFunction(pageData.variant_products) }));
-
 
     const saveProduct = (data) => {
         const id = data.id;
@@ -30,7 +43,7 @@ const CreateProductPage = () => {
         console.log(id, preparedData);
         const { variant_products, ...requestData } = preparedData;
 
-        const requestUrl = id
+        const requestUrl = id !== 'new'
             ? `/api2/product/${id}/`
             : `/api2/product/`
         baseApiAuth
@@ -45,7 +58,9 @@ const CreateProductPage = () => {
     }
 
     const handleChange = (name, value) => {
-        console.log(name, value);
+        if (name === 'category') {
+            loadData((value.pk || value.id || value.value));
+        }
 
         if (typeof (value) === 'object' && name != 'tags') {
             setPageData(pageData => ({
@@ -58,30 +73,165 @@ const CreateProductPage = () => {
         }
     }
 
-    useEffect(() => {
-        const requestUrl = `/api2/product/${id}`
-        baseApiAuth.get(requestUrl)
-            .then((res) => {
-                const { non_variant_extra_attrs, variant_extra_attrs, ...resultData } = res.data;
-                setPageData({
-                    ...resultData,
-                    non_variant_product_attrs: [...resultData['non_variant_product_attrs'], ...non_variant_extra_attrs],
-                    variant_product_attrs: [...resultData['variant_product_attrs'], ...variant_extra_attrs]
-                });
-                console.log('res', res.data);
+    const loadData = async (category) => {
+        console.log(category);
 
+        const createEmptyVariantProduct = (variantAttrs) => [{
+            id: 'new',
+            images: [],
+            part_number_is_manual: false,
+            part_number_en: "new",
+            part_number_fa: "",
+            part_number_bz: "",
+            variant_product_attrs: variantAttrs,
+        }]
+
+        const createMetaDatas = () => ({
+            id: {
+                type: "other",
+                verbose_name: "ID",
+                required: false,
+                validators: [],
+                read_only: true,
+            },
+            category: {
+                type: "select_2",
+                verbose_name: "دسته",
+                required: true,
+                validators: [],
+                default: { id: 3, value: "ceramic" },
+                url: "/api2/myapp-category/?",
+                read_only: false,
+            },
+            status: {
+                type: "select_2",
+                verbose_name: "وضعیت",
+                required: false,
+                validators: [],
+                default: { id: 1, value: "Published" },
+                url: "/api2/myapp-choice/?title=status",
+                read_only: false,
+            },
+            part_number_is_manual: {
+                type: "bool",
+                verbose_name: "شماره قطعه دستی",
+                required: false,
+                validators: [],
+                read_only: false,
+            },
+            part_number_en: {
+                type: "string",
+                verbose_name: "شماره قطعه (انگلیسی)",
+                required: true,
+                validators: [],
+                read_only: false,
+            },
+            part_number_fa: {
+                type: "string",
+                verbose_name: "شماره قطعه (فارسی)",
+                required: true,
+                validators: [],
+                read_only: false,
+            },
+            part_number_bz: {
+                type: "string",
+                verbose_name: "شماره قطعه (محلی)",
+                required: true,
+                validators: [],
+                read_only: false,
+            },
+            price: {
+                type: "float",
+                verbose_name: "قیمت",
+                required: false,
+                validators: [],
+                read_only: false,
+            },
+            limit: {
+                type: "float",
+                verbose_name: "محدودیت موجودی",
+                required: false,
+                validators: [],
+                read_only: false,
+            },
+            description: {
+                type: "other",
+                verbose_name: "توضیحات",
+                required: false,
+                validators: [],
+                read_only: false,
+            },
+            images: {
+                type: "other",
+                verbose_name: "تصاویر",
+                required: false,
+                validators: [],
+                read_only: false,
+            },
+        });
+
+        const createEmptyPageData = () => ({
+            id: "new",
+            part_number_is_manual: false,
+            part_number_en: "new",
+            part_number_fa: "",
+            part_number_bz: "",
+            category,
+            limit: 0,
+            description: "",
+            price: 0,
+            images: [],
+            tags: [],
+            meta_datas: createMetaDatas(),
+        })
+
+        if (!id) {
+            const fetchAttributes = async (category) => {
+                const requestUrl = `/api2/attribute/?category=${category}`;
+                const response = await baseApiAuth.get(requestUrl);
+                const results = response.data.results;
+                return {
+                    nonVariantAttrs: results.filter(a => !a.is_variant),
+                    variantAttrs: results.filter(a => a.is_variant),
+                };
+            };
+
+            try {
+                const { nonVariantAttrs: nonVariantAttrsAll, variantAttrs: variantAttrsAll } = await fetchAttributes(1);
+
+                if (category) {
+                    const { nonVariantAttrs: nonVariantAttrsCategory, variantAttrs: variantAttrsCategory } = await fetchAttributes(category);
+
+                    setPageData(pageData => ({
+                        ...(pageData.id ? pageData : createEmptyPageData()),
+                        non_variant_product_attrs: [...nonVariantAttrsAll, ...nonVariantAttrsCategory],
+                        variant_product_attrs: [...variantAttrsAll, ...variantAttrsCategory],
+                        variant_products: createEmptyVariantProduct([...variantAttrsAll, ...variantAttrsCategory]),
+                    }));
+                } else {
+                    setPageData(pageData => ({
+                        ...(pageData.id ? pageData : createEmptyPageData()),
+                        non_variant_product_attrs: nonVariantAttrsAll,
+                        variant_product_attrs: variantAttrsAll,
+                        variant_products: createEmptyVariantProduct(variantAttrsAll),
+                    }));
+                }
+            } catch (error) {
+                console.error('Error fetching attributes:', error);
+            } finally {
                 setLoading(false);
-            })
-            .catch((err) => {
-                console.error('Error fetching tags:', err);
-                setLoading(false);
-            })
+            }
+        }
+
+    }
+
+    useEffect(() => {
+        loadData();
     }, [])
 
     if (loading) {
         return <div>Loading...</div>;
     }
-
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -103,9 +253,6 @@ const CreateProductPage = () => {
                     const { id, ...nvData } = nv;
                     return nvData;
                 }),
-            part_number_en: pageData.id === linkedProduct.id ? pageData.part_number_en : linkedProduct.part_number_en,
-            part_number_fa: pageData.id === linkedProduct.id ? pageData.part_number_fa : linkedProduct.part_number_fa,
-            part_number_bz: pageData.id === linkedProduct.id ? pageData.part_number_bz : linkedProduct.part_number_bz,
             images: pageData.id === linkedProduct.id ? pageData.images : linkedProduct.images,
             meta_datas: pageData.meta_datas,
             category: pageData.category,
@@ -121,7 +268,7 @@ const CreateProductPage = () => {
         console.log('linkedProducts', linkedProducts);
         console.log('linkedProductsAppended', linkedProductsAppended);
         console.log('finalLinkedProducts', finalLinkedProducts);
-        // finalLinkedProducts.forEach(saveProduct)
+        finalLinkedProducts.forEach(saveProduct)
     }
 
     return (
@@ -142,11 +289,11 @@ const CreateProductPage = () => {
                                 {/* Add Product */}
                                 <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3">
                                     <div className="d-flex flex-column justify-content-center">
-                                        {pageData.id
+                                        {pageData.id !== "new"
                                             ? <h4 className="mb-1 mt-3">ویرایش محصول</h4>
                                             : <h4 className="mb-1 mt-3">ایجاد محصول</h4>
                                         }
-                                        {pageData.id
+                                        {pageData.id !== "new"
                                             ? <p className="text-muted">{pageData.part_number_fa}</p>
                                             : <p className="text-muted">محصولاتی که در سراسر فروشگاه شما ثبت می شود</p>
                                         }
@@ -535,13 +682,19 @@ const CreateProductPage = () => {
                                             <div className="card-body d-flex flex-column gap-3">
                                                 {/* Part number manual */}
                                                 <DynamicAttributeField
-                                                    onChange={(value) => handleChange('part_number_is_manual', value)}
+                                                    onChange={(value) => setPageData(pageData => ({
+                                                        ...pageData, variant_products: pageData.variant_products.map(vp =>
+                                                            vp.id === pageData.id
+                                                                ? { ...vp, part_number_is_manual: value }
+                                                                : vp
+                                                        )
+                                                    }))}
                                                     className='p-2'
                                                     data={{
                                                         attribute_name_en: 'part_number_is_manual',
                                                         attribute_name_fa: 'پارت نامبر دستی',
                                                         attr_type: pageData.meta_datas.part_number_is_manual,
-                                                        attr_value: pageData.part_number_is_manual
+                                                        attr_value: pageData.variant_products.find(vp => vp.id === pageData.id)?.part_number_is_manual
                                                     }}
                                                 />
                                                 {/* Part number en */}
@@ -553,7 +706,7 @@ const CreateProductPage = () => {
                                                             attribute_name_en: 'part_number_en',
                                                             attribute_name_fa: 'پارت نامبر انگلیسی',
                                                             attr_type: pageData.meta_datas.part_number_en,
-                                                            attr_value: pageData.part_number_en
+                                                            attr_value: pageData.variant_products.find(vp => vp.id === pageData.id)?.part_number_en
                                                         }}
                                                     />
                                                     <span id="help_part_number_en" className="fs-tiny form-label"></span>
@@ -567,7 +720,7 @@ const CreateProductPage = () => {
                                                             attribute_name_en: 'part_number_fa',
                                                             attribute_name_fa: 'پارت نامبر فارسی',
                                                             attr_type: pageData.meta_datas.part_number_fa,
-                                                            attr_value: pageData.part_number_fa
+                                                            attr_value: pageData.variant_products.find(vp => vp.id === pageData.id)?.part_number_fa
                                                         }}
                                                     />
                                                     <span id="help_part_number_fa" className="fs-tiny form-label"></span>
@@ -581,7 +734,7 @@ const CreateProductPage = () => {
                                                             attribute_name_en: 'part_number_bz',
                                                             attribute_name_fa: 'پارت نامبر بازاری',
                                                             attr_type: pageData.meta_datas.part_number_bz,
-                                                            attr_value: pageData.part_number_bz
+                                                            attr_value: pageData.variant_products.find(vp => vp.id === pageData.id)?.part_number_bz
                                                         }}
                                                     />
                                                     <span id="help_part_number_bz" className="fs-tiny form-label"></span>

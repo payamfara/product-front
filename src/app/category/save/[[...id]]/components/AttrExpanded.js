@@ -11,7 +11,8 @@ const AttrExpanded = ({ items, rowIndex, meta_datas, onChange }) => {
             attribute_name_fa: meta_datas[name].verbose_name,
             attr_type: meta_datas[name],
             attribute_value: items[name],
-            attribute_value_str: items[`${name}_str`]
+            `attr
+            ibute_value_str`: items[`${name}_str`]
         },
     })
     return (

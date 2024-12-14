@@ -39,30 +39,27 @@ const TabsWithInputs = ({ onChange, inputs }) => {
   }, [inputs]);
 
   const handleChange = (priorityKey, index, newValue) => {
-    console.log(index, newValue);
-
-    const value = typeof newValue === "object" ? newValue.id : newValue;
-    const value_str = typeof newValue === "object" ? (newValue.value || newValue.label || newValue.name || newValue.title_en) : undefined;
-    setCategorizedInputs((prevState) => {
-      const updated = { ...prevState };
-      updated[priorityKey][index] = {
-        ...updated[priorityKey][index],
-        attr_value: value,
-        attribute_value_str: value_str,
-      };
-      return updated;
-    });
+    const extra_data = typeof newValue === "object"
+      ? {
+        attr_value: newValue.id,
+        attribute_value_str: (newValue.value || newValue.label || newValue.name || newValue.title_en),
+        attr_value_fa: newValue.title_fa,
+        attr_value_bz: newValue.title_bz,
+      } : {
+        attr_value: newValue
+      }
 
     if (onChange)
       onChange((prevData, updateKey) => ({
         ...prevData,
         [updateKey]: prevData[updateKey].map(nonVariant =>
           nonVariant.attribute === categorizedInputs[priorityKey][index].attribute
-            ? { ...nonVariant, attr_value: value, attribute_value_str: value_str, changed: true }
+            ? { ...nonVariant, ...extra_data, changed: true }
             : nonVariant
         )
       }))
   };
+  
   return (
     <div>
       {/* Tab Navigation */}

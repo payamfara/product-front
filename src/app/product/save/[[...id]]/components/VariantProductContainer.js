@@ -9,6 +9,7 @@ import { baseApiAuth } from "@/src/api/baseApi";
 import { FaSquareCheck } from "react-icons/fa6";
 import DropzoneComponent from "@/src/components/DropzoneComponent";
 import PlusButton from '../../../../../components/PlusButton';
+import {updatePartNumbers} from '@/src/utils/funcs';
 
 const Card = ({ card, isActive, toggleLink, isLinkable, onDelete, onClick }) => {
   return (
@@ -60,8 +61,6 @@ const Card = ({ card, isActive, toggleLink, isLinkable, onDelete, onClick }) => 
 const VariantProductContainer = ({ nonVariants, updateVariants, pageId, onChange, cards, inputs }) => {
   const [activeCard, setActiveCard] = useState(-1);
   const [isAttributeFrm, setIsAttributeFrm] = useState(true);
-  const toggleIsAttributeFrm = () =>
-    setIsAttributeFrm((isAttributeFrm) => !isAttributeFrm);
 
   const emptyFrm = inputs.map((input) => {
     const { id, ...inputData } = input;
@@ -135,11 +134,13 @@ const VariantProductContainer = ({ nonVariants, updateVariants, pageId, onChange
 
   const updateAttrValues = (updateAttrValuesFunction) =>
     onChange((cards) =>
-      cards.map((card, index) =>
-        index === activeCard
-          ? updateAttrValuesFunction(card, "variant_product_attrs")
-          : card
-      )
+      cards.map((card, index) => {
+        if (index !== activeCard) return card;
+        const updatedCard = updateAttrValuesFunction(card, "variant_product_attrs");
+        const attrs = [...nonVariants, ...updatedCard.variant_product_attrs]
+        const partNumbers = updatePartNumbers(attrs)
+        return { ...updatedCard, ...partNumbers };
+      })
     );
   const toggleLink = (index) =>
     onChange((cards) =>
@@ -149,8 +150,6 @@ const VariantProductContainer = ({ nonVariants, updateVariants, pageId, onChange
     );
   console.log("cards", cards);
   const updateFiles = (newFiles) => {
-    console.log('ss');
-
     updateVariants((cards) =>
       cards.map((c, i) =>
         i === activeCard
@@ -206,20 +205,20 @@ const VariantProductContainer = ({ nonVariants, updateVariants, pageId, onChange
               <div className="position-absolute end-0 top-0 myn-3 mx-3 d-flex gap-3">
                 {cards[activeCard].id !== pageId && <RippleButton
                   className={`z-1 rounded-start-0 border-success btn ${!isAttributeFrm
-                      ? "btn-success border-1"
-                      : "btn-white border-0"
+                    ? "btn-success border-1"
+                    : "btn-white border-0"
                     } btn-sm p-1`}
-                  onClick={toggleIsAttributeFrm}
+                  onClick={() => setIsAttributeFrm(false)}
                   title="Information Form"
                 >
                   فرم اطلاعات
                 </RippleButton>}
                 <RippleButton
                   className={`z-1 rounded-start-0 border-danger btn ${isAttributeFrm
-                      ? "btn-danger border-1"
-                      : "btn-white border-0"
+                    ? "btn-danger border-1"
+                    : "btn-white border-0"
                     } btn-sm p-1`}
-                  onClick={toggleIsAttributeFrm}
+                  onClick={() => setIsAttributeFrm(true)}
                   title="Attributes Form"
                 >
                   فرم ویژگی ها
