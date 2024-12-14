@@ -5,6 +5,50 @@ import { Fragment } from "react";
 import { FaDownload, FaFileExport, FaPlus } from "react-icons/fa";
 
 const ListProductPage = () => {
+  const columns = [
+    {
+      title: "محصول",
+      render: (data, type, row) => {
+        return `<div class="d-flex justify-content-start align-items-center product-name">
+          <div class="avatar-wrapper">
+            <div class="avatar avatar me-2 rounded-2 bg-label-secondary">
+              <img src="${row.images[0]}" alt="${row.part_number_en}" class="rounded-2">
+            </div>
+          </div>
+          <div class="d-flex flex-column">
+            <h6 class="text-body text-nowrap mb-0">${row.part_number_en}</h6>
+            <small class="text-muted text-truncate d-none d-sm-block">${row.part_number_fa}</small>
+          </div>
+        </div>`;
+      },
+    },
+    { title: "دسته بندی", data: "category_str" },
+    { title: "کد محصول", data: "id" },
+    { title: "قیمت", data: "price", render: (data, type, row) => data + " تومان" },
+  ];
+  
+  const [data, setData] = useState([]);
+  const fetchProducts = async () => {
+    const requestUrl = `/api2/product/`;
+    const response = await baseApiAuth.get(requestUrl);
+    const results = response.data.results;
+    return results;
+  };
+
+  useEffect(() => {
+    const loadData = async () => {
+      const data = await fetchProducts();
+      console.log('data', data);
+      
+      setData(data);
+    };
+    loadData();
+  }, []);
+
+  if (!data) {
+    return <div>loading...</div>
+  }
+
   return (
     <Fragment>
       <div className="layout-wrapper layout-navbar-full layout-horizontal layout-without-menu">

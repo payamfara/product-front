@@ -231,7 +231,7 @@ const VariantProductContainer = ({ nonVariants, updateVariants, pageId, onChange
                 />
               ) : (
                 <div>
-                  <DropzoneComponent files={cards[activeCard].images} updateFiles={updateFiles} uploadUrl={"http://192.168.1.5:8000/api/save_images/products/"} />
+                  <DropzoneComponent files={cards[activeCard].images} updateFiles={updateFiles} uploadUrl={"http://192.168.1.21:8000/api/save_images/products/"} />
                 </div>
               )}
             </div>

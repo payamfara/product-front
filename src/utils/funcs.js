@@ -1,3 +1,5 @@
+import { createRoot } from "react-dom/client"; 
+
 export const updatePartNumbers = (attrs) => {
     const partNumbers = ['part_number_en', 'part_number_fa', 'part_number_bz'].reduce((acc, key) => {
         acc[key] = attrs
@@ -13,4 +15,10 @@ export const updatePartNumbers = (attrs) => {
     
     const strPartNumbers = Object.entries(partNumbers).map(([name, value]) => [name, value.join('_')]);
     return Object.fromEntries(strPartNumbers)
+}
+
+export const replaceComponent = (container, component) => {
+    const customContainer = document.querySelector(container);
+    const root = createRoot(customContainer);
+    root.render(component);
 }

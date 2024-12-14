@@ -1,3 +1,4 @@
+"use client";
 import Select2 from "./Select2Component";
 import DatePicker from "./DatePicker";
 import { useEffect, useState } from "react";

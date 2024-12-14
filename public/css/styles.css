@@ -1,169 +1,248 @@
 .bootstrap-autocomplete.dropdown-menu {
-    padding: 0.5rem;
+  padding: 0.5rem;
 }
 
 .bootstrap-autocomplete.dropdown-menu a {
-    position: relative;
-    /*padding: 0.5rem 0.5rem 0.5rem 1.5rem;*/
-    padding: 0.5rem;
-    border-radius: 0.5rem;
-    display: block;
-    transition: all 0.2s ease-in;
-    text-decoration: none;
-    color: #1a1d20;
+  position: relative;
+  /*padding: 0.5rem 0.5rem 0.5rem 1.5rem;*/
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  display: block;
+  transition: all 0.2s ease-in;
+  text-decoration: none;
+  color: #1a1d20;
 }
 
 .bootstrap-autocomplete.dropdown-menu a:hover {
-    background: #f1f1f1;
-
+  background: #f1f1f1;
 }
 
 .rotate-90 {
-    transform: rotate(90deg);
+  transform: rotate(90deg);
 }
 
 .rotate-180 {
-    transform: rotate(180deg);
+  transform: rotate(180deg);
 }
 
 .transition {
-    transition: all .2s ease-in-out;
+  transition: all 0.2s ease-in-out;
 }
 
 .blur {
-    filter: blur(5px);
-    pointer-events: none;
+  filter: blur(5px);
+  pointer-events: none;
 }
 
 .focused-menu {
-    box-shadow: 0 0 15px rgba(0, 123, 255, 0.8);
-    transition: box-shadow 0.3s;
+  box-shadow: 0 0 15px rgba(0, 123, 255, 0.8);
+  transition: box-shadow 0.3s;
 }
 
 hr {
-    margin-top: 1rem;
-    margin-bottom: 1rem;
-    border: 0;
-    border-top: 1px solid rgba(0, 0, 0, 0.1);
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  border: 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .opacity-0 {
-    opacity: 0 !important
+  opacity: 0 !important;
 }
 
 .opacity-25 {
-    opacity: .25 !important
+  opacity: 0.25 !important;
 }
 
 .opacity-50 {
-    opacity: .5 !important
+  opacity: 0.5 !important;
 }
 
 .opacity-75 {
-    opacity: .75 !important
+  opacity: 0.75 !important;
 }
 
 .opacity-100 {
-    opacity: 1 !important
+  opacity: 1 !important;
 }
 
 li {
-    list-style: none;
+  list-style: none;
 }
 
 .transition-a {
-    transition: all 2s ease-in-out;
+  transition: all 2s ease-in-out;
 }
 
 .clickable-item {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .mxn-2 {
-    margin-right: -0.5rem;
-    margin-left: -0.5rem;
+  margin-right: -0.5rem;
+  margin-left: -0.5rem;
 }
 
 .mxn-1 {
-    margin-right: -0.25rem;
-    margin-left: -0.25rem;
+  margin-right: -0.25rem;
+  margin-left: -0.25rem;
 }
 
 .gallery-image {
-    position: relative;
-    cursor: pointer;
+  position: relative;
+  cursor: pointer;
 }
 
 .gallery-image img {
-    max-width: 100%;
-    border: 2px solid transparent;
+  max-width: 100%;
+  border: 2px solid transparent;
 }
 
 .gallery-image.selected img {
-    border-color: #007bff;
+  border-color: #007bff;
 }
 
 .gallery-image .checkmark {
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    background: #007bff;
-    color: #fff;
-    padding: 2px 5px;
-    border-radius: 50%;
-    display: none;
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: #007bff;
+  color: #fff;
+  padding: 2px 5px;
+  border-radius: 50%;
+  display: none;
 }
 
 .gallery-image.selected .checkmark {
-    display: inline-block;
+  display: inline-block;
 }
 
 #variant_attrs_items .card-body input {
-    border: 0;
-    box-shadow: none;
-    outline: none;
+  border: 0;
+  box-shadow: none;
+  outline: none;
 }
 
 #variant_attrs_items .card-body {
-    pointer-events: none;
+  pointer-events: none;
 }
 
 #variant_attrs_items .card-body .select2-selection__arrow,
 #variant_attrs_items .card-body a {
-    display: none;
+  display: none;
 }
 
 #variant_attrs_items .card-body .select2-selection {
-    border: none;
+  border: none;
 }
 
 #variant_attrs_items .card-body .field-wrapper {
-    display: flex;
-    align-items: baseline;
+  display: flex;
+  align-items: baseline;
 }
 
 .plusCard .card-body {
-    display: none;
+  display: none;
 }
 
 ::-webkit-scrollbar-button {
-    display: none;
+  display: none;
 }
 
 ::-webkit-scrollbar {
-    width: 27px;
-    height: 12px;
+  width: 27px;
+  height: 12px;
 }
 
 ::-webkit-scrollbar-track {
-    /*background: #f5f5f5;*/
-    border-radius: 10px;
+  /*background: #f5f5f5;*/
+  border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #6f6b7d;
-    border-radius: 20px;
-    border: 10px solid transparent;
-    background-clip: padding-box;
+  background: #6f6b7d;
+  border-radius: 20px;
+  border: 10px solid transparent;
+  background-clip: padding-box;
 }
 
+.table {
+  inline-size: 100%;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+  white-space: nowrap;
+
+  [align="right"] > * {
+    text-align: end;
+  }
+  [align="center"] > * {
+    text-align: center;
+  }
+
+  thead {
+    text-transform: uppercase;
+    color: var(--mui-palette-text-primary);
+    border-block-start: 1px solid var(--border-color);
+
+    th {
+      font-weight: 500;
+      font-size: 0.8125rem;
+      letter-spacing: 0.2px;
+      line-height: 1.8462;
+      text-align: start;
+      block-size: 56px;
+      &:not(:first-of-type):not(:last-of-type) {
+        padding-block: 0.5rem;
+        padding-inline: 1rem;
+      }
+      &:first-of-type {
+        &:not(:has(input[type="checkbox"])) {
+          padding-block: 0.5rem;
+          padding-inline: 1.5rem 1rem;
+        }
+        &:has(input[type="checkbox"]) {
+          padding-inline-start: 0.9375rem;
+        }
+      }
+      &:last-of-type {
+        padding-block: 0.5rem;
+        padding-inline: 1rem 1.5rem;
+      }
+    }
+  }
+
+  tbody {
+    color: var(--mui-palette-text-secondary);
+
+    th,
+    td {
+      font-size: 0.9375rem;
+      line-height: 1.4667;
+      block-size: 50px;
+      &:not(:first-of-type):not(:last-of-type) {
+        padding-block: 0.5rem;
+        padding-inline: 1rem;
+      }
+      &:first-of-type {
+        &:not(:has(input[type="checkbox"])) {
+          padding-block: 0.5rem;
+          padding-inline: 1.5rem 1rem;
+        }
+        &:has(input[type="checkbox"]) {
+          padding-inline-start: 0.9375rem;
+        }
+      }
+      &:last-of-type {
+        padding-block: 0.5rem;
+        padding-inline: 1rem 1.5rem;
+      }
+    }
+
+    tr:not(:last-child) {
+      border-block-end: 1px solid var(--border-color);
+    }
+    tr {
+      border-block-start: 1px solid var(--border-color);
+    }
+  }
+}
