@@ -283,3 +283,6 @@ body {
   scrollbar-width: thin; /* باریک‌تر کردن اسکرول‌بار */
   scrollbar-color: #007bff #f0f0f0; /* رنگ‌بندی اسکرول‌بار */
 }
+.dropzone > .dz-preview {
+  display: none;
+}

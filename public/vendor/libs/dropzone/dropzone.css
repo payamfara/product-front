@@ -116,7 +116,6 @@
   padding: 0.625rem;
   height: 7.5rem;
   text-align: center;
-  box-sizing: content-box;
 }
 .dz-thumbnail > img,
 .dz-thumbnail .dz-nopreview {
