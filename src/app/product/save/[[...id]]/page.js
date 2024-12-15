@@ -10,6 +10,7 @@ import VariantProductContainer from './components/VariantProductContainer';
 import DynamicAttributeField from "@/src/components/DynamicAttributeField";
 import toast from "react-hot-toast";
 import { updatePartNumbers } from '@/src/utils/funcs';
+import CustomLoading from '../../../../components/Loading';
 
 const CreateProductPage = () => {
     const tagifyRef = useRef();
@@ -230,7 +231,7 @@ const CreateProductPage = () => {
     }, [])
 
     if (loading) {
-        return <div>Loading...</div>;
+        return <CustomLoading />
     }
 
     const handleSubmit = (e) => {
@@ -351,14 +352,14 @@ const CreateProductPage = () => {
                                                             'link', 'image', 'gallery'
                                                         ]}
                                                         placeholder="توضیح (اختیاری)"
-                                                        apiSaveImagesUrl="http://192.168.1.21:8000/api/save_images/products/"
+                                                        apiSaveImagesUrl="http://192.168.1.5:8000/api/save_images/products/"
                                                     />
                                                 </div>
                                             </div>
                                         </div>
                                         {/* /Product Information */}
                                         {/* Media */}
-                                        <DropzoneComponent files={pageData.images} updateFiles={updateFiles} uploadUrl={"http://192.168.1.21:8000/api/save_images/products/"} />
+                                        <DropzoneComponent files={pageData.images} updateFiles={updateFiles} uploadUrl={"http://192.168.1.5:8000/api/save_images/products/"} />
                                         {/* /Media */}
                                         {/* Variants */}
                                         <div id="category_attrs" className="card mb-4">

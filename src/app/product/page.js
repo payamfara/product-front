@@ -1,10 +1,11 @@
 "use client";
 import DynamicAttributeField from "@/src/components/DynamicAttributeField";
-import RippleButton from "@/src/components/RippleButton/RippleButton";
 import { Fragment, useState, useEffect } from "react";
-import { FaDownload, FaFileExport, FaPlus } from "react-icons/fa";
 import DataTable from '../../components/DataTable';
-import {baseApiAuth} from '../../api/baseApi';
+import { baseApiAuth } from '../../api/baseApi';
+import CustomLoading from '../../components/Loading';
+import { IconEdit, IconTrash } from '@tabler/icons-react';
+import { createRoot } from "react-dom/client"; 
 
 const ListProductPage = () => {
   const columns = [
@@ -27,8 +28,24 @@ const ListProductPage = () => {
     { title: "دسته بندی", data: "category_str" },
     { title: "کد محصول", data: "id" },
     { title: "قیمت", data: "price", render: (data, type, row) => data + " تومان" },
+    {
+      title: "عملیات", render: (data, type, row) => {
+        const container = document.createElement("div");
+        container.className = "d-flex gap-2";
+
+        const root = createRoot(container);
+        root.render(
+          <Fragment>
+            <IconEdit onClick size={16} />
+            <IconTrash onClick size={16} />
+          </Fragment>
+        );
+
+        return container;
+      }
+    },
   ];
-  
+
   const [data, setData] = useState([]);
   const fetchProducts = async () => {
     const requestUrl = `/api2/product/`;
@@ -41,14 +58,14 @@ const ListProductPage = () => {
     const loadData = async () => {
       const data = await fetchProducts();
       console.log('data', data);
-      
+
       setData(data);
     };
     loadData();
   }, []);
 
-  if (!data) {
-    return <div>loading...</div>
+  if (!data.length) {
+    return <CustomLoading />
   }
 
   return (
@@ -2457,7 +2474,7 @@ const ListProductPage = () => {
                           attribute_name_fa: "وضعیت",
                           attr_type: {
                             type: "select_2",
-                            url: "/api2/myapp-category/?",
+                            url: "/api2/myapp-choice/?title=status",
                           },
                         }}
                       />
@@ -2465,7 +2482,7 @@ const ListProductPage = () => {
                     <div className="p-2">
                       <DynamicAttributeField
                         data={{
-                          attribute_name_en: "status",
+                          attribute_name_en: "category",
                           attribute_name_fa: "دسته بندی",
                           attr_type: {
                             type: "select_2",

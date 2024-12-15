@@ -1,17 +1,15 @@
 "use client";
-import "datatables.net-buttons-bs5/css/buttons.bootstrap5.min.css"; // Styles for buttons
-import "datatables.net-buttons-bs5"; // Buttons for Bootstrap 5
-import "datatables.net-buttons/js/buttons.html5"; // Export to CSV/Excel
+import "datatables.net-buttons-bs5"; 
+import "datatables.net-buttons/js/buttons.html5"; 
 import "datatables.net-buttons/js/buttons.print";
-import "datatables.net-bs5/css/dataTables.bootstrap5.min.css";
 import "datatables.net-bs5";
 import React, { useEffect } from "react";
 import $ from "jquery";
-import "datatables.net-bs5";
 import RippleButton from "../components/RippleButton/RippleButton";
-import {replaceComponent} from "../utils/funcs";
-import { FaDownload, FaPlus } from "react-icons/fa";
 import CustomDropdown from '../components/Dropdown';
+import { replaceComponent } from "../utils/funcs";
+import { IconPrinter, IconFile, IconCopy, IconPlus, IconDownload } from '@tabler/icons-react';
+
 const DataTable = ({ data, columns }) => {
   useEffect(() => {
     const table = $("#datatable").DataTable({
@@ -19,22 +17,42 @@ const DataTable = ({ data, columns }) => {
       columns: columns,
       destroy: true,
       pagingType: "simple_numbers",
-      dom: '<"col-12 card-header d-flex justify-content-between border-top rounded-0 flex-wrap py-2"f<"d-flex flex-wrap"l<"custom-actions"B><"add-product">>rtip>', // Add "B" for buttons
-      // dom: '<"d-flex justify-content-between"Bf>rtip', // Add "B" for buttons
+      dom: '<"dataTables_wrapper dt-bootstrap5 no-footer"<"col-12 card-header d-flex justify-content-between border-top rounded-0 flex-wrap py-3"f<"d-flex flex-wrap gap-3"l<"custom-actions inner-h-100"><"custom-actions-hidden d-none"B><"add-product inner-h-100">>>rt<"row justify-content-between p-2"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>>',
+      // dom: '<"d-flex justify-content-between"Bf>rtip', 
       buttons: ["copy", "excel", "csv", "print"],
       initComplete: function () {
-        console.log(document.querySelector(".custom-actions").innerHTML)
+        document.querySelector('.dt-search').classList.add('form-floating');
+        document.querySelector('.dt-length > select').classList.add('h-100');
+        document.querySelector('.dt-info').classList.add('dataTables_info');
+        document.querySelector('.dt-paging').classList.add('dataTables_paginate');
+
+        // swap input & label position
+        const parent = document.querySelector('.dt-search'); 
+        const input = parent.querySelector('input');
+        const label = parent.querySelector('label');
+        if (input && label) {
+          parent.insertBefore(input, label); 
+        }
+
+        const btnCopy = document.querySelector(".custom-actions-hidden .buttons-copy");
+        const btnCsv = document.querySelector(".custom-actions-hidden .buttons-csv");
+        const btnPrint = document.querySelector(".custom-actions-hidden .buttons-print");
+        const items = [
+          { 'label': 'چاپ', 'icon': <IconPrinter size={16} />, onClick: () => btnPrint.click() },
+          { 'label': 'Csv', 'icon': <IconFile size={16} />, onClick: () => btnCsv.click() },
+          { 'label': 'کپی', 'icon': <IconCopy size={16} />, onClick: () => btnCopy.click() },
+        ]
         replaceComponent(
           ".custom-actions",
-          <CustomDropdown title={'گرفتن خروجی'} items={document.querySelector(".custom-actions").innerHTML} />
+          <CustomDropdown icon={<IconDownload size={16} />} title={'گرفتن خروجی'} items={items} />
         );
         replaceComponent(
           ".add-product",
           <RippleButton
-            className={`d-flex align-items-center gap-1 w-100 h-100 z-1 btn btn-lg btn-primary p-1`}
+            className={`d-flex align-items-center gap-1 z-1 btn btn-primary p-1 px-4`}
             title="Add Product"
           >
-            <FaPlus />
+            <IconPlus size={16} />
             افزودن محصول
           </RippleButton>
         );
@@ -46,7 +64,7 @@ const DataTable = ({ data, columns }) => {
         lengthMenu: "_MENU_",
         loadingRecords: "در حال بارگذاری...",
         zeroRecords: "هیچ داده‌ای یافت نشد",
-        search: "",
+        search: "جستجو",
         paginate: {
           first: "اولین",
           last: "آخرین",
@@ -65,9 +83,9 @@ const DataTable = ({ data, columns }) => {
     <div className="table-responsive">
       <table
         id="datatable"
-        className="datatables-products table dataTable no-footer dtr-column collapsed"
+        className="mb-3 datatables-products table dataTable no-footer dtr-column collapsed"
       >
-        <thead>
+        <thead className="border-top">
           <tr>
             {columns.map((col, index) => (
               <th key={index}>{col.title}</th>

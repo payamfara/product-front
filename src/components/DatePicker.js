@@ -8,10 +8,9 @@ const DatePicker = ({ name, value, onChange }) => {
   
   const datepickerRef = useRef(null);
   const [isReady, setIsReady] = useState(false); 
-  
+
   useEffect(() => {
     flatpickr.localize(Persian);
-
     const fp = flatpickr(datepickerRef.current, {
       disableMobile: "true",
       altInput: true,

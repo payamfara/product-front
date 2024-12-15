@@ -1,10 +1,11 @@
 import React from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
 
-const CustomDropdown = ({ items, title = 'Click Me'}) => {
+const CustomDropdown = ({ items, icon, title = 'Click Me'}) => {
   return (
     <Dropdown>
-      <Dropdown.Toggle variant="primary" id="dropdown-custom">
+      <Dropdown.Toggle className='d-flex gap-1 h-100' variant="light" id="dropdown-custom">
+        {icon}
         {title}
       </Dropdown.Toggle>
 
@@ -13,7 +14,10 @@ const CustomDropdown = ({ items, title = 'Click Me'}) => {
           <Dropdown.Item
             key={index}
             href={item.href || '#'}
+            onClick={item.onClick}
+            className='fs-1 d-flex gap-1 text-secondary'
           >
+            {item.icon}
             {item.label}
           </Dropdown.Item>
         ))}

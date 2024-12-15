@@ -6,6 +6,7 @@ import AttrListComponent from './components/AttrListComponent';
 import DynamicAttributeField from "@/src/components/DynamicAttributeField";
 import toast from "react-hot-toast/headless";
 import PlusButton from '../../../../components/PlusButton';
+import CustomLoading from '../../../../components/Loading';
 
 const CreateCategoryPage = () => {
     const [pageData, setPageData] = useState({});
@@ -216,7 +217,7 @@ const CreateCategoryPage = () => {
     }
 
     if (loading) {
-        return <div>Loading...</div>;
+        return <CustomLoading />
     }
 
     const handleSubmit = (e) => {

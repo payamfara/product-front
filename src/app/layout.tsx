@@ -56,6 +56,7 @@ export default function RootLayout({
         <link href="/libs/flatpickr/flatpickr.css" rel="stylesheet" />
         <link href="/vendor/libs/tagify/tagify.css" rel="stylesheet" />
         <link href="/css/rtl.css" rel="stylesheet" />
+        <link href="/vendor/libs/datatables-bs5/datatables.bootstrap5.css" rel="stylesheet" />
         <link rel="stylesheet" href="/css/styles.css" />
       </head>
 
