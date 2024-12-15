@@ -163,7 +163,7 @@ const VariantProductContainer = ({ nonVariants, updateVariants, pageId, onChange
   }
 
   return (
-    <div id="variant_attrs" className="card mb-4">
+    <div id="variant_attrs" className="card h-100">
       <div className="card-header d-flex align-items-center gap-3">
         <h5 className="card-title mb-0">ویژگی های وریانت</h5>
         <PlusButton

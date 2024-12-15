@@ -2,8 +2,10 @@ import React, { useEffect, useRef, useState } from "react";
 import Dropzone from "dropzone";
 import AddFromLinkModal from "./AddFromLinkModal";
 import GalleryModal from "./GalleryModal";
+import Flickity from "react-flickity-component";
+import "flickity/css/flickity.css";
 
-const DropzoneComponent = ({ files = [], updateFiles, uploadUrl }) => {
+const DropzoneComponent = ({ urls = [], updateUrls, uploadUrl }) => {
   const [isAddFromLinkModalOpen, setIsAddFromLinkModalOpen] = useState(false);
   const [isGalleryModalOpen, setIsGalleryModalOpen] = useState(false);
   const handleOpenAddFromLinkModal = () => setIsAddFromLinkModalOpen(true);
@@ -11,6 +13,9 @@ const DropzoneComponent = ({ files = [], updateFiles, uploadUrl }) => {
   const handleOpenGalleryModal = () => setIsGalleryModalOpen(true);
   const handleCloseGalleryModal = () => setIsGalleryModalOpen(false);
 
+  const [files, setFiles] = useState(urls=>{
+
+  });
   const dropzoneRef = useRef(null);
   const dzInstanceRef = useRef(null);
   const isInitialized = useRef(false);
@@ -47,20 +52,25 @@ const DropzoneComponent = ({ files = [], updateFiles, uploadUrl }) => {
   };
 
   const addFile = (file) => {
+    console.log(file);
     
     if (isInitialized.current) {
-      const newFiles = [...files, file.url];
-      updateFiles(newFiles);
+      updateUrls((urls) => [...urls, file.url]);
     }
-    dzInstanceRef.current.files.push(file)
+    dzInstanceRef.current.files.push(file);
   };
   const removeFile = (fileUrl) => {
-    const newFiles = files.filter((f) => f !== fileUrl);
-    updateFiles(newFiles);
+    updateUrls((urls) => urls.filter((f) => f !== fileUrl));
   };
   const isDuplicateFile = (fileUrl) => {
-    return files.some((f) => f === fileUrl);
+    return urls.some((f) => f === fileUrl);
   };
+
+  const itemsPerPage = 4;
+  const pages = [];
+  for (let i = 0; i < urls.length; i += itemsPerPage) {
+    pages.push(urls.slice(i, i + itemsPerPage));
+  }
 
   useEffect(() => {
     if (!dropzoneRef.current || isInitialized.current) return;
@@ -81,18 +91,22 @@ const DropzoneComponent = ({ files = [], updateFiles, uploadUrl }) => {
     Object.assign(options, faOption);
     const dz = new Dropzone(dropzoneRef.current, options);
     dzInstanceRef.current = dz;
-    files.forEach(addLocalImage);
+    urls.forEach(addLocalImage);
     isInitialized.current = true;
-    
+
     dz.on("success", function (file, response) {
       const url = response?.url || file.url;
       file.previewElement.querySelector("img[data-dz-thumbnail]").src = url;
       file.url = url;
       addFile(file);
     });
-
+    dz.on("addedfile", function (file, response) {
+      console.log('sss');
+      
+      // if (file.previewElement) file.previewElement.remove();
+    });
     // return () => dz.destroy();
-  }, []);
+  }, [urls]);
 
   const getFileTypeFromURL = (url) => {
     const extension = url.split(".").pop().toLowerCase();
@@ -113,6 +127,7 @@ const DropzoneComponent = ({ files = [], updateFiles, uploadUrl }) => {
 
   const addLocalImage = (url) => {
     if (!isInitialized.current || !isDuplicateFile(url)) {
+      
       const fileType = getFileTypeFromURL(url);
 
       var mockFile = {
@@ -138,9 +153,15 @@ const DropzoneComponent = ({ files = [], updateFiles, uploadUrl }) => {
   const handleGallerySubmit = (selectedUrls) => {
     selectedUrls.forEach(addLocalImage);
   };
-
+  const flickityOptions = {
+    cellAlign: "left",
+    freeScroll: true,
+    pageDots: false,
+    prevNextButtons: false,
+    groupCells: false,
+  };
   return (
-    <div className="card mb-4">
+    <div className="card mb-4 h-100">
       <div className="card-header d-flex justify-content-between align-items-center">
         <h5 className="mb-0 card-title">رسانه ها</h5>
         <a className="d-flex align-items-center gap-1 fw-medium ql-snow">
@@ -192,17 +213,57 @@ const DropzoneComponent = ({ files = [], updateFiles, uploadUrl }) => {
               ></polyline>{" "}
             </svg>
           </button>
+          <button type="button" onClick={() => console.log(files)}>
+            sfdfsd
+          </button>
         </a>
       </div>
       <div className="card-body">
         <div ref={dropzoneRef} className="dropzone">
-          <div className="dz-message needsclick">
+          <div
+            className={`dz-message needsclick ${pages.length ? "d-none" : ""}`}
+          >
             <p className="fs-4 note needsclick pt-3 mb-1">کشیدن و رهاکردن</p>
             <p className="text-muted d-block fw-normal mb-2">یا</p>
             <span className="note needsclick btn bg-label-primary d-inline">
               انتخاب از فایل‌ها
             </span>
           </div>
+
+          <Flickity className="carousel" options={flickityOptions}>
+            {pages.map((page, pageIndex) => (
+              <div key={pageIndex} className="row row-cols-2">
+                {page.map((item, index) => (
+                  <div key={index} className="p-2">
+                    <div className="dz-preview dz-file-preview m-0 w-auto">
+                      <div className="dz-details">
+                        <div className="dz-thumbnail w-auto">
+                          <img src={item} />
+                          <span className="dz-nopreview">بدون پیشنمایش</span>
+                          <div className="dz-success-mark"></div>
+                          <div className="dz-error-mark"></div>
+                          <div className="dz-error-message">
+                            <span data-dz-errormessage></span>
+                          </div>
+                          <div className="progress">
+                            <div
+                              className="progress-bar progress-bar-primary"
+                              role="progressbar"
+                              aria-valuemin="0"
+                              aria-valuemax="100"
+                              data-dz-uploadprogress
+                            ></div>
+                          </div>
+                        </div>
+                        <div className="dz-filename" data-dz-name></div>
+                        <div className="dz-size" data-dz-size></div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ))}
+          </Flickity>
         </div>
       </div>
       <AddFromLinkModal
