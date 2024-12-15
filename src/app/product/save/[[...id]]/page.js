@@ -387,7 +387,7 @@ const CreateProductPage = () => {
                   <div className="row">
                     <div className="col-12 col-lg-8">
                       {/* Product Information */}
-                      <div className="card">
+                      <div className="card h-100">
                         <div className="card-header">
                           <h5 className="card-tile mb-0">اطلاعات محصول</h5>
                         </div>

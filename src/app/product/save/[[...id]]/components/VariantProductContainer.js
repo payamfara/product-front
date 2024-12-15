@@ -149,13 +149,13 @@ const VariantProductContainer = ({ nonVariants, updateVariants, pageId, onChange
       )
     );
   console.log("cards", cards);
-  const updateFiles = (newFiles) => {
+  const updateUrls = (newUrls) => {
     updateVariants((cards) =>
       cards.map((c, i) =>
         i === activeCard
           ? {
             ...cards[activeCard],
-            'images': newFiles,
+            'images': newUrls,
           }
           : c
       )
@@ -231,7 +231,7 @@ const VariantProductContainer = ({ nonVariants, updateVariants, pageId, onChange
                 />
               ) : (
                 <div>
-                  <DropzoneComponent files={cards[activeCard].images} updateFiles={updateFiles} uploadUrl={"http://192.168.1.21:8000/api/save_images/products/"} />
+                  <DropzoneComponent urls={cards[activeCard].images} updateUrls={updateUrls} uploadUrl={"http://192.168.1.21:8000/api/save_images/products/"} />
                 </div>
               )}
             </div>

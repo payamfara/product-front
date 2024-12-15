@@ -286,3 +286,10 @@ body {
 .dropzone > .dz-preview {
   display: none;
 }
+
+.img-medium {
+  height: 13rem;
+}
+.img-small {
+  height: 7rem;
+}

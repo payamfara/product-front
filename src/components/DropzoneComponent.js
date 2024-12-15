@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { Fragment, useEffect, useRef, useState } from "react";
 import Dropzone from "dropzone";
 import AddFromLinkModal from "./AddFromLinkModal";
 import GalleryModal from "./GalleryModal";
@@ -6,8 +6,6 @@ import Flickity from "react-flickity-component";
 import "flickity/css/flickity.css";
 
 const DropzoneComponent = ({ urls = [], updateUrls, uploadUrl }) => {
-  console.log(urls);
-
   const [isAddFromLinkModalOpen, setIsAddFromLinkModalOpen] = useState(false);
   const [isGalleryModalOpen, setIsGalleryModalOpen] = useState(false);
   const handleOpenAddFromLinkModal = () => setIsAddFromLinkModalOpen(true);
@@ -31,6 +29,7 @@ const DropzoneComponent = ({ urls = [], updateUrls, uploadUrl }) => {
     }
   };
 
+  const [activeFile, setActiveFile] = useState(0);
   const [files, setFiles] = useState(
     urls.map((url) => {
       const fileType = getFileTypeFromURL(url);
@@ -49,6 +48,23 @@ const DropzoneComponent = ({ urls = [], updateUrls, uploadUrl }) => {
   const dropzoneRef = useRef(null);
   const dzInstanceRef = useRef(null);
   const isInitialized = useRef(false);
+
+  const previewTemplate = `<div class="dz-preview dz-file-preview">
+  <div class="dz-details">
+    <div class="dz-thumbnail">
+      <img data-dz-thumbnail>
+      <span class="dz-nopreview">بدون پیشنمایش</span>
+      <div class="dz-success-mark"></div>
+      <div class="dz-error-mark"></div>
+      <div class="dz-error-message"><span data-dz-errormessage></span></div>
+      <div class="progress">
+        <div class="progress-bar progress-bar-primary" role="progressbar" aria-valuemin="0" aria-valuemax="100" data-dz-uploadprogress></div>
+      </div>
+    </div>
+    <div class="dz-filename" data-dz-name></div>
+    <div class="dz-size" data-dz-size></div>
+  </div>
+</div>`;
 
   const faOption = {
     dictDefaultMessage: "فایل‌ها را برای ارسال اینجا رها کنید",
@@ -90,6 +106,7 @@ const DropzoneComponent = ({ urls = [], updateUrls, uploadUrl }) => {
 
     const options = {
       url: uploadUrl,
+      previewTemplate: previewTemplate,
       maxFilesize: 5,
       acceptedFiles: ".jpg,.jpeg,.png,.gif,.webp",
       addRemoveLinks: true,
@@ -117,8 +134,8 @@ const DropzoneComponent = ({ urls = [], updateUrls, uploadUrl }) => {
       file.complete = true;
       addFile(file);
     });
-    
-    dz.on("addedFile", function (file, response) {
+
+    dz.on("addedfile", function (file, response) {
       if (file.previewElement) file.previewElement.remove();
     });
 
@@ -142,12 +159,9 @@ const DropzoneComponent = ({ urls = [], updateUrls, uploadUrl }) => {
   };
 
   const handleAddFromLinkSubmit = (selectedFiles) => {
-    // selectedFiles.forEach(
-    //   dzInstanceRef.current.addFile.bind(dzInstanceRef.current)
-    // );
-    console.log('ssssssss', selectedFiles);
-    
-    selectedFiles.forEach(addFile);
+    selectedFiles.forEach(
+      dzInstanceRef.current.addFile.bind(dzInstanceRef.current)
+    );
   };
 
   const handleGallerySubmit = (selectedUrls) => {
@@ -158,8 +172,13 @@ const DropzoneComponent = ({ urls = [], updateUrls, uploadUrl }) => {
     pageDots: false,
     prevNextButtons: false,
   };
+
+  const handleDelete = (item) => {
+    removeFile(item.url);
+    setActiveFile((activeFile) => Math.max(0, activeFile - 1));
+  };
   return (
-    <div className="card mb-4 h-100">
+    <div className="card h-100">
       <div className="card-header d-flex justify-content-between align-items-center">
         <h5 className="mb-0 card-title">رسانه ها</h5>
         <a className="d-flex align-items-center gap-1 fw-medium ql-snow">
@@ -211,9 +230,6 @@ const DropzoneComponent = ({ urls = [], updateUrls, uploadUrl }) => {
               ></polyline>{" "}
             </svg>
           </button>
-          <button type="button" onClick={() => console.log(files)}>
-            sfdfsd
-          </button>
         </a>
       </div>
       <div className="card-body">
@@ -228,10 +244,11 @@ const DropzoneComponent = ({ urls = [], updateUrls, uploadUrl }) => {
             </span>
           </div>
 
-          <Flickity className="carousel" options={flickityOptions}>
-            {pages.map((page, pageIndex) => (
-              <div key={pageIndex} className="row row-cols-2">
-                {page.map((item, index) => (
+          {pages.length && (
+            <Fragment>
+              <img className="w-100 img-medium" src={files[activeFile].url} />
+              <Flickity className="carousel" options={flickityOptions}>
+                {files.map((item, index) => (
                   <div key={index} className="p-2">
                     <div
                       className={`dz-preview ${
@@ -240,9 +257,12 @@ const DropzoneComponent = ({ urls = [], updateUrls, uploadUrl }) => {
                         item.complete ? "dz-complete" : ""
                       } dz-file-preview m-0 w-100`}
                     >
-                      <div className="dz-details">
-                        <div className="dz-thumbnail w-100">
-                          <img src={item.url} className="w-100" />
+                      <div
+                        className="dz-details"
+                        onClick={() => setActiveFile(index)}
+                      >
+                        <div className="dz-thumbnail">
+                          <img src={item.url} className="w-100 img-small" />
                           <span className="dz-nopreview">بدون پیشنمایش</span>
                           <div className="dz-success-mark"></div>
                           <div className="dz-error-mark"></div>
@@ -263,25 +283,22 @@ const DropzoneComponent = ({ urls = [], updateUrls, uploadUrl }) => {
                           {item.name}
                         </div>
                         <div className="dz-size" data-dz-size>
-                          {item.size} KB
+                          <strong>{Math.round((item.size / 1000) * 10) / 10}</strong> KB
                         </div>
                       </div>
                       <a
-                        class="dz-remove"
+                        className="dz-remove"
                         role="button"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          removeFile(item.url);
-                        }}
+                        onClick={() => handleDelete(item)}
                       >
                         حذف فایل
                       </a>
                     </div>
                   </div>
                 ))}
-              </div>
-            ))}
-          </Flickity>
+              </Flickity>
+            </Fragment>
+          )}
         </div>
       </div>
       <AddFromLinkModal
