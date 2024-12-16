@@ -155,6 +155,10 @@ body {
   color: rgba(var(--bs-warning-rgb)) !important;
 }
 
+.text-green {
+  color: #6e9c03;
+}
+
 .form-floating.warning > input,
 .form-floating.warning > input:focus {
   border-color: #f5dfca !important;
