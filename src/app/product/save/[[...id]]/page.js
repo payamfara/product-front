@@ -9,7 +9,6 @@ import { baseApiAuth } from "../../../../api/baseApi";
 import VariantProductContainer from "./components/VariantProductContainer";
 import DynamicAttributeField from "@/src/components/DynamicAttributeField";
 import toast from "react-hot-toast";
-import { updatePartNumbers } from "@/src/utils/funcs";
 import CustomLoading from "../../../../components/Loading";
 
 const CreateProductPage = () => {
@@ -22,28 +21,15 @@ const CreateProductPage = () => {
   const updateFiles = (updateFilesFunction) =>
     setPageData((pageData) => ({ ...pageData, images: updateFilesFunction(pageData.images) }));
 
-  const updateNonVariantAttrs = (updateNonVariantAttrsFunction) => {
-    setPageData((pageData) => {
-      const updatedPageData = updateNonVariantAttrsFunction(
+  const updateNonVariantAttrs = (updateNonVariantAttrsFunction) =>
+    setPageData((pageData) => ({
+      ...pageData,
+      non_variant_product_attrs: updateNonVariantAttrsFunction(
         pageData,
         "non_variant_product_attrs"
-      );
-      const updatedVariantProducts = pageData.variant_products.map((vp) => {
-        if (!vp.linked && vp.id !== pageData.id && vp.part_number_is_manual)
-          return vp;
-        const attrs = [
-          ...updatedPageData.non_variant_product_attrs,
-          ...(vp.variant_product_attrs ??
-            updatedPageData.variant_product_attrs),
-        ];
-        const partNumbers = updatePartNumbers(attrs);
-        console.log(partNumbers);
+      )
+    }));
 
-        return { ...vp, ...partNumbers };
-      });
-      return { ...updatedPageData, variant_products: updatedVariantProducts };
-    });
-  };
   const updateVariantAttrs = (updateVariantAttrsFunction) =>
     setPageData((pageData) => ({
       ...pageData,
@@ -295,28 +281,28 @@ const CreateProductPage = () => {
       (nonVariant) => nonVariant.changed
     )
       ? pageData.variant_products.filter(
-          (vp) => vp.linked || vp.id === pageData.id
-        )
+        (vp) => vp.linked || vp.id === pageData.id
+      )
       : pageData.variant_products;
     const linkedProductsAppended = linkedProducts.map((linkedProduct) => ({
       ...linkedProduct,
       non_variant_product_attrs: linkedProduct.non_variant_product_attrs
         ? linkedProduct.non_variant_product_attrs.map((nonVariant) => {
-            const foundItem = pageData.non_variant_product_attrs.find(
-              (nv) => nv.attribute === nonVariant.attribute
-            );
-            return foundItem.changed
-              ? {
-                  ...nonVariant,
-                  attr_value: foundItem.attr_value,
-                  attr_value_str: foundItem.attr_value_str,
-                }
-              : nonVariant;
-          })
+          const foundItem = pageData.non_variant_product_attrs.find(
+            (nv) => nv.attribute === nonVariant.attribute
+          );
+          return foundItem.changed
+            ? {
+              ...nonVariant,
+              attr_value: foundItem.attr_value,
+              attr_value_str: foundItem.attr_value_str,
+            }
+            : nonVariant;
+        })
         : pageData.non_variant_product_attrs.map((nv) => {
-            const { id, ...nvData } = nv;
-            return nvData;
-          }),
+          const { id, ...nvData } = nv;
+          return nvData;
+        }),
       images:
         pageData.id === linkedProduct.id
           ? pageData.images
@@ -439,7 +425,7 @@ const CreateProductPage = () => {
                                   "gallery",
                                 ]}
                                 placeholder="توضیح (اختیاری)"
-                                apiSaveImagesUrl="http://192.168.1.21:8000/api/save_images/products/"
+                                apiSaveImagesUrl="http://192.168.1.6:8000/api/save_images/products/"
                               />
                             </div>
                             <TagifyComponent
@@ -471,9 +457,9 @@ const CreateProductPage = () => {
                                         pageData.variant_products.map((vp) =>
                                           vp.id === pageData.id
                                             ? {
-                                                ...vp,
-                                                part_number_is_manual: value,
-                                              }
+                                              ...vp,
+                                              part_number_is_manual: value,
+                                            }
                                             : vp
                                         ),
                                     }))
@@ -570,7 +556,7 @@ const CreateProductPage = () => {
                         urls={pageData.images}
                         updateUrls={updateFiles}
                         uploadUrl={
-                          "http://192.168.1.21:8000/api/save_images/products/"
+                          "http://192.168.1.6:8000/api/save_images/products/"
                         }
                       />
                     </div>

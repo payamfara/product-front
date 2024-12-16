@@ -9,7 +9,6 @@ import { baseApiAuth } from "@/src/api/baseApi";
 import { FaSquareCheck } from "react-icons/fa6";
 import DropzoneComponent from "@/src/components/DropzoneComponent";
 import PlusButton from '../../../../../components/PlusButton';
-import {updatePartNumbers} from '@/src/utils/funcs';
 
 const Card = ({ card, isActive, toggleLink, isLinkable, onDelete, onClick }) => {
   return (
@@ -134,13 +133,11 @@ const VariantProductContainer = ({ nonVariants, updateVariants, pageId, onChange
 
   const updateAttrValues = (updateAttrValuesFunction) =>
     onChange((cards) =>
-      cards.map((card, index) => {
-        if (index !== activeCard) return card;
-        const updatedCard = updateAttrValuesFunction(card, "variant_product_attrs");
-        const attrs = [...nonVariants, ...updatedCard.variant_product_attrs]
-        const partNumbers = updatePartNumbers(attrs)
-        return { ...updatedCard, ...partNumbers };
-      })
+      cards.map((card, index) =>
+        index === activeCard
+          ? updateAttrValuesFunction(card, "variant_product_attrs")
+          : card
+      )
     );
   const toggleLink = (index) =>
     onChange((cards) =>
@@ -148,7 +145,6 @@ const VariantProductContainer = ({ nonVariants, updateVariants, pageId, onChange
         i === index ? { ...card, linked: !card.linked } : card
       )
     );
-  console.log("cards", cards);
   const updateUrls = (newUrls) => {
     updateVariants((cards) =>
       cards.map((c, i) =>
@@ -231,7 +227,7 @@ const VariantProductContainer = ({ nonVariants, updateVariants, pageId, onChange
                 />
               ) : (
                 <div>
-                  <DropzoneComponent urls={cards[activeCard].images} updateUrls={updateUrls} uploadUrl={"http://192.168.1.21:8000/api/save_images/products/"} />
+                  <DropzoneComponent urls={cards[activeCard].images} updateUrls={updateUrls} uploadUrl={"http://192.168.1.6:8000/api/save_images/products/"} />
                 </div>
               )}
             </div>
