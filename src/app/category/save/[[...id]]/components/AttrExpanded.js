@@ -3,7 +3,13 @@ import { Fragment } from "react";
 
 const AttrExpanded = ({ items, rowIndex, meta_datas, onChange }) => {
     const booleanDataMap = Object.fromEntries(Object.entries(items).filter(([name, value]) => meta_datas[name] && meta_datas[name].type === 'bool'))
-    const getProps = (name) => ({
+    const getProps = (name) => {
+        console.log(items);
+        console.log(meta_datas);
+        
+        console.log(name);
+        
+        return {
         onChange: (value) => onChange(name, value),
         data: {
             attribute_id: `${rowIndex}-${name}`,
@@ -13,7 +19,7 @@ const AttrExpanded = ({ items, rowIndex, meta_datas, onChange }) => {
             attribute_value: items[name],
             attribute_value_str: items[`${name}_str`]
         },
-    })
+    }}
     return (
         <Fragment>
             <div className="col-7 offset-1">

@@ -244,7 +244,7 @@ const DropzoneComponent = ({ urls = [], updateUrls, uploadUrl }) => {
             </span>
           </div>
 
-          {pages.length && (
+          {pages.length ? (
             <Fragment>
               <img className="w-100 img-medium" src={files[activeFile].url} />
               <Flickity className="carousel" options={flickityOptions}>
@@ -298,7 +298,7 @@ const DropzoneComponent = ({ urls = [], updateUrls, uploadUrl }) => {
                 ))}
               </Flickity>
             </Fragment>
-          )}
+          ) : undefined}
         </div>
       </div>
       <AddFromLinkModal

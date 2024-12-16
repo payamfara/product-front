@@ -1,37 +1,47 @@
 import RippleButton from "@/src/components/RippleButton/RippleButton";
-import React, {
-  useState,
-  useEffect,
-} from "react";
+import React, { useState, useEffect } from "react";
 import { FaTrash, FaSquare } from "react-icons/fa";
 import TabsWithInputsComponent from "../../../../../components/TabsWithInputsComponent";
 import { baseApiAuth } from "@/src/api/baseApi";
 import { FaSquareCheck } from "react-icons/fa6";
 import DropzoneComponent from "@/src/components/DropzoneComponent";
-import PlusButton from '../../../../../components/PlusButton';
+import PlusButton from "../../../../../components/PlusButton";
+import DynamicAttributeField from "@/src/components/DynamicAttributeField";
 
-const Card = ({ card, isActive, toggleLink, isLinkable, onDelete, onClick }) => {
+const Card = ({
+  card,
+  isActive,
+  toggleLink,
+  isLinkable,
+  onDelete,
+  onClick,
+}) => {
   return (
     <div
       onClick={onClick}
-      className={`p-2 rounded border ${card.linked ? "border-success" : isActive ? "border-primary" : ""
-        } border-dashed position-relative`}
+      className={`p-2 rounded border ${
+        card.linked ? "border-success" : isActive ? "border-primary" : ""
+      } border-dashed position-relative`}
     >
       <div className="position-absolute d-flex flex-column justify-content-center gap-4 top-0 start-0 h-100 mxn-2">
-        {!card.id && <RippleButton
-          className="z-1 rounded-start-0 border-0 border-danger ribbon btn btn-danger btn-sm p-1"
-          onClick={onDelete}
-          title="Delete"
-        >
-          <FaTrash size={16} />
-        </RippleButton>}
-        {card.id && isLinkable && <RippleButton
-          className="z-1 rounded-start-0 border-0 border-success ribbon btn btn-success btn-sm p-1"
-          onClick={toggleLink}
-          title="Add"
-        >
-          {card.linked ? <FaSquareCheck size={16} /> : <FaSquare size={16} />}
-        </RippleButton>}
+        {!card.id && (
+          <RippleButton
+            className="z-1 rounded-start-0 border-0 border-danger ribbon btn btn-danger btn-sm p-1"
+            onClick={onDelete}
+            title="Delete"
+          >
+            <FaTrash size={16} />
+          </RippleButton>
+        )}
+        {card.id && isLinkable && (
+          <RippleButton
+            className="z-1 rounded-start-0 border-0 border-success ribbon btn btn-success btn-sm p-1"
+            onClick={toggleLink}
+            title="Add"
+          >
+            {card.linked ? <FaSquareCheck size={16} /> : <FaSquare size={16} />}
+          </RippleButton>
+        )}
       </div>
       <div className={`card shadow-lg h-100 overflow-hidden`}>
         <div className="card-img card-body p-0">
@@ -57,7 +67,15 @@ const Card = ({ card, isActive, toggleLink, isLinkable, onDelete, onClick }) => 
   );
 };
 
-const VariantProductContainer = ({ nonVariants, updateVariants, pageId, onChange, cards, inputs }) => {
+const VariantProductContainer = ({
+  nonVariants,
+  updateVariants,
+  pageId,
+  onChange,
+  cards,
+  initialCards,
+  inputs,
+}) => {
   const [activeCard, setActiveCard] = useState(-1);
   const [isAttributeFrm, setIsAttributeFrm] = useState(true);
 
@@ -110,16 +128,16 @@ const VariantProductContainer = ({ nonVariants, updateVariants, pageId, onChange
           cards.map((c, i) =>
             i === index
               ? {
-                ...cards[index],
-                variant_product_attrs: [
-                  ...res.data.variant_product_attrs,
-                  ...res.data.variant_extra_attrs,
-                ],
-                non_variant_product_attrs: [
-                  ...res.data.non_variant_product_attrs,
-                  ...res.data.non_variant_extra_attrs,
-                ],
-              }
+                  ...cards[index],
+                  variant_product_attrs: [
+                    ...res.data.variant_product_attrs,
+                    ...res.data.variant_extra_attrs,
+                  ],
+                  non_variant_product_attrs: [
+                    ...res.data.non_variant_product_attrs,
+                    ...res.data.non_variant_extra_attrs,
+                  ],
+                }
               : c
           )
         );
@@ -145,18 +163,18 @@ const VariantProductContainer = ({ nonVariants, updateVariants, pageId, onChange
         i === index ? { ...card, linked: !card.linked } : card
       )
     );
-  const updateUrls = (newUrls) => {
+  const updateUrls = (updateUrlsFunction) => {
     updateVariants((cards) =>
       cards.map((c, i) =>
         i === activeCard
           ? {
-            ...cards[activeCard],
-            'images': newUrls,
-          }
+              ...cards[activeCard],
+              images: updateUrlsFunction(cards[activeCard].images),
+            }
           : c
       )
-    )
-  }
+    );
+  };
 
   return (
     <div id="variant_attrs" className="card h-100">
@@ -185,7 +203,9 @@ const VariantProductContainer = ({ nonVariants, updateVariants, pageId, onChange
               <Card
                 key={index}
                 card={card}
-                isLinkable={nonVariants.some((nonVariant) => nonVariant.changed)}
+                isLinkable={nonVariants.some(
+                  (nonVariant) => nonVariant.changed
+                )}
                 isActive={activeCard === index}
                 onDelete={() => handleDelete(index)}
                 toggleLink={() => toggleLink(index)}
@@ -194,26 +214,31 @@ const VariantProductContainer = ({ nonVariants, updateVariants, pageId, onChange
             ))}
           </div>
           {activeCard >= -1 &&
-            activeCard <= cards.length - 1 &&
-            cards[activeCard] &&
-            (cards[activeCard].linked || !nonVariants.some((nonVariant) => nonVariant.changed)) ? (
-            <div className="position-relative border border-dashed rounded col-9">
+          activeCard <= cards.length - 1 &&
+          cards[activeCard] &&
+          (cards[activeCard].linked ||
+            !nonVariants.some((nonVariant) => nonVariant.changed)) ? (
+            <div className="position-relative border border-dashed rounded col-9 p-2">
               <div className="position-absolute end-0 top-0 myn-3 mx-3 d-flex gap-3">
-                {cards[activeCard].id !== pageId && <RippleButton
-                  className={`z-1 rounded-start-0 border-success btn ${!isAttributeFrm
-                    ? "btn-success border-1"
-                    : "btn-white border-0"
+                {cards[activeCard].id !== pageId && (
+                  <RippleButton
+                    className={`z-1 rounded-start-0 border-success btn ${
+                      !isAttributeFrm
+                        ? "btn-success border-1"
+                        : "btn-white border-0"
                     } btn-sm p-1`}
-                  onClick={() => setIsAttributeFrm(false)}
-                  title="Information Form"
-                >
-                  فرم اطلاعات
-                </RippleButton>}
+                    onClick={() => setIsAttributeFrm(false)}
+                    title="Information Form"
+                  >
+                    فرم اطلاعات
+                  </RippleButton>
+                )}
                 <RippleButton
-                  className={`z-1 rounded-start-0 border-danger btn ${isAttributeFrm
-                    ? "btn-danger border-1"
-                    : "btn-white border-0"
-                    } btn-sm p-1`}
+                  className={`z-1 rounded-start-0 border-danger btn ${
+                    isAttributeFrm
+                      ? "btn-danger border-1"
+                      : "btn-white border-0"
+                  } btn-sm p-1`}
                   onClick={() => setIsAttributeFrm(true)}
                   title="Attributes Form"
                 >
@@ -223,11 +248,138 @@ const VariantProductContainer = ({ nonVariants, updateVariants, pageId, onChange
               {isAttributeFrm ? (
                 <TabsWithInputsComponent
                   inputs={cards[activeCard].variant_product_attrs}
-                  onChange={updateAttrValues}
+                  onChange={(updateAttrValuesFunction) =>
+                    updateAttrValues(
+                      updateAttrValuesFunction,
+                      "variant_product_attrs"
+                    )
+                  }
                 />
               ) : (
-                <div>
-                  <DropzoneComponent urls={cards[activeCard].images} updateUrls={updateUrls} uploadUrl={"http://192.168.1.6:8000/api/save_images/products/"} />
+                <div className="row">
+                  <div className="col-4">
+                    <div className="card h-100 border">
+                      <div className="card-header">
+                        <h5 className="card-title mb-0">جزئیات</h5>
+                      </div>
+                      <div className="card-body d-flex flex-column gap-3">
+                        {/* Part number manual */}
+                        <DynamicAttributeField
+                          onChange={(updateAttrValuesFunction) =>
+                            updateAttrValues(
+                              updateAttrValuesFunction,
+                              "part_number_is_manual"
+                            )
+                          }
+                          className="p-2"
+                          data={{
+                            attribute_name_en: "part_number_is_manual",
+                            attribute_name_fa: "پارت نامبر دستی",
+                            attr_type:
+                            cards[activeCard].meta_datas.part_number_is_manual,
+                            attr_value: cards[activeCard].part_number_is_manual,
+                          }}
+                        />
+                        {/* Part number en */}
+                        <div>
+                          <DynamicAttributeField
+                            onChange={(updateAttrValuesFunction) =>
+                              updateAttrValues(
+                                updateAttrValuesFunction,
+                                "part_number_en"
+                              )
+                            }
+                            className="p-2"
+                            data={{
+                              attribute_name_en: "part_number_en",
+                              attribute_name_fa: "پارت نامبر انگلیسی",
+                              attr_type: cards[activeCard].meta_datas.part_number_en,
+                              attr_value: cards[activeCard].meta_datas.part_number_is_manual
+                              ? cards[activeCard].part_number_en
+                              : initialCards[activeCard].part_number_en,
+                              attribute_readonly: cards[activeCard].meta_datas.part_number_is_manual,
+                            }}
+                          />
+                          {cards[activeCard].meta_datas.part_number_is_manual && (
+                            <span
+                              id="help_part_number_en"
+                              className="fs-tiny form-label"
+                            >
+                              {initialCards[activeCard].part_number_en}
+                            </span>
+                          )}
+                        </div>
+                        {/* Part number fa */}
+                        <div>
+                          <DynamicAttributeField
+                            onChange={(updateAttrValuesFunction) =>
+                              updateAttrValues(
+                                updateAttrValuesFunction,
+                                "part_number_fa"
+                              )
+                            }
+                            className="p-2"
+                            data={{
+                              attribute_name_en: "part_number_fa",
+                              attribute_name_fa: "پارت نامبر فارسی",
+                              attr_type: cards[activeCard].meta_datas.part_number_fa,
+                              attr_value: cards[activeCard].meta_datas.part_number_is_manual
+                              ? cards[activeCard].part_number_fa
+                              : initialCards[activeCard].part_number_fa,
+                              attribute_readonly: cards[activeCard].meta_datas.part_number_is_manual,
+                            }}
+                          />
+                          {cards[activeCard].meta_datas.part_number_is_manual && (
+                            <span
+                              id="help_part_number_fa"
+                              className="fs-tiny form-label"
+                            >
+                              {initialCards[activeCard].part_number_fa}
+                            </span>
+                          )}
+                        </div>
+                        {/* Part number bz */}
+                        <div>
+                          <DynamicAttributeField
+                            onChange={(updateAttrValuesFunction) =>
+                              updateAttrValues(
+                                updateAttrValuesFunction,
+                                "part_number_bz"
+                              )
+                            }
+                            className="p-2"
+                            data={{
+                              attribute_name_en: "part_number_bz",
+                              attribute_name_fa: "پارت نامبر بازاری",
+                              attr_type: cards[activeCard].meta_datas.part_number_bz,
+                              attr_value: cards[activeCard].meta_datas.part_number_is_manual
+                              ? cards[activeCard].part_number_bz
+                              : initialCards[activeCard].part_number_bz,
+                              attribute_readonly: cards[activeCard].meta_datas.part_number_is_manual,
+                            }}
+                          />
+                          {cards[activeCard].meta_datas.part_number_is_manual && (
+                            <span
+                              id="help_part_number_bz"
+                              className="fs-tiny form-label"
+                            >
+                              {initialCards[activeCard].part_number_bz}
+                            </span>
+                          )}
+                        </div>
+                        {/* Tags */}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col-8">
+                    <DropzoneComponent
+                      urls={cards[activeCard].images}
+                      updateUrls={updateUrls}
+                      uploadUrl={
+                        "http://192.168.1.21:8000/api/save_images/products/"
+                      }
+                    />
+                  </div>
                 </div>
               )}
             </div>

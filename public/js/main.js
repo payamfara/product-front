@@ -3,7 +3,6 @@
  */
 
 'use strict';
-
 function _scrollToActive(animate = false, duration = 500) {
     const layoutMenu = document.querySelector('.layout-menu');
 
@@ -57,7 +56,6 @@ function _scrollToActive(animate = false, duration = 500) {
         }
     }
 }
-
 
 
 let isRtl = window.Helpers.isRtl(),

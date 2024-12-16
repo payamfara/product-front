@@ -25,6 +25,7 @@ const DynamicAttributeField = ({ data, onChange, parentClassName }) => {
   const attribute_prefix = localData.attribute_prefix ?? localData.prefix;
   const attribute_postfix = localData.attribute_postfix ?? localData.postfix;
   const attribute_placeholder = localData.attribute_placeholder ?? attribute_name_fa;
+  const attribute_readonly = localData.attribute_readonly ?? attribute_type.type === "readonly";
 
   switch (attribute_type?.type) {
     case "select_2": // Select_2
@@ -76,21 +77,7 @@ const DynamicAttributeField = ({ data, onChange, parentClassName }) => {
       return (
         <div className={`${parentClassName} form-floating`}>
           <input
-            onChange={(e) => onChange(e.target.value)}
-            id={attribute_id}
-            name={attribute_name_en}
-            className={`form-control`}
-            placeholder={attribute_placeholder}
-            value={attribute_value}
-          />
-          <label htmlFor={attribute_id}>{attribute_name_fa}</label>
-        </div>
-      );
-    case "readonly": // Readonly
-      return (
-        <div className={`${parentClassName} form-floating`}>
-          <input
-            readOnly
+            readOnly={attribute_readonly}
             onChange={(e) => onChange(e.target.value)}
             id={attribute_id}
             name={attribute_name_en}

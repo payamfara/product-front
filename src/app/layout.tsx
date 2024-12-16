@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { Toaster } from 'react-hot-toast';
+import Script from 'next/script';
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -58,6 +59,7 @@ export default function RootLayout({
         <link href="/css/rtl.css" rel="stylesheet" />
         <link href="/vendor/libs/datatables-bs5/datatables.bootstrap5.css" rel="stylesheet" />
         <link rel="stylesheet" href="/css/styles.css" />
+
       </head>
 
       <body
@@ -67,6 +69,7 @@ export default function RootLayout({
         <Toaster 
           position="top-left"
         />
+        
       </body>
     </html>
   );
