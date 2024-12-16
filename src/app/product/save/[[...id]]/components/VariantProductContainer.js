@@ -149,11 +149,17 @@ const VariantProductContainer = ({
       });
   };
 
-  const updateAttrValues = (updateAttrValuesFunction) =>
+  const updateAttrValues = (updateAttrValuesFunctionOrValue, key) =>
     onChange((cards) =>
       cards.map((card, index) =>
         index === activeCard
-          ? updateAttrValuesFunction(card, "variant_product_attrs")
+          ? {
+              ...card,
+              [key]:
+                typeof updateAttrValuesFunctionOrValue === "function"
+                  ? updateAttrValuesFunctionOrValue(card[key])
+                  : updateAttrValuesFunctionOrValue,
+            }
           : card
       )
     );
@@ -265,42 +271,40 @@ const VariantProductContainer = ({
                       <div className="card-body d-flex flex-column gap-3">
                         {/* Part number manual */}
                         <DynamicAttributeField
-                          onChange={(updateAttrValuesFunction) =>
-                            updateAttrValues(
-                              updateAttrValuesFunction,
-                              "part_number_is_manual"
-                            )
-                          }
+                          onChange={(value) => {
+                            updateAttrValues(value, "part_number_is_manual");
+                          }}
                           className="p-2"
                           data={{
                             attribute_name_en: "part_number_is_manual",
                             attribute_name_fa: "پارت نامبر دستی",
                             attr_type:
-                            cards[activeCard].meta_datas.part_number_is_manual,
+                              cards[activeCard].meta_datas
+                                .part_number_is_manual,
                             attr_value: cards[activeCard].part_number_is_manual,
                           }}
                         />
                         {/* Part number en */}
                         <div>
                           <DynamicAttributeField
-                            onChange={(updateAttrValuesFunction) =>
-                              updateAttrValues(
-                                updateAttrValuesFunction,
-                                "part_number_en"
-                              )
+                            onChange={(value) =>
+                              updateAttrValues(value, "part_number_en")
                             }
                             className="p-2"
                             data={{
                               attribute_name_en: "part_number_en",
                               attribute_name_fa: "پارت نامبر انگلیسی",
-                              attr_type: cards[activeCard].meta_datas.part_number_en,
-                              attr_value: cards[activeCard].meta_datas.part_number_is_manual
-                              ? cards[activeCard].part_number_en
-                              : initialCards[activeCard].part_number_en,
-                              attribute_readonly: cards[activeCard].meta_datas.part_number_is_manual,
+                              attr_type:
+                                cards[activeCard].meta_datas.part_number_en,
+                              attr_value: cards[activeCard].meta_datas
+                                .part_number_is_manual
+                                ? cards[activeCard].part_number_en
+                                : initialCards[activeCard].part_number_en,
+                              attribute_readonly:
+                                !cards[activeCard].part_number_is_manual,
                             }}
                           />
-                          {cards[activeCard].meta_datas.part_number_is_manual && (
+                          {cards[activeCard].part_number_is_manual && (
                             <span
                               id="help_part_number_en"
                               className="fs-tiny form-label"
@@ -312,24 +316,24 @@ const VariantProductContainer = ({
                         {/* Part number fa */}
                         <div>
                           <DynamicAttributeField
-                            onChange={(updateAttrValuesFunction) =>
-                              updateAttrValues(
-                                updateAttrValuesFunction,
-                                "part_number_fa"
-                              )
+                            onChange={(value) =>
+                              updateAttrValues(value, "part_number_fa")
                             }
                             className="p-2"
                             data={{
                               attribute_name_en: "part_number_fa",
                               attribute_name_fa: "پارت نامبر فارسی",
-                              attr_type: cards[activeCard].meta_datas.part_number_fa,
-                              attr_value: cards[activeCard].meta_datas.part_number_is_manual
-                              ? cards[activeCard].part_number_fa
-                              : initialCards[activeCard].part_number_fa,
-                              attribute_readonly: cards[activeCard].meta_datas.part_number_is_manual,
+                              attr_type:
+                                cards[activeCard].meta_datas.part_number_fa,
+                              attr_value: cards[activeCard].meta_datas
+                                .part_number_is_manual
+                                ? cards[activeCard].part_number_fa
+                                : initialCards[activeCard].part_number_fa,
+                              attribute_readonly:
+                                !cards[activeCard].part_number_is_manual,
                             }}
                           />
-                          {cards[activeCard].meta_datas.part_number_is_manual && (
+                          {cards[activeCard].part_number_is_manual && (
                             <span
                               id="help_part_number_fa"
                               className="fs-tiny form-label"
@@ -341,24 +345,24 @@ const VariantProductContainer = ({
                         {/* Part number bz */}
                         <div>
                           <DynamicAttributeField
-                            onChange={(updateAttrValuesFunction) =>
-                              updateAttrValues(
-                                updateAttrValuesFunction,
-                                "part_number_bz"
-                              )
+                            onChange={(value) =>
+                              updateAttrValues(value, "part_number_bz")
                             }
                             className="p-2"
                             data={{
                               attribute_name_en: "part_number_bz",
                               attribute_name_fa: "پارت نامبر بازاری",
-                              attr_type: cards[activeCard].meta_datas.part_number_bz,
-                              attr_value: cards[activeCard].meta_datas.part_number_is_manual
-                              ? cards[activeCard].part_number_bz
-                              : initialCards[activeCard].part_number_bz,
-                              attribute_readonly: cards[activeCard].meta_datas.part_number_is_manual,
+                              attr_type:
+                                cards[activeCard].meta_datas.part_number_bz,
+                              attr_value: cards[activeCard].meta_datas
+                                .part_number_is_manual
+                                ? cards[activeCard].part_number_bz
+                                : initialCards[activeCard].part_number_bz,
+                              attribute_readonly:
+                                !cards[activeCard].part_number_is_manual,
                             }}
                           />
-                          {cards[activeCard].meta_datas.part_number_is_manual && (
+                          {cards[activeCard].part_number_is_manual && (
                             <span
                               id="help_part_number_bz"
                               className="fs-tiny form-label"

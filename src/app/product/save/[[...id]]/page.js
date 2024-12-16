@@ -10,7 +10,7 @@ import VariantProductContainer from "./components/VariantProductContainer";
 import DynamicAttributeField from "@/src/components/DynamicAttributeField";
 import toast from "react-hot-toast";
 import CustomLoading from "../../../../components/Loading";
-import MultilevelMenu from '../../../../components/MultilevelMenu';
+import MultilevelMenu from "../../../../components/MultilevelMenu";
 
 const CreateProductPage = () => {
   const tagifyRef = useRef();
@@ -50,8 +50,7 @@ const CreateProductPage = () => {
     setPageData((pageData) => ({
       ...pageData,
       non_variant_product_attrs: updateNonVariantAttrsFunction(
-        pageData,
-        "non_variant_product_attrs"
+        pageData.non_variant_product_attrs
       ),
     }));
 
@@ -400,7 +399,11 @@ const CreateProductPage = () => {
           <div className="layout-page">
             {/* Content wrapper */}
             <div className="content-wrapper">
-              <MultilevelMenu />
+              <div className="py-3">
+                <div className="bg-white shadow-sm rounded-pill container-xxl flex-grow-1 py-2">
+                  <MultilevelMenu />
+                </div>
+              </div>
               {/* Content */}
               <div className="container-xxl flex-grow-1 container-p-y">
                 <h4 className="py-3 mb-4">

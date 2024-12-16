@@ -50,14 +50,11 @@ const TabsWithInputs = ({ onChange, inputs }) => {
       }
 
     if (onChange)
-      onChange((prevData, updateKey) => ({
-        ...prevData,
-        [updateKey]: prevData[updateKey].map(nonVariant =>
+      onChange((prevData) => prevData.map(nonVariant =>
           nonVariant.attribute === categorizedInputs[priorityKey][index].attribute
             ? { ...nonVariant, ...extra_data, changed: true }
             : nonVariant
-        )
-      }))
+        ))
   };
   
   return (

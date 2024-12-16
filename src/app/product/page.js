@@ -1,12 +1,12 @@
 "use client";
 import DynamicAttributeField from "@/src/components/DynamicAttributeField";
 import { Fragment, useState, useEffect } from "react";
-import DataTable from '../../components/DataTable';
-import { baseApiAuth } from '../../api/baseApi';
-import CustomLoading from '../../components/Loading';
-import { IconEdit, IconTrash } from '@tabler/icons-react';
-import { createRoot } from "react-dom/client"; 
-import MultilevelMenu from '../../components/MultilevelMenu';
+import DataTable from "../../components/DataTable";
+import { baseApiAuth } from "../../api/baseApi";
+import CustomLoading from "../../components/Loading";
+import { IconEdit, IconTrash } from "@tabler/icons-react";
+import { createRoot } from "react-dom/client";
+import MultilevelMenu from "../../components/MultilevelMenu";
 
 const ListProductPage = () => {
   const columns = [
@@ -28,9 +28,14 @@ const ListProductPage = () => {
     },
     { title: "دسته بندی", data: "category_str" },
     { title: "کد محصول", data: "id" },
-    { title: "قیمت", data: "price", render: (data, type, row) => data + " تومان" },
     {
-      title: "عملیات", render: (data, type, row) => {
+      title: "قیمت",
+      data: "price",
+      render: (data, type, row) => data + " تومان",
+    },
+    {
+      title: "عملیات",
+      render: (data, type, row) => {
         const container = document.createElement("div");
         container.className = "d-flex gap-2";
 
@@ -43,7 +48,7 @@ const ListProductPage = () => {
         );
 
         return container;
-      }
+      },
     },
   ];
 
@@ -58,7 +63,7 @@ const ListProductPage = () => {
   useEffect(() => {
     const loadData = async () => {
       const data = await fetchProducts();
-      console.log('data', data);
+      console.log("data", data);
 
       setData(data);
     };
@@ -66,7 +71,7 @@ const ListProductPage = () => {
   }, []);
 
   if (!data.length) {
-    return <CustomLoading />
+    return <CustomLoading />;
   }
 
   return (
@@ -75,11 +80,15 @@ const ListProductPage = () => {
         <div className="layout-container">
           <div className="layout-page">
             <div className="content-wrapper">
-              <MultilevelMenu />
+              <div className="py-3">
+                <div className="bg-white shadow-sm rounded-pill container-xxl flex-grow-1 py-2">
+                  <MultilevelMenu />
+                </div>
+              </div>
               <div className="container-xxl flex-grow-1 container-p-y">
                 <h4 className="py-3 mb-4">
-                  <span className="text-muted fw-light">{" "} صفحه اصلی / {" "}</span>
-                   لیست محصولات 
+                  <span className="text-muted fw-light"> صفحه اصلی / </span>
+                  لیست محصولات
                 </h4>
                 <div className="card">
                   <div className="card-header d-flex flex-wrap row-cols-3">
