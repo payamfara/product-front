@@ -2,10 +2,10 @@
 import { useState } from "react";
 import { baseApi } from "../../api/baseApi";
 import Cookies from 'js-cookie';
-import { useRouter } from 'next/navigation'; 
+import LoadingBtn from '@/src/components/LoadingBtn';
 
 const Login = () => {
-    const router = useRouter();
+    const [formDisabled, setFormDisabled] = useState(false);
     const [pageData, setPageData] = useState({});
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -13,6 +13,7 @@ const Login = () => {
     }
     const handleSubmit = (e) => {
         e.preventDefault();
+        setFormDisabled(true);
         const requestUrl = '/api2/token/';
         baseApi
             .post(requestUrl, pageData)
@@ -23,6 +24,9 @@ const Login = () => {
             })
             .catch(err => {
                 console.log('err', err);
+            })
+            .finally(()=>{
+                setFormDisabled(false);
             })
 
     }
@@ -40,7 +44,7 @@ const Login = () => {
                                 <div className="col-md-6 col-lg-7 d-flex align-items-center">
                                     <div className="card-body p-4 p-lg-5 text-black">
 
-                                        <form onSubmit={handleSubmit} autoComplete="off">
+                                        <form onSubmit={handleSubmit} className={`${formDisabled ? "disabled" : ""}`} autoComplete="off">
 
                                             <div className="d-flex align-items-center mb-3 pb-1">
                                                 <img src="/logo.svg" alt="logo" />
@@ -59,7 +63,7 @@ const Login = () => {
                                             </div>
 
                                             <div className="pt-1 mb-4">
-                                                <button className="btn btn-dark btn-lg btn-block" type="submit">Login</button>
+                                                <LoadingBtn isLoading={formDisabled} />
                                             </div>
                                         </form>
 

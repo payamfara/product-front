@@ -297,3 +297,25 @@ body {
 .img-small {
   height: 7rem;
 }
+
+.disabled input {
+  pointer-events:none;
+  color:#AAA;
+  background:#F5F5F5;
+}
+
+.layout-page {
+  padding-top: 62px !important;
+}
+
+.w-70 {
+  width: 70%;
+}
+
+.menu-item:hover > .menu-sub {
+  display: block;
+}
+
+.no-caret::after {
+  display: none !important;
+}

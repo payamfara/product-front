@@ -494,7 +494,7 @@ const CreateProductPage = () => {
                                     "gallery",
                                   ]}
                                   placeholder="توضیح (اختیاری)"
-                                  apiSaveImagesUrl="http://192.168.1.21:8000/api/save_images/products/"
+                                  apiSaveImagesUrl="http://192.168.1.4:8000/api/save_images/products/"
                                 />
                               </div>
                               <TagifyComponent
@@ -658,7 +658,7 @@ const CreateProductPage = () => {
                           urls={pageData.images}
                           updateUrls={updateFiles}
                           uploadUrl={
-                            "http://192.168.1.21:8000/api/save_images/products/"
+                            "http://192.168.1.4:8000/api/save_images/products/"
                           }
                         />
                       </div>
