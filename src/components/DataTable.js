@@ -6,7 +6,7 @@ import "datatables.net-bs5";
 import React, { useEffect } from "react";
 import $ from "jquery";
 import RippleButton from "../components/RippleButton/RippleButton";
-import CustomDropdown from '../components/Dropdown';
+import CustomDropdown from '../components/CustomDropdown';
 import { replaceComponent } from "../utils/funcs";
 import { IconPrinter, IconFile, IconCopy, IconPlus, IconDownload } from '@tabler/icons-react';
 

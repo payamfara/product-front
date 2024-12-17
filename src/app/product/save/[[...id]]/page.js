@@ -10,7 +10,6 @@ import VariantProductContainer from "./components/VariantProductContainer";
 import DynamicAttributeField from "@/src/components/DynamicAttributeField";
 import toast from "react-hot-toast";
 import CustomLoading from "../../../../components/Loading";
-import MultilevelMenu from "../../../../components/MultilevelMenu";
 
 const CreateProductPage = () => {
   const tagifyRef = useRef();
@@ -401,7 +400,6 @@ const CreateProductPage = () => {
             <div className="content-wrapper">
               <div className="py-3">
                 <div className="bg-white shadow-sm rounded-pill container-xxl flex-grow-1 py-2">
-                  <MultilevelMenu />
                 </div>
               </div>
               {/* Content */}

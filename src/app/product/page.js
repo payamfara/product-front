@@ -6,9 +6,8 @@ import { baseApiAuth } from "../../api/baseApi";
 import CustomLoading from "../../components/Loading";
 import { IconEdit, IconTrash } from "@tabler/icons-react";
 import { createRoot } from "react-dom/client";
-import { IconBox } from "@tabler/icons-react";
-import CustomDropdown from "@/src/components/Dropdown";
-import DropdownNotification from "@/src/components/DropdownNotification";
+import Menu from '@/src/components/Menu';
+import Header from '@/src/components/Header';
 
 const ListProductPage = () => {
   const columns = [
@@ -62,6 +61,8 @@ const ListProductPage = () => {
     return results;
   };
 
+  const [search, setSearch] = useState({})
+
   useEffect(() => {
     const loadData = async () => {
       const data = await fetchProducts();
@@ -70,169 +71,21 @@ const ListProductPage = () => {
       setData(data);
     };
     loadData();
-  }, []);
+  }, [search]);
 
   if (!data.length) {
     return <CustomLoading />;
   }
-
-  const items = [
-    { 'label': 'روز', 'icon': <i className="ti ti-sun me-2"></i>, onClick: () => btnPrint.click() },
-    { 'label': 'شب', 'icon': <i className="ti ti-moon me-2"></i>, onClick: () => btnCsv.click() },
-    { 'label': 'سیستم', 'icon': <i className="ti ti-device-desktop me-2"></i>, onClick: () => btnCopy.click() },
-  ]
 
 
   return (
     <Fragment>
       <div className="layout-wrapper layout-navbar-full layout-horizontal layout-without-menu">
         <div className="layout-container">
-          <nav className="layout-navbar navbar navbar-expand-xl align-items-center bg-navbar-theme" id="layout-navbar">
-            <div className="container-xxl">
-              <div className="navbar-brand app-brand demo d-none d-xl-flex py-0 me-4">
-                <a className="app-brand-link gap-2" href="index.html">
-                  <span className="app-brand-logo demo">
-                    <img alt="logo" src='/logo-sm.svg' />
-                  </span>
-                  <span className="app-brand-text demo menu-text fw-bold">میکرومدرن</span>
-                </a>
-                <a className="layout-menu-toggle menu-link text-large ms-auto d-xl-none" href="javascript:void(0);">
-                  <i className="ti ti-x ti-sm align-middle"></i>
-                </a>
-              </div>
-              <div className="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0 d-xl-none">
-                <a className="nav-item nav-link px-0 me-xl-4" href="javascript:void(0)">
-                  <i className="ti ti-menu-2 ti-sm"></i>
-                </a>
-              </div>
-              <div className="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
-                <ul className="navbar-nav flex-row align-items-center ms-auto">
-                  <li className="nav-item">
-                    <CustomDropdown toggleClass="nav-link no-caret" icon={<i className="ti ti-md ti-sun"></i>} items={items} />
-                  </li>
-                  <li className="nav-item">
-                    <DropdownNotification />
-                  </li>
-                  <li className="nav-item navbar-dropdown dropdown-user dropdown">
-                    <a className="nav-link dropdown-toggle hide-arrow" data-bs-toggle="dropdown" href="javascript:void(0);">
-                      <div className="avatar avatar-online">
-                        <img className="h-auto rounded-circle" src="/images/1.png" />
-                      </div>
-                    </a>
-                    <ul className="dropdown-menu dropdown-menu-end">
-                      <li>
-                        <a className="dropdown-item" href="pages-account-settings-account.html">
-                          <div className="d-flex">
-                            <div className="flex-shrink-0 me-3">
-                              <div className="avatar avatar-online">
-                                <img className="h-auto rounded-circle" src="/images/1.png" />
-                              </div>
-                            </div>
-                            <div className="flex-grow-1">
-                              <span className="fw-semibold d-block mb-1">نوید محمدزاده</span>
-                              <small className="text-muted">مدیرکل</small>
-                            </div>
-                          </div>
-                        </a>
-                      </li>
-                      <li>
-                        <div className="dropdown-divider"></div>
-                      </li>
-                      <li>
-                        <a className="dropdown-item" href="pages-profile-user.html">
-                          <i className="ti ti-user-check me-2 ti-sm"></i>
-                          <span className="align-middle">پروفایل من</span>
-                        </a>
-                      </li>
-                      <li>
-                        <a className="dropdown-item" href="pages-account-settings-account.html">
-                          <i className="ti ti-settings me-2 ti-sm"></i>
-                          <span className="align-middle">تنظیمات</span>
-                        </a>
-                      </li>
-                      <li>
-                        <a className="dropdown-item" href="pages-account-settings-billing.html">
-                          <span className="d-flex align-items-center align-middle">
-                            <i className="flex-shrink-0 ti ti-credit-card me-2 ti-sm"></i>
-                            <span className="flex-grow-1 align-middle">خریدها</span>
-                            <span className="flex-shrink-0 badge badge-center rounded-pill bg-label-danger w-px-20 h-px-20">2
-                            </span>
-                          </span>
-                        </a>
-                      </li>
-                      <li>
-                        <div className="dropdown-divider"></div>
-                      </li>
-                      <li>
-                        <a className="dropdown-item" href="pages-faq.html">
-                          <i className="ti ti-help me-2 ti-sm"></i>
-                          <span className="align-middle">سوالات متداول</span>
-                        </a>
-                      </li>
-                      <li>
-                        <a className="dropdown-item" href="pages-pricing.html">
-                          <i className="ti ti-currency-dollar me-2 ti-sm"></i>
-                          <span className="align-middle">قیمت گذاری</span>
-                        </a>
-                      </li>
-                      <li>
-                        <div className="dropdown-divider"></div>
-                      </li>
-                      <li>
-                        <a className="dropdown-item" href="auth-login-cover.html" target="_blank">
-                          <i className="ti ti-logout me-2 ti-sm"></i>
-                          <span className="align-middle">خروج از حساب</span>
-                        </a>
-                      </li>
-                    </ul>
-                  </li>
-                </ul>
-              </div>
-              <div className="navbar-search-wrapper search-input-wrapper container-xxl d-none">
-                <input aria-label="جستجو..." className="form-control search-input border-0" placeholder="جستجو..." type="text" />
-                <i className="ti ti-x ti-sm search-toggler cursor-pointer"></i>
-              </div>
-            </div>
-          </nav>
+         <Header />
           <div className="layout-page">
             <div className="content-wrapper">
-              <aside className="layout-menu-horizontal menu-horizontal menu bg-menu-theme flex-grow-0" id="layout-menu">
-                <div className="container-xxl d-flex h-100">
-                  <ul className="menu-inner">
-                    <li className="menu-item">
-                      <a className="menu-link menu-toggle" href="javascript:void(0)">
-                        <i className="menu-icon tf-icons ti ti-file"></i>
-                        <div data-i18n="Pages">صفحات سایت</div>
-                      </a>
-                      <ul className="menu-sub">
-                        <li className="menu-item">
-                          <a className="menu-link menu-toggle" href="javascript:void(0);">
-                            <i className="menu-icon tf-icons ti ti-box"></i>
-                            <div data-i18n="Front Pages">محصولات</div>
-                          </a>
-                          <ul className="menu-sub">
-                            <li className="menu-item">
-                              <a className="menu-link" href="/product/" target="_blank">
-                                <div data-i18n="Landing">لیست محصولات</div>
-                              </a>
-                            </li>
-                            <li className="menu-item">
-                              <a className="menu-link" href="/product/save/" target="_blank">
-                                <div data-i18n="Pricing">افزودن محصول</div>
-                              </a>
-                            </li>
-                            <li className="menu-item">
-                              <a className="menu-link" href="/category/" target="_blank">
-                                <div data-i18n="Payment">دسته بندی</div>
-                              </a>
-                            </li>
-                          </ul>
-                        </li>
-                      </ul>
-                    </li>
-                  </ul>
-                </div>
-              </aside>
+              <Menu />
               <div className="container-xxl flex-grow-1 container-p-y">
                 <h4 className="py-3 mb-4">
                   <span className="text-muted fw-light"> صفحه اصلی / </span>
