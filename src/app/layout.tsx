@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import { Toaster } from 'react-hot-toast';
-import Script from 'next/script';
+import { Toaster } from "react-hot-toast";
+import { WebSocketProvider } from "../contexts/WebSocketContext";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -26,28 +26,49 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html className="light-style layout-navbar-fixed layout-menu-fixed layout-compact" data-assets-path="../../assets/"
-      data-template="vertical-menu-template" data-theme="theme-default" dir="rtl" lang="fa">
-
+    <html
+      className="light-style layout-navbar-fixed layout-menu-fixed layout-compact"
+      data-assets-path="../../assets/"
+      data-template="vertical-menu-template"
+      data-theme="theme-default"
+      dir="rtl"
+      lang="fa"
+    >
       <head>
         <meta charSet="UTF-8" />
-        <meta content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
-          name="viewport" />
+        <meta
+          content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
+          name="viewport"
+        />
         <title>افزودن محصول</title>
         <meta content="" name="description" />
         {/* Favicon */}
-        <link href="../../assets/img/favicon/favicon.ico" rel="icon" type="image/x-icon" />
+        <link
+          href="../../assets/img/favicon/favicon.ico"
+          rel="icon"
+          type="image/x-icon"
+        />
         {/* Icons  */}
         <link href="/vendor/fonts/fontawesome.css" rel="stylesheet" />
         <link href="/vendor/fonts/tabler-icons.css" rel="stylesheet" />
         <link href="/vendor/fonts/flag-icons.css" rel="stylesheet" />
         {/* Core CSS  */}
-        <link className="template-customizer-core-css" href="/vendor/css/rtl/core.css" rel="stylesheet" />
-        <link className="template-customizer-theme-css" href="/vendor/css/rtl/theme-default.css"
-          rel="stylesheet" />
+        <link
+          className="template-customizer-core-css"
+          href="/vendor/css/rtl/core.css"
+          rel="stylesheet"
+        />
+        <link
+          className="template-customizer-theme-css"
+          href="/vendor/css/rtl/theme-default.css"
+          rel="stylesheet"
+        />
         {/* Vendors CSS  */}
         <link href="/vendor/libs/node-waves/node-waves.css" rel="stylesheet" />
-        <link href="/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" rel="stylesheet" />
+        <link
+          href="/vendor/libs/perfect-scrollbar/perfect-scrollbar.css"
+          rel="stylesheet"
+        />
         <link href="/vendor/libs/typeahead-js/typeahead.css" rel="stylesheet" />
         <link href="/vendor/libs/quill/typography.css" rel="stylesheet" />
         <link href="/vendor/libs/quill/katex.css" rel="stylesheet" />
@@ -57,21 +78,19 @@ export default function RootLayout({
         <link href="/libs/flatpickr/flatpickr.css" rel="stylesheet" />
         <link href="/vendor/libs/tagify/tagify.css" rel="stylesheet" />
         <link href="/css/rtl.css" rel="stylesheet" />
-        <link href="/vendor/libs/datatables-bs5/datatables.bootstrap5.css" rel="stylesheet" />
+        <link
+          href="/vendor/libs/datatables-bs5/datatables.bootstrap5.css"
+          rel="stylesheet"
+        />
         <link rel="stylesheet" href="/css/styles.css" />
-
       </head>
 
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         {children}
-        <Toaster 
-          position="top-left"
-        />
-        
+        <Toaster position="top-left" />
       </body>
     </html>
   );
-
 }

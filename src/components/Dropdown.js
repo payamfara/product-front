@@ -1,10 +1,11 @@
 import React from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
 
-const CustomDropdown = ({ items, icon, title = '', variant = '' , noCaret = false}) => {
+const CustomDropdown = ({ items, icon, title = '', variant = '' , toggleClass = ''}) => {
   return (
     <Dropdown>
-      <Dropdown.Toggle className={`d-flex gap-1 h-100 ${noCaret? "no-caret" : ""}`} variant={""} id="dropdown-custom">
+
+      <Dropdown.Toggle className={`d-flex gap-1 h-100 ${toggleClass}`} variant={variant}>
         {icon}
         {title}
       </Dropdown.Toggle>

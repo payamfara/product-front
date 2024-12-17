@@ -380,7 +380,7 @@ const VariantProductContainer = ({
                       urls={cards[activeCard].images}
                       updateUrls={updateUrls}
                       uploadUrl={
-                        "http://192.168.1.4:8000/api/save_images/products/"
+                        "http://192.168.1.21:8000/api/save_images/products/"
                       }
                     />
                   </div>
