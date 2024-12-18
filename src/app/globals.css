@@ -311,6 +311,12 @@ body {
 .w-70 {
   width: 70%;
 }
+.col-15 {
+  width: 15%;
+}
+.col-40 {
+  width: 40%;
+}
 
 .menu-item:hover > .menu-sub {
   display: block;

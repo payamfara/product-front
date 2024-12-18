@@ -3,7 +3,7 @@ import "datatables.net-buttons-bs5";
 import "datatables.net-buttons/js/buttons.html5";
 import "datatables.net-buttons/js/buttons.print";
 import "datatables.net-bs5";
-import React, {useEffect, useState, useRef} from "react";
+import React, {useEffect, useState} from "react";
 import $ from "jquery";
 import CustomDropdown from "./CustomDropdown";
 import {
@@ -15,19 +15,21 @@ import {
 } from "@tabler/icons-react";
 import RippleButton from "../components/RippleButton/RippleButton";
 import DynamicAttributeField from "./DynamicAttributeField";
-import CustomLoading from "./Loading";
 import {baseApiAuth} from "../api/baseApi";
+import Spinner from "./Spinner";
+import CustomPagination from "./CustomPagination";
 
 const DataTable = ({data, columns}) => {
-    const tableRef = useRef(null);
     const [pageData, setPageData] = useState([]);
     const [search, setSearch] = useState({
-        num: 7,
+        page_size: 7,
         page: 1,
+        q: '',
     });
     const [loading, setLoading] = useState(true);
+    const [debouncedSearch, setDebouncedSearch] = useState(search);
 
-    const numItems = [
+    const pageSizeItems = [
         {id: 7, value: 7},
         {id: 10, value: 10},
         {id: 20, value: 20},
@@ -62,54 +64,65 @@ const DataTable = ({data, columns}) => {
 
     const fetchProducts = async () => {
         try {
-            const response = await baseApiAuth.get(`/api2/product/`);
+            const queryParams = new URLSearchParams(search).toString();
+            const requestUrl = `/api2/product/`
+            const response = await baseApiAuth.get(`${requestUrl}?${queryParams}`);
             return response.data || [];
         } catch (error) {
             console.error("Error fetching products:", error);
             return [];
         }
+
     };
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearch(search);
+        }, 500);
+
+        return () => clearTimeout(timer);
+    }, [search]);
+
 
     useEffect(() => {
-        if (loading) {
-            fetchProducts().then((data) => {
-                setPageData(data);
-                setLoading(false);
-            });
-        }
-    }, [pageData, columns, loading]);
+        setLoading(true);
+        fetchProducts().then((data) => {
+            setPageData(data);
+            setLoading(false);
+        });
+    }, [debouncedSearch]);
 
     const handleSearchChange = (attribute, value) => {
+        if (attribute === "q") {
+
+        }
         setSearch((prev) => ({
             ...prev,
             [attribute]: value,
         }));
         setLoading(true);
     };
-
-    if (loading) {
-        return <CustomLoading/>;
-    }
-
+    const handlePageChange = (handlePageFunction) => {
+        setPageData(pageData=>({...pageData, current_page: handlePageFunction(pageData.current_page)}));
+    };
     return (
         <div className="card">
             <div className="card-header d-flex justify-content-between">
                 <DynamicAttributeField
                     data={{
-                        attribute_name_en: "term",
+                        attribute_name_en: "q",
                         attribute_name_fa: "جستجو محصول",
                         attr_type: {type: "string"},
-                        attribute_value: search["term"],
+                        attribute_value: search.q,
                     }}
-                    onChange={(value) => handleSearchChange("term", value)}
+                    onChange={(value) => handleSearchChange("q", value)}
                 />
                 <div className="d-flex gap-3">
                     <div>
                         <select
                             className={'h-100 form-select'}
-                            name={'term'}
+                            name={'page_size'}
                         >
-                            {numItems.map((item, index) => (
+                            {pageSizeItems.map((item, index) => (
                                 <option key={index} value={item.id}>{item.value}</option>
                             ))}
                         </select>
@@ -124,19 +137,42 @@ const DataTable = ({data, columns}) => {
                     </RippleButton>
                 </div>
             </div>
+
             <div className="">
                 <table
                     className="mb-3 table table-hover"
                 >
+                    <colgroup>
+                        {columns.map((column, index) => (
+                            <col key={index} className={`col-${column.width}`}/>
+                        ))}
+                    </colgroup>
                     <thead className="border-top">
                     <tr>
                         {columns.map((col, index) => (
-                            <th key={index}>{col.title}</th>
+                            <th key={index} className={'align-middle'}>
+                                {col.search_fields ? <DynamicAttributeField
+                                    data={{
+                                        attribute_name_en: col.data,
+                                        attribute_name_fa: col.title,
+                                        attribute_placeholder: 'جستجو ...',
+                                        attr_type: {type: "string"},
+                                        attribute_value: search[col.data],
+                                    }}
+                                    onChange={(value) => handleSearchChange(col.data, value)}
+                                /> : col.title}
+                            </th>
                         ))}
                     </tr>
                     </thead>
                     <tbody>
-                    {pageData.map((row, rowIndex) =>
+                    {loading ? <tr>
+                        <td colSpan={columns.length} className={'text-center border-0 pt-4'}>
+                            <div style={{minWidth: "100%"}}>
+                                <Spinner/>
+                            </div>
+                        </td>
+                    </tr> : pageData.results.map((row, rowIndex) =>
                         <tr key={rowIndex}>
                             {columns.map((col, index) => {
                                 return (
@@ -154,8 +190,13 @@ const DataTable = ({data, columns}) => {
                 </table>
             </div>
             <div className="card-footer">
-                <div className="row justify-content-between align-items-center">
-                    <div>نمایش {((search.page - 1) * search.num) + 1} تا {search.page * search.num}</div>
+                <div className="d-flex row-cols-auto justify-content-between align-items-center">
+                    <div>نمایش {((search.page - 1) * search.page_size) + 1} تا {search.page * search.page_size} از {pageData.total_pages * search.page_size}</div>
+                    <CustomPagination
+                        currentPage={pageData.current_page}
+                        totalPages={pageData.total_pages}
+                        onPageChange={handlePageChange}
+                    />
                 </div>
             </div>
         </div>
