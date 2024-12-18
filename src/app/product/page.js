@@ -14,17 +14,17 @@ const ListProductPage = () => {
     {
       title: "محصول",
       render: (data, type, row) => {
-        return `<div className="d-flex justify-content-start align-items-center product-name">
+        return <div className="d-flex justify-content-start align-items-center product-name">
           <div className="avatar-wrapper">
             <div className="avatar avatar me-2 rounded-2 bg-label-secondary">
-              <img src="${row.images[0]}" alt="${row.part_number_en}" className="rounded-2">
+              <img src={row.images[0]} alt={row.part_number_en} className="rounded-2" />
             </div>
           </div>
           <div className="d-flex flex-column">
-            <h6 className="text-body text-nowrap mb-0">${row.part_number_en}</h6>
-            <small className="text-muted text-truncate d-none d-sm-block">${row.part_number_fa}</small>
+            <h6 className="text-body text-nowrap mb-0">{row.part_number_en}</h6>
+            <small className="text-muted text-truncate d-none d-sm-block">{row.part_number_fa}</small>
           </div>
-        </div>`;
+        </div>;
       },
     },
     { title: "دسته بندی", data: "category_str" },
@@ -37,52 +37,21 @@ const ListProductPage = () => {
     {
       title: "عملیات",
       render: (data, type, row) => {
-        const container = document.createElement("div");
-        container.className = "d-flex gap-2";
-
-        const root = createRoot(container);
-        root.render(
-          <Fragment>
+        return (
+          <div className="d-flex gap-2">
             <IconEdit size={16} />
             <IconTrash size={16} />
-          </Fragment>
+          </div>
         );
-
-        return container;
       },
     },
   ];
-
-  const [data, setData] = useState([]);
-  const fetchProducts = async () => {
-    const requestUrl = `/api2/product/`;
-    const response = await baseApiAuth.get(requestUrl);
-    const results = response.data.results;
-    return results;
-  };
-
-  const [search, setSearch] = useState({})
-
-  useEffect(() => {
-    const loadData = async () => {
-      const data = await fetchProducts();
-      console.log("data", data);
-
-      setData(data);
-    };
-    loadData();
-  }, [search]);
-
-  if (!data.length) {
-    return <CustomLoading />;
-  }
-
 
   return (
     <Fragment>
       <div className="layout-wrapper layout-navbar-full layout-horizontal layout-without-menu">
         <div className="layout-container">
-         <Header />
+          <Header />
           <div className="layout-page">
             <div className="content-wrapper">
               <Menu />
@@ -92,9 +61,9 @@ const ListProductPage = () => {
                   لیست محصولات
                 </h4>
                 <div className="card">
-                  <div className="card-header d-flex flex-wrap row-cols-3">
-                    <h5 className="card-title mb-0 col-12">لیست محصولات</h5>
-                    <div className="p-2">
+                  <div className="card-header row row-cols-3 gy-3 flex-wrap">
+                    <h5 className="card-title col-12">لیست محصولات</h5>
+                    <div>
                       <DynamicAttributeField
                         data={{
                           attribute_name_en: "status",
@@ -106,7 +75,7 @@ const ListProductPage = () => {
                         }}
                       />
                     </div>
-                    <div className="p-2">
+                    <div>
                       <DynamicAttributeField
                         data={{
                           attribute_name_en: "category",
@@ -118,7 +87,7 @@ const ListProductPage = () => {
                         }}
                       />
                     </div>
-                    <div className="p-2">
+                    <div>
                       <DynamicAttributeField
                         data={{
                           attribute_name_en: "status",
@@ -131,7 +100,7 @@ const ListProductPage = () => {
                       />
                     </div>
                   </div>
-                  <DataTable data={data} columns={columns} />
+                  <DataTable columns={columns} />
                 </div>
               </div>
               <div className="content-backdrop fade"></div>

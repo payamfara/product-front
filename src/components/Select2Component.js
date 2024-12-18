@@ -15,7 +15,6 @@ const Select2Component = ({
   value,
   className
 }) => {
-  
   const [defaultOptions, setDefaultOptions] = useState(options);
   
   const handleOptions = async (inputValue) => {

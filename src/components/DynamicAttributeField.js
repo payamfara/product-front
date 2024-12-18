@@ -175,54 +175,6 @@ const DynamicAttributeField = ({ data, onChange, parentClassName }) => {
         </div>
       )
     default: return undefined;
-      // debugger
-      // let isAsync, inputValue, asyncUrl, options;
-      // if (typeof (attribute_type === "object")) {
-      //   isAsync = attribute_type.type === "select_2";
-      //   inputValue = { 'id': attribute_value, 'value': attribute_value_str };
-      //   asyncUrl = `/strvalue/?list_id=${attribute_type.list_id}`;
-      //   options = attribute_type.choice;
-      // } else {
-      //   const match = attribute_type?.match(/\(([^)]+)\)/);
-      //   if (match) {
-      //     isAsync = true;
-      //     inputValue = { id: attribute_value, value: attribute_value_str };
-      //     asyncUrl =
-      //       match[1] == "choice"
-      //         ? `/choice/?title=${attribute_name_en}`
-      //         : `/${match[1]}/`;
-      //   } else {
-      //     return (
-      //       <div className={`${parentClassName} form-floating`}>
-      //         <DatePicker name={attribute_name_en} />
-      //         <label htmlFor={attribute_id}>{attribute_name_en}</label>
-      //       </div>
-      //     );
-      //   }
-      // }
-
-      // return (
-      //   <div className={`${parentClassName} form-floating`}>
-      //     <input
-      //       id={`${attribute_id}_fake`}
-      //       readOnly
-      //       type="text"
-      //       className="form-control"
-      //     />
-      //     <label htmlFor={attribute_id}>{attribute_name_fa}</label>
-      //     <Select2
-      //       options={options}
-      //       id={attribute_id}
-      //       name={attribute_name_en}
-      //       asyncUrl={asyncUrl}
-      //       isAsync={isAsync}
-      //       placeholder={attribute_placeholder}
-      //       onChange={onChange}
-      //       value={inputValue}
-      //       className={`position-absolute bottom-0 w-100 custom-select--nobrorder`}
-      //     />
-      //   </div>
-      // );
   }
 };
 
