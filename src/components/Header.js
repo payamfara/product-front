@@ -1,5 +1,6 @@
 import { Fragment } from "react";
 import CustomDropdown from "./CustomDropdown";
+import Cookies from "js-cookie";
 
 
 const Header = () => {
@@ -105,6 +106,7 @@ const Header = () => {
       {
         icon: <i className="ti ti-logout me-2 ti-sm"></i>,
         title: "خروج از حساب",
+        onClick: ()=>{Cookies.remove('authToken'); window.location.reload();},
       },
     ],
   };

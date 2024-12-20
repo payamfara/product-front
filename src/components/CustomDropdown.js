@@ -51,7 +51,7 @@ const CustomDropdown = ({
               <Fragment key={index}>
                 {arr.map((arrItem, arrIndex) =>
                   !arrItem.msg ? (
-                    <Dropdown.Item key={arrIndex}>
+                    <Dropdown.Item key={arrIndex} onClick={arrItem.onClick}>
                       {arrItem.img ? (
                         <img
                           alt=""
@@ -66,6 +66,7 @@ const CustomDropdown = ({
                   ) : (
                     <Dropdown.Item
                       key={arrIndex}
+                      onClick={arrItem.onClick}
                       className={`w-100 ${hasSpace ? "" : "m-0 p-3"}`}
                     >
                       <div className="d-flex">
