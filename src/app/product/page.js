@@ -1,15 +1,23 @@
 "use client";
 import DynamicAttributeField from "@/src/components/DynamicAttributeField";
-import {Fragment, useState, useEffect} from "react";
 import DataTable from "../../components/DataTable";
-import {baseApiAuth} from "../../api/baseApi";
-import CustomLoading from "../../components/Loading";
 import {IconEdit, IconTrash} from "@tabler/icons-react";
-import {createRoot} from "react-dom/client";
-import Menu from '@/src/components/Menu';
-import Header from '@/src/components/Header';
+import ClientLayout from "../../components/ClientLayout";
+import {useState} from "react";
+import Link from "next/link";
+import {confirm} from "../../components/ConfirmModalComponent";
 
 const ListProductPage = () => {
+    const handleDelete = async (id) => {
+        const result = await confirm({});
+
+        if (result) {
+            console.log("Item deleted!");
+        } else {
+            console.log("Action canceled.");
+        }
+    };
+
     const columns = [
         {
             search_fields: ['part_number_en', 'part_number_fa', 'part_number_bz'],
@@ -46,7 +54,7 @@ const ListProductPage = () => {
             width: '15',
             title: "قیمت",
             data: "price",
-            render: (data, type, row) => data + " تومان",
+            render: (data, type, row) => data + " ءتء",
         },
         {
             width: '15',
@@ -54,78 +62,94 @@ const ListProductPage = () => {
             render: (data, type, row) => {
                 return (
                     <div className="d-flex gap-2">
-                        <IconEdit size={16} />
-                        <IconTrash size={16} />
+                        <Link href={`/product/save/${row.id}`}><IconEdit size={20}/></Link>
+                        <IconTrash role={'button'} onClick={()=>handleDelete(row.id)} size={20}/>
                     </div>
                 );
             },
         },
     ];
+    const [fields, setFields] = useState({});
+
+    const updateFields = (attribute, value, opr) => {
+        const extraData = typeof value === "object"
+            ? {
+                value: value.id,
+                value_str: (value.value || value.label || value.name || value.title_en),
+                opr: opr
+            } : {
+                value: value,
+                opr: opr
+            }
+
+        console.log(attribute, value);
+        setFields(fields => ({
+            ...fields,
+            [attribute]: {...fields[attribute], ...extraData}
+        }))
+    }
 
     return (
-        <Fragment>
-            <div className="layout-wrapper layout-navbar-full layout-horizontal layout-without-menu">
-                <div className="layout-container">
-                    <Header/>
-                    <div className="layout-page">
-                        <div className="content-wrapper">
-                            <Menu/>
-                            <div className="container-xxl flex-grow-1 container-p-y">
-                                <h4 className="py-3 mb-4">
-                                    <span className="text-muted fw-light"> صفحه اصلی / </span>
-                                    لیست محصولات
-                                </h4>
-                                <div className="card">
-                                    <div className="card-header row row-cols-3 gy-3 flex-wrap">
-                                        <h5 className="card-title col-12">لیست محصولات</h5>
-                                        <div>
-                                            <DynamicAttributeField
-                                                data={{
-                                                    attribute_name_en: "status",
-                                                    attribute_name_fa: "وضعیت",
-                                                    attr_type: {
-                                                        type: "select_2",
-                                                        url: "/api2/myapp-choice/?title=status",
-                                                    },
-                                                }}
-                                            />
-                                        </div>
-                                        <div>
-                                            <DynamicAttributeField
-                                                data={{
-                                                    attribute_name_en: "category",
-                                                    attribute_name_fa: "دسته بندی",
-                                                    attr_type: {
-                                                        type: "select_2",
-                                                        url: "/api2/myapp-category/?",
-                                                    },
-                                                }}
-                                            />
-                                        </div>
-                                        <div>
-                                            <DynamicAttributeField
-                                                data={{
-                                                    attribute_name_en: "status",
-                                                    attribute_name_fa: "وضعیت انبار",
-                                                    attr_type: {
-                                                        type: "select_2",
-                                                        url: "/api2/myapp-category/?",
-                                                    },
-                                                }}
-                                            />
-                                        </div>
-                                    </div>
-                                    <DataTable columns={columns}/>
-                                </div>
-                            </div>
-                            <div className="content-backdrop fade"></div>
+        <ClientLayout>
+
+            <div className="container-xxl flex-grow-1 container-p-y">
+                <h4 className="py-3 mb-4">
+                    <span className="text-muted fw-light"> صفحه اصلی / </span>
+                    لیست محصولات
+                </h4>
+                <div className="card">
+                    <div className="card-header row row-cols-3 gy-3 flex-wrap">
+                        <h5 className="card-title col-12">لیست محصولات</h5>
+                        <div>
+                            <DynamicAttributeField
+                                data={{
+                                    attribute_name_en: "status",
+                                    attribute_name_fa: "وضعیت",
+                                    attr_type: {
+                                        type: "select_2",
+                                        url: "/api2/myapp-choice/?title=status",
+                                    },
+                                    attribute_value: fields.status?.value,
+                                    attribute_value_str: fields.status?.value_str
+                                }}
+                                onChange={(value) => updateFields('status', value, '=')}
+                            />
+                        </div>
+                        <div>
+                            <DynamicAttributeField
+                                data={{
+                                    attribute_name_en: "category",
+                                    attribute_name_fa: "دسته بندی",
+                                    attr_type: {
+                                        type: "select_2",
+                                        url: "/api2/myapp-category/",
+                                    },
+                                    attribute_value: fields.category?.value,
+                                    attribute_value_str: fields.category?.value_str
+                                }}
+                                onChange={(value) => updateFields('category', value, '=')}
+                            />
+                        </div>
+                        <div>
+                            <DynamicAttributeField
+                                data={{
+                                    attribute_name_en: "status",
+                                    attribute_name_fa: "وضعیت انبار",
+                                    attr_type: {
+                                        type: "select_2",
+                                        url: "/api2/myapp-category/",
+                                    },
+                                    attribute_value: fields.category,
+                                }}
+                                onChange={(value) => updateFields('status', value)}
+                            />
                         </div>
                     </div>
+                    <DataTable columns={columns} fields={fields}/>
                 </div>
             </div>
-            <div className="layout-overlay layout-menu-toggle"></div>
-            <div className="drag-target"></div>
-        </Fragment>
+        </ClientLayout>
+
     );
 };
 

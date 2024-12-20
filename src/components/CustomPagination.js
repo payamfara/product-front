@@ -30,7 +30,7 @@ const CustomPagination = ({ currentPage, totalPages, onPageChange }) => {
     return (
         <Pagination>
             <Pagination.Prev
-                onClick={() => onPageChange(currentPage => currentPage - 1)}
+                onClick={() => onPageChange(currentPage - 1)}
                 disabled={currentPage === 1}
             >قبلی</Pagination.Prev>
 

@@ -43,8 +43,6 @@ const TabsWithInputs = ({ onChange, inputs }) => {
       ? {
         attr_value: newValue.id,
         attribute_value_str: (newValue.value || newValue.label || newValue.name || newValue.title_en),
-        attr_value_fa: newValue.title_fa,
-        attr_value_bz: newValue.title_bz,
       } : {
         attr_value: newValue
       }

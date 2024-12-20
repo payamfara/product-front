@@ -29,7 +29,7 @@ const Header = () => {
   };
   const notificationItems = {
     header: {
-      icon: <i class="ti ti-mail-opened fs-4"></i>,
+      icon: <i className="ti ti-mail-opened fs-4"></i>,
       title: "اعلانات",
     },
     footer: {
@@ -61,19 +61,19 @@ const Header = () => {
         date: "1 ساعت قبل",
       },
       {
-        icon: <i class="ti ti-shopping-cart"></i>,
+        icon: <i className="ti ti-shopping-cart"></i>,
         title: "ایول! سفارش جدید داری 🛒",
         msg: "شرکت یلدا سفارشی جدید ثبت کرد.",
         date: "امروز",
       },
       {
-        icon: <i class="ti ti-shopping-cart"></i>,
+        icon: <i className="ti ti-shopping-cart"></i>,
         title: "ایول! سفارش جدید داری 🛒",
         msg: "شرکت یلدا سفارشی جدید ثبت کرد.",
         date: "امروز",
       },
       {
-        icon: <i class="ti ti-shopping-cart"></i>,
+        icon: <i className="ti ti-shopping-cart"></i>,
         title: "ایول! سفارش جدید داری 🛒",
         msg: "شرکت یلدا سفارشی جدید ثبت کرد.",
         date: "امروز",
@@ -94,16 +94,16 @@ const Header = () => {
       },
       [
         {
-          icon: <i class="ti ti-user-check me-2 ti-sm"></i>,
+          icon: <i className="ti ti-user-check me-2 ti-sm"></i>,
           title: "پروفایل من",
         },
         {
-          icon: <i class="ti ti-settings me-2 ti-sm"></i>,
+          icon: <i className="ti ti-settings me-2 ti-sm"></i>,
           title: "تنظیمات",
         },
       ],
       {
-        icon: <i class="ti ti-logout me-2 ti-sm"></i>,
+        icon: <i className="ti ti-logout me-2 ti-sm"></i>,
         title: "خروج از حساب",
       },
     ],
