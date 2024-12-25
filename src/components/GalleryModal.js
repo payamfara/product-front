@@ -7,7 +7,7 @@ const GalleryModal = ({ show, onHide, onSubmit }) => {
 
     useEffect(() => {
         if (show) {
-            fetch("http://192.168.1.6:8000/api/save_images/products/")
+            fetch("http://192.168.1.26:8001/api/save_images/products/")
                 .then((response) => response.json())
                 .then((data) => {
                     console.log(data);
