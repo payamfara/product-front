@@ -19,7 +19,7 @@ const CreateProductPage = () => {
     const [loading, setLoading] = useState(true);
     const [pageDataHistory, setPageDataHistory] = useState({});
     const params = useParams();
-    const {id = ""} = params;
+    const {id = 0} = params;
 
     const updateMainProduct = (name, value) => {
         console.log(name, value);
@@ -75,7 +75,7 @@ const CreateProductPage = () => {
         console.log(id, preparedData);
         const {variant_products, ...requestData} = preparedData;
 
-        const requestUrl = id !== "new" ? `/api2/product/${id}/` : `/api2/product/`;
+        const requestUrl = id !== 0 ? `/api2/product/${id}/` : `/api2/product/`;
         baseApiAuth
             .post(requestUrl, requestData)
             .then((res) => {
@@ -104,226 +104,60 @@ const CreateProductPage = () => {
         }
     };
 
-    const loadData = async (category) => {
-        console.log(category);
-
-        const createEmptyVariantProduct = (variantAttrs) => [
-            {
-                id: "new",
-                images: [],
-                part_number_is_manual: false,
-                part_number_en: "new",
-                part_number_fa: "",
-                part_number_bz: "",
-                variant_product_attrs: variantAttrs,
-            },
-        ];
-
-        const createMetaDatas = () => ({
-            id: {
-                type: "other",
-                verbose_name: "ID",
-                required: false,
-                validators: [],
-                read_only: true,
-            },
-            category: {
-                type: "select_2",
-                verbose_name: "دسته",
-                required: true,
-                validators: [],
-                default: {id: 3, value: "ceramic"},
-                url: "/api2/myapp-category/?",
-                read_only: false,
-            },
-            status: {
-                type: "select_2",
-                verbose_name: "وضعیت",
-                required: false,
-                validators: [],
-                default: {id: 1, value: "Published"},
-                url: "/api2/myapp-choice/?title=status",
-                read_only: false,
-            },
-            part_number_is_manual: {
-                type: "bool",
-                verbose_name: "شماره قطعه دستی",
-                required: false,
-                validators: [],
-                read_only: false,
-            },
-            part_number_en: {
-                type: "string",
-                verbose_name: "شماره قطعه (انگلیسی)",
-                required: true,
-                validators: [],
-                read_only: false,
-            },
-            part_number_fa: {
-                type: "string",
-                verbose_name: "شماره قطعه (فارسی)",
-                required: true,
-                validators: [],
-                read_only: false,
-            },
-            part_number_bz: {
-                type: "string",
-                verbose_name: "شماره قطعه (محلی)",
-                required: true,
-                validators: [],
-                read_only: false,
-            },
-            price: {
-                type: "float",
-                verbose_name: "قیمت",
-                required: false,
-                validators: [],
-                read_only: false,
-            },
-            limit: {
-                type: "float",
-                verbose_name: "محدودیت موجودی",
-                required: false,
-                validators: [],
-                read_only: false,
-            },
-            description: {
-                type: "other",
-                verbose_name: "توضیحات",
-                required: false,
-                validators: [],
-                read_only: false,
-            },
-            images: {
-                type: "other",
-                verbose_name: "تصاویر",
-                required: false,
-                validators: [],
-                read_only: false,
-            },
-        });
-
-        const createEmptyPageData = () => ({
-            id: "new",
-            part_number_is_manual: false,
-            part_number_en: "new",
-            part_number_fa: "",
-            part_number_bz: "",
-            category,
-            limit: 0,
-            description: "",
-            price: 0,
-            images: [],
-            tags: [],
-            meta_datas: createMetaDatas(),
-        });
-
-        if (!id) {
-            const fetchAttributes = async (category) => {
-                const requestUrl = `/api2/attribute/?category=${category}`;
+    const loadData = async () => {
+        try {
+            const fetchProduct = async () => {
+                const requestUrl = `/api2/product/${id}`;
                 const response = await baseApiAuth.get(requestUrl);
-                const results = response.data.results;
-                return {
-                    nonVariantAttrs: results.filter((a) => !a.is_variant),
-                    variantAttrs: results.filter((a) => a.is_variant),
-                };
+                const results = response.data;
+                console.log("res", results);
+
+                return results;
             };
 
-            try {
+            // if (pageDataHistory[category]) {
+            //     const [categoryPageData, categoryInitialPageData] =
+            //         pageDataHistory[category];
+            //     setPageDataHistory((pageDataHistory) => ({
+            //         ...pageDataHistory,
+            //         [category]: [pageData, initialPageData],
+            //     }));
+            //     setPageData(categoryPageData);
+            //     setInitialPageData(categoryInitialPageData);
+            // } else {
+                const results = await fetchProduct();
                 const {
-                    nonVariantAttrs: nonVariantAttrsAll,
-                    variantAttrs: variantAttrsAll,
-                } = await fetchAttributes(1);
-
-                if (category) {
-                    const {
-                        nonVariantAttrs: nonVariantAttrsCategory,
-                        variantAttrs: variantAttrsCategory,
-                    } = await fetchAttributes(category);
-
-                    setPageData((pageData) => ({
-                        ...(pageData.id ? pageData : createEmptyPageData()),
-                        non_variant_product_attrs: [
-                            ...nonVariantAttrsAll,
-                            ...nonVariantAttrsCategory,
-                        ],
-                        variant_product_attrs: [
-                            ...variantAttrsAll,
-                            ...variantAttrsCategory,
-                        ],
-                        variant_products: createEmptyVariantProduct([
-                            ...variantAttrsAll,
-                            ...variantAttrsCategory,
-                        ]),
-                    }));
-                } else {
-                    setPageData((pageData) => ({
-                        ...(pageData.id ? pageData : createEmptyPageData()),
-                        non_variant_product_attrs: nonVariantAttrsAll,
-                        variant_product_attrs: variantAttrsAll,
-                        variant_products: createEmptyVariantProduct(variantAttrsAll),
-                    }));
-                }
-            } catch (error) {
-                console.error("Error fetching attributes:", error);
-            } finally {
-                setLoading(false);
-            }
-        } else {
-            try {
-                const fetchProduct = async () => {
-                    const requestUrl = `/api2/product/${id}`;
-                    const response = await baseApiAuth.get(requestUrl);
-                    const results = response.data;
-                    console.log("res", results);
-
-                    return results;
-                };
-
-                if (pageDataHistory[category]) {
-                    const [categoryPageData, categoryInitialPageData] =
-                        pageDataHistory[category];
-                    setPageDataHistory((pageDataHistory) => ({
-                        ...pageDataHistory,
-                        [category]: [pageData, initialPageData],
-                    }));
-                    setPageData(categoryPageData);
-                    setInitialPageData(categoryInitialPageData);
-                } else {
-                    const results = await fetchProduct();
-                    const {
-                        non_variant_extra_attrs,
-                        variant_extra_attrs,
-                        ...resultData
-                    } = results;
-                    setPageData({
-                        ...resultData,
-                        non_variant_product_attrs: [
-                            ...resultData["non_variant_product_attrs"],
-                            ...non_variant_extra_attrs,
-                        ],
-                        variant_product_attrs: [
-                            ...resultData["variant_product_attrs"],
-                            ...variant_extra_attrs,
-                        ],
-                    });
-                    setInitialPageData({
-                        ...resultData,
-                        non_variant_product_attrs: [
-                            ...resultData["non_variant_product_attrs"],
-                            ...non_variant_extra_attrs,
-                        ],
-                        variant_product_attrs: [
-                            ...resultData["variant_product_attrs"],
-                            ...variant_extra_attrs,
-                        ],
-                    });
-                }
-            } catch (error) {
-                console.error("Error fetching attributes:", error);
-            } finally {
-                setLoading(false);
-            }
+                    non_variant_extra_attrs,
+                    variant_extra_attrs,
+                    ...resultData
+                } = results;
+                setPageData({
+                    ...resultData,
+                    non_variant_product_attrs: [
+                        ...(resultData["non_variant_product_attrs"] ?? []),
+                        ...non_variant_extra_attrs,
+                    ],
+                    variant_product_attrs: [
+                        ...(resultData["variant_product_attrs"] ?? []),
+                        ...variant_extra_attrs,
+                    ],
+                });
+                // setInitialPageData({
+                //     ...resultData,
+                //     non_variant_product_attrs: [
+                //         ...resultData["non_variant_product_attrs"],
+                //         ...non_variant_extra_attrs,
+                //     ],
+                //     variant_product_attrs: [
+                //         ...resultData["variant_product_attrs"],
+                //         ...variant_extra_attrs,
+                //     ],
+                // });
+            // }
+        } catch (error) {
+            console.error("Error fetching attributes:", error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -399,16 +233,16 @@ const CreateProductPage = () => {
                     لیست محصولات
                 </h4>
                 <form onSubmit={handleSubmit} className="app-ecommerce">
-                {/* Add Product */}
+                    {/* Add Product */}
                     <div
                         className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3">
                         <div className="d-flex flex-column justify-content-center">
-                            {pageData.id !== "new" ? (
+                            {pageData.id !== 0 ? (
                                 <h4 className="mb-1 mt-3">ویرایش محصول</h4>
                             ) : (
                                 <h4 className="mb-1 mt-3">ایجاد محصول</h4>
                             )}
-                            {pageData.id !== "new" ? (
+                            {pageData.id !== 0 ? (
                                 <p className="text-muted">{pageData.part_number_fa}</p>
                             ) : (
                                 <p className="text-muted">
