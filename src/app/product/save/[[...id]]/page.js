@@ -1,5 +1,5 @@
 "use client";
-import {Fragment, useState, useEffect, useRef} from "react";
+import {useState, useEffect, useRef} from "react";
 import TagifyComponent from "../../../../components/TagifyComponent";
 import DropzoneComponent from "../../../../components/DropzoneComponent";
 import QuillEditorComponent from "../../../../components/QuillEditorComponent";
@@ -13,7 +13,6 @@ import CustomLoading from "../../../../components/Loading";
 import ClientLayout from "../../../../components/ClientLayout";
 
 const CreateProductPage = () => {
-    const tagifyRef = useRef();
     const [pageData, setPageData] = useState({});
     const [initialPageData, setInitialPageData] = useState({});
     const [loading, setLoading] = useState(true);
@@ -125,34 +124,48 @@ const CreateProductPage = () => {
             //     setPageData(categoryPageData);
             //     setInitialPageData(categoryInitialPageData);
             // } else {
-                const results = await fetchProduct();
-                const {
-                    non_variant_extra_attrs,
-                    variant_extra_attrs,
-                    ...resultData
-                } = results;
-                setPageData({
-                    ...resultData,
-                    non_variant_product_attrs: [
-                        ...(resultData["non_variant_product_attrs"] ?? []),
-                        ...non_variant_extra_attrs,
-                    ],
-                    variant_product_attrs: [
-                        ...(resultData["variant_product_attrs"] ?? []),
-                        ...variant_extra_attrs,
-                    ],
-                });
-                // setInitialPageData({
-                //     ...resultData,
-                //     non_variant_product_attrs: [
-                //         ...resultData["non_variant_product_attrs"],
-                //         ...non_variant_extra_attrs,
-                //     ],
-                //     variant_product_attrs: [
-                //         ...resultData["variant_product_attrs"],
-                //         ...variant_extra_attrs,
-                //     ],
-                // });
+            const {
+                non_variant_extra_attrs,
+                variant_extra_attrs,
+                non_variant_product_attrs = [],
+                variant_product_attrs = [],
+                ...results
+            } = await fetchProduct();
+
+            const mergedNonVariantAttrs = [
+                ...non_variant_product_attrs,
+                ...non_variant_extra_attrs,
+            ];
+
+            const mergedVariantAttrs = [
+                ...variant_product_attrs,
+                ...variant_extra_attrs,
+            ];
+
+            setPageData({
+                ...results,
+                non_variant_product_attrs: mergedNonVariantAttrs,
+                variant_product_attrs: mergedVariantAttrs,
+                variant_products: [
+                    {
+                        ...results,
+                        variant_product_attrs: mergedVariantAttrs,
+                    },
+                    ...results.variant_products,
+                ]
+            });
+
+            // setInitialPageData({
+            //     ...resultData,
+            //     non_variant_product_attrs: [
+            //         ...resultData["non_variant_product_attrs"],
+            //         ...non_variant_extra_attrs,
+            //     ],
+            //     variant_product_attrs: [
+            //         ...resultData["variant_product_attrs"],
+            //         ...variant_extra_attrs,
+            //     ],
+            // });
             // }
         } catch (error) {
             console.error("Error fetching attributes:", error);
@@ -173,9 +186,10 @@ const CreateProductPage = () => {
         e.preventDefault();
         console.log("pageData", pageData);
 
-        const linkedProducts = pageData.non_variant_product_attrs.some(
+        const changedAttrs = pageData.non_variant_product_attrs.filter(
             (nonVariant) => nonVariant.changed
         )
+        const linkedProducts = changedAttrs.length
             ? pageData.variant_products.filter(
                 (vp) => vp.linked || vp.id === pageData.id
             )
@@ -184,11 +198,11 @@ const CreateProductPage = () => {
             ...linkedProduct,
             non_variant_product_attrs: linkedProduct.non_variant_product_attrs
                 ? linkedProduct.non_variant_product_attrs.map((nonVariant) => {
-                    const foundItem = pageData.non_variant_product_attrs.find(
+                    const foundItem = changedAttrs.find(
                         (nv) => nv.attribute === nonVariant.attribute
                     );
 
-                    return foundItem.changed
+                    return foundItem
                         ? {
                             ...nonVariant,
                             attr_value: foundItem.attr_value,
@@ -321,12 +335,12 @@ const CreateProductPage = () => {
                                                 />
                                             </div>
                                             <TagifyComponent
-                                                ref={tagifyRef}
                                                 name={"برچسب ها"}
                                                 id={"tags"}
                                                 asyncUrl="/api2/tag/"
                                                 placeholder="افزودن..."
                                                 onChange={(value) => {
+                                                    console.log('val', value)
                                                     handleChange("tags", value);
                                                 }}
                                                 value={pageData.tags}
