@@ -69,17 +69,16 @@ const Card = ({
 };
 
 const VariantProductContainer = ({
-                                     nonVariants,
                                      updateVariants,
-                                     pageId,
                                      onChange,
-                                     cards,
                                      initialCards,
-                                     inputs,
+                                     pageData
                                  }) => {
     const [activeCard, setActiveCard] = useState(-1);
     const [isAttributeFrm, setIsAttributeFrm] = useState(true);
 
+    const cards = pageData.variant_products;
+    const inputs = pageData.variant_product_attrs;
     const emptyFrm = inputs.map((input) => {
         const {id, ...inputData} = input;
         return {
@@ -113,7 +112,7 @@ const VariantProductContainer = ({
     }, []);
 
     const handleCardClick = async (index) => {
-        console.log(index);
+        console.log(index, cards[index]);
 
         if (cards[index].variant_product_attrs) {
             setActiveCard(index);
@@ -183,6 +182,8 @@ const VariantProductContainer = ({
         );
     };
 
+    const mainProduct = cards.find(c => c.id === pageData.id)
+
     return (
         <div id="variant_attrs" className="card h-100">
             <div className="card-header d-flex align-items-center gap-3">
@@ -211,7 +212,7 @@ const VariantProductContainer = ({
                             <Card
                                 key={index}
                                 card={card}
-                                isLinkable={nonVariants.some(
+                                isLinkable={mainProduct.non_variant_product_attrs.some(
                                     (nonVariant) => nonVariant.changed
                                 )}
                                 isActive={activeCard === index}
@@ -225,10 +226,10 @@ const VariantProductContainer = ({
                     activeCard <= cards.length - 1 &&
                     cards[activeCard] &&
                     (cards[activeCard].linked ||
-                        !nonVariants.some((nonVariant) => nonVariant.changed)) ? (
+                        !mainProduct.non_variant_product_attrs.some((nonVariant) => nonVariant.changed)) ? (
                         <div className="position-relative border border-dashed rounded col-9 p-2">
                             <div className="position-absolute end-0 top-0 myn-3 mx-3 d-flex gap-3">
-                                {cards[activeCard].id !== pageId && (
+                                {cards[activeCard].id !== pageData.id && (
                                     <RippleButton
                                         className={`z-1 rounded-start-0 border-success btn ${
                                             !isAttributeFrm
@@ -389,7 +390,7 @@ const VariantProductContainer = ({
                                 </div>
                             )}
                         </div>
-                    ) : nonVariants.some((nonVariant) => nonVariant.changed) ? (
+                    ) : mainProduct.non_variant_product_attrs.some((nonVariant) => nonVariant.changed) ? (
                         <div className="bg-secondary-subtle border border-dashed rounded col-9">
                             <div
                                 className="h-100 d-flex flex-column gap-1 justify-content-center align-items-center fs-5">

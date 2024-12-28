@@ -1,4 +1,4 @@
-import React, {useRef, useImperativeHandle, forwardRef} from "react";
+import React, {useRef} from "react";
 import Tags from "@yaireo/tagify/dist/react.tagify";
 import {baseApiAuth} from "../api/baseApi";
 
@@ -16,8 +16,7 @@ const TagifyComponent =
             value = [],
             valueKey = "id",
             displayKey = "value",
-        },
-        ref
+        }
     ) => {
         const tagifyRef = useRef();
         const settings = {
@@ -25,7 +24,8 @@ const TagifyComponent =
             maxTags,
             whitelist: whitelist.map((item) => ({
                 id: item[valueKey],
-                value: item[displayKey],
+                [displayKey]: item[displayKey] || item['value'] || item['title'],
+                value: item[displayKey] || item['value'] || item['title'],
             })),
             dropdown: {
                 enabled: 0,
@@ -37,7 +37,8 @@ const TagifyComponent =
 
         const processedvalue = value.map((item) => ({
             id: item[valueKey],
-            value: item[displayKey],
+            [displayKey]: item[displayKey] || item['value'] || item['title'],
+            value: item[displayKey] || item['value'] || item['title'],
         }));
 
         const handleInput = async (e) => {
@@ -50,6 +51,7 @@ const TagifyComponent =
                         tagifyRef.current.settings.whitelist = res.data.results.map(
                             (item) => ({
                                 id: item[valueKey],
+                                [displayKey]: item[displayKey] || item['value'] || item['title'],
                                 value: item[displayKey] || item['value'] || item['title'],
                             })
                         );
