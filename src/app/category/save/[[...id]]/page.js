@@ -7,7 +7,6 @@ import DynamicAttributeField from "@/src/components/DynamicAttributeField";
 import toast from "react-hot-toast";
 import PlusButton from "../../../../components/PlusButton";
 import CustomLoading from "../../../../components/Loading";
-import MultilevelMenu from "@/src/components/MultilevelMenu";
 import ClientLayout from "../../../../components/ClientLayout";
 
 const CreateCategoryPage = () => {
