@@ -1,6 +1,6 @@
 import RippleButton from "@/src/components/RippleButton/RippleButton";
 import React, {useState, useEffect} from "react";
-import {FaTrash, FaSquare} from "react-icons/fa";
+    import {FaTrash, FaSquare} from "react-icons/fa";
 import TabsWithInputsComponent from "../../../../../components/TabsWithInputsComponent";
 import {baseApiAuth} from "@/src/api/baseApi";
 import {FaSquareCheck} from "react-icons/fa6";
@@ -25,16 +25,16 @@ const Card = ({
         >
             <div
                 className="position-absolute d-flex flex-column justify-content-center gap-4 top-0 start-0 h-100 mxn-2">
-                {!card.id && (
+                {!card.id ? (
                     <RippleButton
                         className="z-1 rounded-start-0 border-0 border-danger ribbon btn btn-danger btn-sm p-1"
                         onClick={onDelete}
                         title="Delete"
                     >
-                        <FaTrash size={16}/>
+                            <FaTrash size={16}/>
                     </RippleButton>
-                )}
-                {card.id && isLinkable && (
+                ) : undefined}
+                {card.id && isLinkable ? (
                     <RippleButton
                         className="z-1 rounded-start-0 border-0 border-success ribbon btn btn-success btn-sm p-1"
                         onClick={toggleLink}
@@ -42,7 +42,7 @@ const Card = ({
                     >
                         {card.linked ? <FaSquareCheck size={16}/> : <FaSquare size={16}/>}
                     </RippleButton>
-                )}
+                ) : undefined}
             </div>
             <div className={`card shadow-lg h-100 overflow-hidden`}>
                 <div className="card-img card-body p-0">
@@ -71,8 +71,7 @@ const Card = ({
 const VariantProductContainer = ({
                                      updateVariants,
                                      onChange,
-                                     initialCards,
-                                     pageData
+                                     pageData,
                                  }) => {
     const [activeCard, setActiveCard] = useState(-1);
     const [isAttributeFrm, setIsAttributeFrm] = useState(true);
@@ -159,6 +158,18 @@ const VariantProductContainer = ({
                             typeof updateAttrValuesFunctionOrValue === "function"
                                 ? updateAttrValuesFunctionOrValue(card[key])
                                 : updateAttrValuesFunctionOrValue,
+                        ...(key === "part_number_is_manual" ? updateAttrValuesFunctionOrValue ? {
+                            part_number_en: card.part_number_en_custom,
+                            part_number_fa: card.part_number_fa_custom,
+                            part_number_bz: card.part_number_bz_custom,
+                        } : {
+                            part_number_en_custom: card.part_number_en,
+                            part_number_fa_custom: card.part_number_fa,
+                            part_number_bz_custom: card.part_number_bz,
+                            part_number_en: card.part_number_en_default,
+                            part_number_fa: card.part_number_fa_default,
+                            part_number_bz: card.part_number_bz_default,
+                        } : {})
                     }
                     : card
             )
@@ -297,14 +308,9 @@ const VariantProductContainer = ({
                                                         data={{
                                                             attribute_name_en: "part_number_en",
                                                             attribute_name_fa: "پارت نامبر انگلیسی",
-                                                            attr_type:
-                                                            cards[activeCard].meta_datas.part_number_en,
-                                                            attr_value: cards[activeCard].meta_datas
-                                                                .part_number_is_manual
-                                                                ? cards[activeCard].part_number_en
-                                                                : initialCards[activeCard].part_number_en,
-                                                            attribute_readonly:
-                                                                !cards[activeCard].part_number_is_manual,
+                                                            attr_type: cards[activeCard].meta_datas.part_number_en,
+                                                            attr_value: cards[activeCard].part_number_en,
+                                                            attribute_readonly: !cards[activeCard].part_number_is_manual,
                                                         }}
                                                     />
                                                     {cards[activeCard].part_number_is_manual && (
@@ -312,7 +318,7 @@ const VariantProductContainer = ({
                                                             id="help_part_number_en"
                                                             className="fs-tiny form-label"
                                                         >
-                              {initialCards[activeCard].part_number_en}
+                              {cards[activeCard].part_number_en_default}
                             </span>
                                                     )}
                                                 </div>
@@ -326,14 +332,9 @@ const VariantProductContainer = ({
                                                         data={{
                                                             attribute_name_en: "part_number_fa",
                                                             attribute_name_fa: "پارت نامبر فارسی",
-                                                            attr_type:
-                                                            cards[activeCard].meta_datas.part_number_fa,
-                                                            attr_value: cards[activeCard].meta_datas
-                                                                .part_number_is_manual
-                                                                ? cards[activeCard].part_number_fa
-                                                                : initialCards[activeCard].part_number_fa,
-                                                            attribute_readonly:
-                                                                !cards[activeCard].part_number_is_manual,
+                                                            attr_type: cards[activeCard].meta_datas.part_number_fa,
+                                                            attr_value: cards[activeCard].part_number_fa,
+                                                            attribute_readonly: !cards[activeCard].part_number_is_manual,
                                                         }}
                                                     />
                                                     {cards[activeCard].part_number_is_manual && (
@@ -341,7 +342,7 @@ const VariantProductContainer = ({
                                                             id="help_part_number_fa"
                                                             className="fs-tiny form-label"
                                                         >
-                              {initialCards[activeCard].part_number_fa}
+                              {cards[activeCard].part_number_fa_default}
                             </span>
                                                     )}
                                                 </div>
@@ -355,14 +356,9 @@ const VariantProductContainer = ({
                                                         data={{
                                                             attribute_name_en: "part_number_bz",
                                                             attribute_name_fa: "پارت نامبر بازاری",
-                                                            attr_type:
-                                                            cards[activeCard].meta_datas.part_number_bz,
-                                                            attr_value: cards[activeCard].meta_datas
-                                                                .part_number_is_manual
-                                                                ? cards[activeCard].part_number_bz
-                                                                : initialCards[activeCard].part_number_bz,
-                                                            attribute_readonly:
-                                                                !cards[activeCard].part_number_is_manual,
+                                                            attr_type: cards[activeCard].meta_datas.part_number_bz,
+                                                            attr_value: cards[activeCard].part_number_bz,
+                                                            attribute_readonly: !cards[activeCard].part_number_is_manual,
                                                         }}
                                                     />
                                                     {cards[activeCard].part_number_is_manual && (
@@ -370,7 +366,7 @@ const VariantProductContainer = ({
                                                             id="help_part_number_bz"
                                                             className="fs-tiny form-label"
                                                         >
-                              {initialCards[activeCard].part_number_bz}
+                              {cards[activeCard].part_number_bz_default}
                             </span>
                                                     )}
                                                 </div>
@@ -383,7 +379,7 @@ const VariantProductContainer = ({
                                             urls={cards[activeCard].images}
                                             updateUrls={updateUrls}
                                             uploadUrl={
-                                                "http://192.168.1.26:8001/api/save_images/products/"
+                                                "http://192.168.1.9:8001/api/save_images/products/"
                                             }
                                         />
                                     </div>

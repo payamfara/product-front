@@ -11,31 +11,51 @@ import DynamicAttributeField from "@/src/components/DynamicAttributeField";
 import toast from "react-hot-toast";
 import CustomLoading from "../../../../components/Loading";
 import ClientLayout from "../../../../components/ClientLayout";
+import {useRouter} from 'next/navigation'
+import LoadingBtn from "../../../../components/LoadingBtn";
 
 const CreateProductPage = () => {
+        const [formDisabled, setFormDisabled] = useState(false);
         const [pageData, setPageData] = useState({});
-        const [initialPageData, setInitialPageData] = useState({});
         const [loading, setLoading] = useState(true);
-        const [pageDataHistory, setPageDataHistory] = useState({});
         const params = useParams();
+        const router = useRouter()
         const {id = 0} = params;
 
-        const updateMainProduct = (name, valueOrFunction) => {
-            console.log(name, valueOrFunction);
+        const [reload, setReload] = useState(false);
+        const handleRefresh = () => {
+            setReload((prev) => !prev);
+        };
 
+        const updateMainProduct = (name, valueOrFunction) => {
             setPageData((pageData) => {
                 const data = pageData.variant_products.map((vp) =>
                     vp.id === pageData.id ? {
                         ...vp,
                         [name]: typeof (valueOrFunction) === 'function'
                             ? valueOrFunction(vp[name])
-                            : valueOrFunction
+                            : valueOrFunction,
+                        ...(name === "part_number_is_manual" ? valueOrFunction ? {
+                            part_number_en: vp.part_number_en_custom,
+                            part_number_fa: vp.part_number_fa_custom,
+                            part_number_bz: vp.part_number_bz_custom,
+                        } : {
+                            part_number_en_custom: vp.part_number_en,
+                            part_number_fa_custom: vp.part_number_fa,
+                            part_number_bz_custom: vp.part_number_bz,
+                            part_number_en: vp.part_number_en_default,
+                            part_number_fa: vp.part_number_fa_default,
+                            part_number_bz: vp.part_number_bz_default,
+                        } : {})
                     } : vp
                 );
                 console.log(data);
 
                 return {...pageData, variant_products: data};
             });
+            if (name === 'category') {
+                saveProduct(mainProduct)
+            }
         };
 
         const updateVariantAttrs = (updateVariantAttrsFunction) =>
@@ -60,16 +80,23 @@ const CreateProductPage = () => {
             console.log('nonReadOnlyData', nonReadOnlyData)
             const {variant_products, ...requestData} = nonReadOnlyData
 
-            const requestUrl = id !== 0 ? `/api2/product/${id}/` : `/api2/product/`;
+            setFormDisabled(true);
+            const requestUrl = id ? `/api2/product/${id}/` : `/api2/product/`;
             baseApiAuth
                 .post(requestUrl, requestData)
                 .then((res) => {
                     toast.success("موفقیت آمیز بود!");
+                    router.push(`/product/save/${id}`);
+                    // handleRefresh();
                     console.log("ress", res);
                 })
                 .catch((err) => {
                     console.error("Error fetching tags:", err);
+                })
+                .finally(() => {
+                    setFormDisabled(false);
                 });
+
         };
 
         const handleChange = (name, value) => {
@@ -89,68 +116,55 @@ const CreateProductPage = () => {
             }
         };
 
-        const loadData = async () => {
+        const updatePageData = (data) => {
+            const {
+                non_variant_extra_attrs,
+                variant_extra_attrs,
+                non_variant_product_attrs = [],
+                variant_product_attrs = [],
+                ...results
+            } = data;
+
+            const mergedNonVariantAttrs = [
+                ...non_variant_product_attrs,
+                ...non_variant_extra_attrs,
+            ];
+
+            const mergedVariantAttrs = [
+                ...variant_product_attrs,
+                ...variant_extra_attrs,
+            ];
+
+            const finalData = {
+                ...results,
+                non_variant_product_attrs: mergedNonVariantAttrs,
+                variant_product_attrs: mergedVariantAttrs,
+                id: results.id ?? 0,
+            }
+
+            const variantProducts = [{...finalData, linked: true}, ...finalData.variant_products].map(vp => ({
+                ...vp,
+                part_number_en_default: vp.part_number_en,
+                part_number_fa_default: vp.part_number_fa,
+                part_number_bz_default: vp.part_number_bz,
+            }))
+
+            setPageData({
+                ...finalData,
+                variant_products: variantProducts,
+            });
+        }
+
+        const fetchProduct = async () => {
+            setLoading(true);
             try {
-                const fetchProduct = async () => {
-                    const requestUrl = `/api2/product/${id}`;
-                    const response = await baseApiAuth.get(requestUrl);
-                    const results = response.data;
-                    console.log("res", results);
+                const requestUrl = `/api2/product/${id}`;
+                const response = await baseApiAuth.get(requestUrl);
+                const results = response.data;
+                console.log("res", results);
 
-                    return results;
-                };
+                return results;
 
-                // if (pageDataHistory[category]) {
-                //     const [categoryPageData, categoryInitialPageData] =
-                //         pageDataHistory[category];
-                //     setPageDataHistory((pageDataHistory) => ({
-                //         ...pageDataHistory,
-                //         [category]: [pageData, initialPageData],
-                //     }));
-                //     setPageData(categoryPageData);
-                //     setInitialPageData(categoryInitialPageData);
-                // } else {
-                const {
-                    non_variant_extra_attrs,
-                    variant_extra_attrs,
-                    non_variant_product_attrs = [],
-                    variant_product_attrs = [],
-                    ...results
-                } = await fetchProduct();
-
-                const mergedNonVariantAttrs = [
-                    ...non_variant_product_attrs,
-                    ...non_variant_extra_attrs,
-                ];
-
-                const mergedVariantAttrs = [
-                    ...variant_product_attrs,
-                    ...variant_extra_attrs,
-                ];
-
-                const data = {
-                    ...results,
-                    non_variant_product_attrs: mergedNonVariantAttrs,
-                    variant_product_attrs: mergedVariantAttrs,
-                }
-
-                setPageData({
-                    ...data,
-                    variant_products: [{...data, linked: true}, ...data.variant_products],
-                });
-
-                // setInitialPageData({
-                //     ...resultData,
-                //     non_variant_product_attrs: [
-                //         ...resultData["non_variant_product_attrs"],
-                //         ...non_variant_extra_attrs,
-                //     ],
-                //     variant_product_attrs: [
-                //         ...resultData["variant_product_attrs"],
-                //         ...variant_extra_attrs,
-                //     ],
-                // });
-                // }
             } catch (error) {
                 console.error("Error fetching attributes:", error);
             } finally {
@@ -158,9 +172,14 @@ const CreateProductPage = () => {
             }
         };
 
+        const loadData = async () => {
+            const data = await fetchProduct();
+            updatePageData(data);
+        }
+
         useEffect(() => {
             loadData();
-        }, []);
+        }, [reload]);
 
         if (loading) {
             return <CustomLoading/>;
@@ -212,7 +231,7 @@ const CreateProductPage = () => {
                         <span className="text-muted fw-light"> صفحه اصلی / </span>
                         لیست محصولات
                     </h4>
-                    <form onSubmit={handleSubmit} className="app-ecommerce">
+                    <form onSubmit={handleSubmit} className={`app-ecommerce ${formDisabled ? "disabled" : ""}`}>
                         {/* Add Product */}
                         <div
                             className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3">
@@ -236,9 +255,9 @@ const CreateProductPage = () => {
                                         ذخیره پیش نویس
                                     </button>
                                 </div>
-                                <button className="btn btn-primary" type="submit">
+                                <LoadingBtn color={'primary'} isLoading={formDisabled}>
                                     انتشار محصول
-                                </button>
+                                </LoadingBtn>
                             </div>
                         </div>
                         <div className="d-flex flex-column gap-3">
@@ -254,7 +273,7 @@ const CreateProductPage = () => {
                                             <div className="col-6 ecommerce-select2-dropdown">
                                                 <DynamicAttributeField
                                                     onChange={(value) =>
-                                                        handleChange("category", value)
+                                                        updateMainProduct("category", value)
                                                     }
                                                     className="p-2"
                                                     data={{
@@ -270,9 +289,10 @@ const CreateProductPage = () => {
                                                 <DynamicAttributeField
                                                     className="p-2"
                                                     data={{
-                                                        attribute_name_en: "sku",
+                                                        attribute_name_en: "id",
                                                         attribute_name_fa: "کد محصول",
-                                                        attr_type: pageData.meta_datas.price,
+                                                        attr_type: pageData.meta_datas.id,
+                                                        attr_value: pageData.id,
                                                     }}
                                                 />
                                             </div>
@@ -300,7 +320,7 @@ const CreateProductPage = () => {
                                                             "gallery",
                                                         ]}
                                                         placeholder="توضیح (اختیاری)"
-                                                        apiSaveImagesUrl="http://192.168.1.26:8001/api/save_images/products/"
+                                                        apiSaveImagesUrl="http://192.168.1.9:8001/api/save_images/products/"
                                                     />
                                                 </div>
                                                 <TagifyComponent
@@ -339,7 +359,7 @@ const CreateProductPage = () => {
                                                                     "part_number_is_manual",
                                                                 attribute_name_fa: "پارت نامبر دستی",
                                                                 attr_type:
-                                                                pageData.meta_datas
+                                                                mainProduct.meta_datas
                                                                     .part_number_is_manual,
                                                                 attr_value: mainProduct.part_number_is_manual
                                                             }}
@@ -357,11 +377,8 @@ const CreateProductPage = () => {
                                                                 data={{
                                                                     attribute_name_en: "part_number_en",
                                                                     attribute_name_fa: "پارت نامبر انگلیسی",
-                                                                    attr_type:
-                                                                    pageData.meta_datas.part_number_en,
-                                                                    attr_value: !mainProduct.part_number_is_manual
-                                                                        ? initialPageData.part_number_en
-                                                                        : mainProduct.part_number_en,
+                                                                    attr_type: mainProduct.meta_datas.part_number_en,
+                                                                    attr_value: mainProduct.part_number_en,
                                                                     attribute_readonly: !mainProduct.part_number_is_manual,
                                                                 }}
                                                             />
@@ -370,7 +387,7 @@ const CreateProductPage = () => {
                                                                     id="help_part_number_en"
                                                                     className="fs-tiny form-label"
                                                                 >
-                                        {initialPageData.part_number_en}
+                                        {mainProduct.part_number_en_default}
                                       </span>
                                                             )}
                                                         </div>
@@ -387,11 +404,8 @@ const CreateProductPage = () => {
                                                                 data={{
                                                                     attribute_name_en: "part_number_fa",
                                                                     attribute_name_fa: "پارت نامبر فارسی",
-                                                                    attr_type:
-                                                                    pageData.meta_datas.part_number_fa,
-                                                                    attr_value: !mainProduct.part_number_is_manual
-                                                                        ? initialPageData.part_number_fa
-                                                                        : mainProduct.part_number_fa,
+                                                                    attr_type: mainProduct.meta_datas.part_number_fa,
+                                                                    attr_value: mainProduct.part_number_fa,
                                                                     attribute_readonly: !mainProduct.part_number_is_manual,
                                                                 }}
                                                             />
@@ -400,7 +414,7 @@ const CreateProductPage = () => {
                                                                     id="help_part_number_fa"
                                                                     className="fs-tiny form-label"
                                                                 >
-                                        {initialPageData.part_number_fa}
+                                        {mainProduct.part_number_fa_default}
                                       </span>
                                                             )}
                                                         </div>
@@ -417,11 +431,8 @@ const CreateProductPage = () => {
                                                                 data={{
                                                                     attribute_name_en: "part_number_bz",
                                                                     attribute_name_fa: "پارت نامبر بازاری",
-                                                                    attr_type:
-                                                                    pageData.meta_datas.part_number_bz,
-                                                                    attr_value: !mainProduct.part_number_is_manual
-                                                                        ? initialPageData.part_number_bz
-                                                                        : mainProduct.part_number_bz,
+                                                                    attr_type: mainProduct.meta_datas.part_number_bz,
+                                                                    attr_value: mainProduct.part_number_bz,
                                                                     attribute_readonly: !mainProduct.part_number_is_manual,
                                                                 }}
                                                             />
@@ -430,7 +441,7 @@ const CreateProductPage = () => {
                                                                     id="help_part_number_bz"
                                                                     className="fs-tiny form-label"
                                                                 >
-                                        {initialPageData.part_number_bz}
+                                        {mainProduct.part_number_bz_default}
                                       </span>
                                                             )}
                                                         </div>
@@ -446,7 +457,7 @@ const CreateProductPage = () => {
                                         urls={mainProduct.images}
                                         updateUrls={(valueOrFunction) => updateMainProduct('images', valueOrFunction)}
                                         uploadUrl={
-                                            "http://192.168.1.26:8001/api/save_images/products/"
+                                            "http://192.168.1.9:8001/api/save_images/products/"
                                         }
                                     />
                                 </div>
@@ -470,7 +481,6 @@ const CreateProductPage = () => {
                                 </div>
                                 <div className="col-12 col-lg-9">
                                     <VariantProductContainer
-                                        initialCards={initialPageData.variant_products}
                                         onChange={updateVariantAttrs}
                                         updateVariants={updateVariants}
                                         pageData={pageData}
