@@ -1,6 +1,6 @@
 import RippleButton from "@/src/components/RippleButton/RippleButton";
 import React, {useState, useEffect} from "react";
-    import {FaTrash, FaSquare} from "react-icons/fa";
+import {FaTrash, FaSquare} from "react-icons/fa";
 import TabsWithInputsComponent from "../../../../../components/TabsWithInputsComponent";
 import {baseApiAuth} from "@/src/api/baseApi";
 import {FaSquareCheck} from "react-icons/fa6";
@@ -31,7 +31,7 @@ const Card = ({
                         onClick={onDelete}
                         title="Delete"
                     >
-                            <FaTrash size={16}/>
+                        <FaTrash size={16}/>
                     </RippleButton>
                 ) : undefined}
                 {card.id && isLinkable ? (
@@ -94,14 +94,47 @@ const VariantProductContainer = ({
         };
     });
 
+    const clearArr = (arr) => {
+        return (
+            arr.length
+                ? Array.isArray(arr[0])
+                    ? arr.map((item) => clearArr(item))
+                    : typeof arr[0] === 'object' && arr[0]
+                        ? arr.map((item) => clearObj(item))
+                        : []
+                : []
+        )
+    }
+
+    const clearObj = (obj) => {
+        return (
+            Object.fromEntries(
+                Object.entries(obj).map(([key, value]) => [key,
+                    Array.isArray(value)
+                        ? clearArr(value)
+                        : typeof value === "object" && value
+                            ? key === "meta_datas"
+                                ? value
+                                : clearObj(value)
+                            : ["title_en", "title_fa", "priority", "order", "attribute"].includes(key)
+                                ? value
+                                : undefined
+                ])
+            )
+        )
+    }
+    const emptyCard = clearObj(pageData)
+
+    console.log(emptyCard)
     const handleDelete = (index) => {
         setActiveCard((activeCard) => activeCard - 1);
         setIsAttributeFrm(true);
         updateVariants((cards) => cards.filter((_, i) => i !== index));
     };
 
-    const handleAddCard = (newCard) => {
-        updateVariants((cards) => [newCard, ...cards]);
+
+    const handleAddCard = () => {
+        updateVariants((cards) => [emptyCard, ...cards]);
         setActiveCard(0);
         setIsAttributeFrm(true);
     };
@@ -200,17 +233,7 @@ const VariantProductContainer = ({
             <div className="card-header d-flex align-items-center gap-3">
                 <h5 className="card-title mb-0">ویژگی های وریانت</h5>
                 <PlusButton
-                    onClick={() =>
-                        handleAddCard({
-                            part_number_en: "new",
-                            part_number_fa: "new",
-                            part_number_bz: "",
-                            images: [],
-                            variant_product_attrs: emptyFrm,
-                            linked: true,
-                            created: true,
-                        })
-                    }
+                    onClick={handleAddCard}
                 />
             </div>
             <div className="card-body">

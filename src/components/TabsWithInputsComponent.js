@@ -25,6 +25,7 @@ const TabsWithInputs = ({ onChange, inputs }) => {
   const [activeTab, setActiveTab] = useState("");
 
   useEffect(() => {
+    console.log('inputs', inputs)
     const sortedInputs = inputs.sort((a, b) => {
       if (a.order !== b.order) {
         return a.order - b.order;

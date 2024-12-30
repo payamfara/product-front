@@ -84,17 +84,16 @@ const CreateProductPage = () => {
                 ...results.variant_extra_attrs,
             ];
             const modifyItem = (search, mnv) => {
+                console.log('dd', search, mnv);
                 const foundItem = search.find(nv => nv.attribute === mnv.attribute)
+                const {id, ...mnvWithoutId} = mnv;
                 return foundItem
                     ? {
                         ...mnv,
                         id: foundItem.id,
                         attr_value: foundItem.attr_value,
                         attr_value_str: foundItem.attr_value_str,
-                    } : {
-                        ...mnv,
-                        id: foundItem.id,
-                    }
+                    } : mnvWithoutId
             }
             setPageData(pageData => ({
                 ...pageData,
@@ -102,22 +101,20 @@ const CreateProductPage = () => {
                 non_variant_product_attrs: mergedNonVariantAttrs.map(mnv => modifyItem(pageData.non_variant_product_attrs, mnv)),
                 variant_products: pageData.variant_products.map(vp => ({
                     ...vp,
-                    variant_product_attrs: mergedVariantAttrs.map(v => modifyItem(vp.variant_product_attrs, v)),
-                    non_variant_product_attrs: mergedNonVariantAttrs.map(nv => modifyItem(vp.non_variant_product_attrs, nv)),
+                    variant_product_attrs: mergedVariantAttrs.map(mv => modifyItem(vp.variant_product_attrs, mv)),
+                    non_variant_product_attrs: mergedNonVariantAttrs.map(mnv => modifyItem(vp.non_variant_product_attrs, mnv)),
                 }))
             }))
         }
-        console.log('results', results)
 
-        
     };
-
 
     const updateVariantAttrs = (updateVariantAttrsFunction) =>
         setPageData((pageData) => ({
             ...pageData,
             variant_products: updateVariantAttrsFunction(pageData.variant_products),
         }));
+
     const updateVariants = (updateVariantsFunction) =>
         setPageData((pageData) => ({
             ...pageData,
