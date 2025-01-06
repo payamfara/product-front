@@ -23,7 +23,6 @@ const TagifyComponent =
             placeholder,
             maxTags,
             whitelist: whitelist.map((item) => ({
-                id: item[valueKey],
                 [displayKey]: item[displayKey] || item['value'] || item['title'],
                 value: item[displayKey] || item['value'] || item['title'],
             })),
@@ -50,7 +49,6 @@ const TagifyComponent =
                     .then((res) => {
                         tagifyRef.current.settings.whitelist = res.data.results.map(
                             (item) => ({
-                                id: item[valueKey],
                                 [displayKey]: item[displayKey] || item['value'] || item['title'],
                                 value: item[displayKey] || item['value'] || item['title'],
                             })

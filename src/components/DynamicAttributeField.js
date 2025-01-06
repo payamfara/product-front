@@ -135,6 +135,7 @@ const DynamicAttributeField = ({data, onChange, parentClassName}) => {
                 </div>
             );
         case "bool":
+        case "boolean":
             // For checkbox or radio based on priority
             if (attribute_priority === "mandatory" || attribute_type.required) {
                 return (

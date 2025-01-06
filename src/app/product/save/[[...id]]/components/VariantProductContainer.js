@@ -69,6 +69,7 @@ const Card = ({
 };
 
 const VariantProductContainer = ({
+                                     filterItem,
                                      updateVariants,
                                      onChange,
                                      pageData,
@@ -94,44 +95,22 @@ const VariantProductContainer = ({
         };
     });
 
-    const clearArr = (arr) => {
-        return (
-            arr.length
-                ? Array.isArray(arr[0])
-                    ? arr.map((item) => clearArr(item))
-                    : typeof arr[0] === 'object' && arr[0]
-                        ? arr.map((item) => clearObj(item))
-                        : []
-                : []
-        )
+    const emptyCard = {
+        part_number_en: "",
+        part_number_fa: "",
+        part_number_bz: "",
+        images: [],
+        meta_datas: pageData.meta_datas,
+        variant_product_attrs: emptyFrm,
+        linked: true,
+        created: true,
     }
 
-    const clearObj = (obj) => {
-        return (
-            Object.fromEntries(
-                Object.entries(obj).map(([key, value]) => [key,
-                    Array.isArray(value)
-                        ? clearArr(value)
-                        : typeof value === "object" && value
-                            ? key === "meta_datas"
-                                ? value
-                                : clearObj(value)
-                            : ["title_en", "title_fa", "priority", "order", "attribute"].includes(key)
-                                ? value
-                                : undefined
-                ])
-            )
-        )
-    }
-    const emptyCard = clearObj(pageData)
-
-    console.log(emptyCard)
     const handleDelete = (index) => {
         setActiveCard((activeCard) => activeCard - 1);
         setIsAttributeFrm(true);
         updateVariants((cards) => cards.filter((_, i) => i !== index));
     };
-
 
     const handleAddCard = () => {
         updateVariants((cards) => [emptyCard, ...cards]);
@@ -159,7 +138,7 @@ const VariantProductContainer = ({
                 updateVariants((cards) =>
                     cards.map((c, i) =>
                         i === index
-                            ? {
+                            ? filterItem({
                                 ...cards[index],
                                 variant_product_attrs: [
                                     ...res.data.variant_product_attrs,
@@ -169,7 +148,7 @@ const VariantProductContainer = ({
                                     ...res.data.non_variant_product_attrs,
                                     ...res.data.non_variant_extra_attrs,
                                 ],
-                            }
+                            })
                             : c
                     )
                 );
