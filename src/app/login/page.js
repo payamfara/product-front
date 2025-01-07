@@ -63,7 +63,12 @@ const Login = () => {
                                             </div>
 
                                             <div className="pt-1 mb-4">
-                                                <LoadingBtn isLoading={formDisabled} >Login</LoadingBtn>
+                                                <LoadingBtn
+                                                    isLoading={formDisabled}
+                                                    type={'submit'}
+                                                >
+                                                    Login
+                                                </LoadingBtn>
                                             </div>
                                         </form>
 

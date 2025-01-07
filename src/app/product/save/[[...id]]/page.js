@@ -1,5 +1,5 @@
 "use client";
-import {useState, useEffect, useRef} from "react";
+import {useState, useEffect} from "react";
 import TagifyComponent from "../../../../components/TagifyComponent";
 import DropzoneComponent from "../../../../components/DropzoneComponent";
 import QuillEditorComponent from "../../../../components/QuillEditorComponent";
@@ -59,9 +59,9 @@ const CreateProductPage = () => {
                                     part_number_en_custom: vp.part_number_en,
                                     part_number_fa_custom: vp.part_number_fa,
                                     part_number_bz_custom: vp.part_number_bz,
-                                    part_number_en: vp.part_number_en_default,
-                                    part_number_fa: vp.part_number_fa_default,
-                                    part_number_bz: vp.part_number_bz_default,
+                                    part_number_en: vp.part_number_auto?.en,
+                                    part_number_fa: vp.part_number_auto?.fa,
+                                    part_number_bz: vp.part_number_auto?.bz,
                                 }
                             : {};
 
@@ -195,12 +195,13 @@ const CreateProductPage = () => {
                 id: results.id ?? 0,
             }
 
-            const variantProducts = [{...finalData, linked: true}, ...finalData.variant_products].map(vp => ({
-                ...vp,
-                part_number_en_default: vp.part_number_en,
-                part_number_fa_default: vp.part_number_fa,
-                part_number_bz_default: vp.part_number_bz,
-            }))
+            const variantProducts = [{...finalData, linked: true}, ...finalData.variant_products]
+            // const variantProducts = [{...finalData, linked: true}, ...finalData.variant_products].map(vp => ({
+            //     ...vp,
+            //     part_number_en_default: vp.part_number_en,
+            //     part_number_fa_default: vp.part_number_fa,
+            //     part_number_bz_default: vp.part_number_bz,
+            // }))
 
             setPageData({
                 ...finalData,
@@ -319,12 +320,28 @@ const CreateProductPage = () => {
                                 )}
                             </div>
                             <div className="d-flex align-content-center flex-wrap gap-3">
-                                <div className="d-flex gap-3">
-                                    <button className="btn btn-label-primary">
-                                        ذخیره پیش نویس
-                                    </button>
-                                </div>
-                                <LoadingBtn color={'primary'} isLoading={formDisabled}>
+                                <LoadingBtn
+                                    color={'label-primary'}
+                                    isLoading={formDisabled}
+                                    onClick={() =>
+                                        updateMainProduct(
+                                            "status",
+                                            3
+                                        )
+                                    }
+                                >
+                                    ذخیره پیش نویس
+                                </LoadingBtn>
+                                <LoadingBtn
+                                    color={'primary'}
+                                    isLoading={formDisabled}
+                                    onClick={() =>
+                                        updateMainProduct(
+                                            "status",
+                                            1
+                                        )
+                                    }
+                                >
                                     انتشار محصول
                                 </LoadingBtn>
                             </div>
@@ -456,7 +473,7 @@ const CreateProductPage = () => {
                                                                     id="help_part_number_en"
                                                                     className="fs-tiny form-label"
                                                                 >
-                                                                {mainProduct.part_number_en_default}
+                                                                {mainProduct.part_number_auto?.en}
                                                             </span>
                                                             )}
                                                         </div>
@@ -483,7 +500,7 @@ const CreateProductPage = () => {
                                                                     id="help_part_number_fa"
                                                                     className="fs-tiny form-label"
                                                                 >
-                                                                {mainProduct.part_number_fa_default}
+                                                                {mainProduct.part_number_auto?.fa}
                                                             </span>
                                                             )}
                                                         </div>
@@ -510,7 +527,7 @@ const CreateProductPage = () => {
                                                                     id="help_part_number_bz"
                                                                     className="fs-tiny form-label"
                                                                 >
-                                                                {mainProduct.part_number_bz_default}
+                                                                {mainProduct.part_number_auto?.bz}
                                                             </span>
                                                             )}
                                                         </div>

@@ -25,7 +25,7 @@ const Card = ({
         >
             <div
                 className="position-absolute d-flex flex-column justify-content-center gap-4 top-0 start-0 h-100 mxn-2">
-                {!card.id ? (
+                {card.id === undefined ? (
                     <RippleButton
                         className="z-1 rounded-start-0 border-0 border-danger ribbon btn btn-danger btn-sm p-1"
                         onClick={onDelete}
@@ -178,9 +178,9 @@ const VariantProductContainer = ({
                             part_number_en_custom: card.part_number_en,
                             part_number_fa_custom: card.part_number_fa,
                             part_number_bz_custom: card.part_number_bz,
-                            part_number_en: card.part_number_en_default,
-                            part_number_fa: card.part_number_fa_default,
-                            part_number_bz: card.part_number_bz_default,
+                            part_number_en: card.part_number_auto?.en,
+                            part_number_fa: card.part_number_auto?.fa,
+                            part_number_bz: card.part_number_auto?.bz,
                         } : {})
                     }
                     : card
@@ -320,7 +320,7 @@ const VariantProductContainer = ({
                                                             id="help_part_number_en"
                                                             className="fs-tiny form-label"
                                                         >
-                              {cards[activeCard].part_number_en_default}
+                              {cards[activeCard].part_number_auto?.en}
                             </span>
                                                     )}
                                                 </div>
@@ -344,7 +344,7 @@ const VariantProductContainer = ({
                                                             id="help_part_number_fa"
                                                             className="fs-tiny form-label"
                                                         >
-                              {cards[activeCard].part_number_fa_default}
+                              {cards[activeCard].part_number_auto?.fa}
                             </span>
                                                     )}
                                                 </div>
@@ -368,7 +368,7 @@ const VariantProductContainer = ({
                                                             id="help_part_number_bz"
                                                             className="fs-tiny form-label"
                                                         >
-                              {cards[activeCard].part_number_bz_default}
+                              {cards[activeCard].part_number_auto?.bz}
                             </span>
                                                     )}
                                                 </div>
