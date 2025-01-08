@@ -9,7 +9,7 @@ import {baseApiAuth} from "../../../../api/baseApi";
 import VariantProductContainer from "./components/VariantProductContainer";
 import DynamicAttributeField from "@/src/components/DynamicAttributeField";
 import toast from "react-hot-toast";
-import CustomLoading from "../../../../components/Loading";
+import Loading from "../../../../components/Loading";
 import ClientLayout from "../../../../components/ClientLayout";
 import {useRouter} from 'next/navigation'
 import LoadingBtn from "../../../../components/LoadingBtn";
@@ -236,7 +236,7 @@ const CreateProductPage = () => {
         }, [reload]);
 
         if (loading) {
-            return <CustomLoading/>;
+            return <Loading isFullHeight/>;
         }
 
         const mainProduct = pageData.variant_products.find((vp) => vp.id === pageData.id)
@@ -320,27 +320,29 @@ const CreateProductPage = () => {
                                 )}
                             </div>
                             <div className="d-flex align-content-center flex-wrap gap-3">
-                                <LoadingBtn
-                                    color={'label-primary'}
-                                    isLoading={formDisabled}
-                                    onClick={() =>
-                                        updateMainProduct(
-                                            "status",
-                                            3
-                                        )
-                                    }
+                                <button
+                                    className={`d-flex gap-2 btn btn-label-primary btn-lg btn-block`}
+                                    // color={''}
+                                    // isLoading={formDisabled}
+                                    // onClick={() =>
+                                    //     updateMainProduct(
+                                    //         "status",
+                                    //         3
+                                    //     )
+                                    // }
                                 >
                                     ذخیره پیش نویس
-                                </LoadingBtn>
+                                </button>
                                 <LoadingBtn
+                                    type={'submit'}
                                     color={'primary'}
                                     isLoading={formDisabled}
-                                    onClick={() =>
-                                        updateMainProduct(
-                                            "status",
-                                            1
-                                        )
-                                    }
+                                    // onClick={() =>
+                                    //     updateMainProduct(
+                                    //         "status",
+                                    //         1
+                                    //     )
+                                    // }
                                 >
                                     انتشار محصول
                                 </LoadingBtn>

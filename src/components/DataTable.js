@@ -11,20 +11,23 @@ import {
 import RippleButton from "../components/RippleButton/RippleButton";
 import DynamicAttributeField from "./DynamicAttributeField";
 import {baseApiAuth} from "../api/baseApi";
-import Spinner from "./Spinner";
 import CustomPagination from "./CustomPagination";
 import Link from "next/link";
+import Loading from "./Loading";
 
 const DataTable = ({fields, columns}) => {
-    const [pageData, setPageData] = useState([]);
-    const [search, setSearch] = useState({
-        page_size: {value: 10, opr: '='},
-        page: {value: 1, opr: '='},
-        q: {value: '', opr: '='},
-        order_by: {value: '-pk', opr: '='},
+    const [data, setData] = useState({
+        pageData: {},
+        search: {
+            page_size: {value: 2, opr: '='},
+            page: {value: 1, opr: '='},
+            q: {value: '', opr: '='},
+            order_by: {value: '-pk', opr: '='},
+        }
     });
-    const [loading, setLoading] = useState(true);
-    const [debouncedSearch, setDebouncedSearch] = useState(search);
+    const [changeLoading, setChangeLoading] = useState(true);
+    const [fetchLoading, setFetchLoading] = useState(true);
+    const [debouncedSearch, setDebouncedSearch] = useState();
 
     const oprItems = [
         {id: '*', value: '*'},
@@ -33,6 +36,7 @@ const DataTable = ({fields, columns}) => {
         {id: '<', value: '<'},
     ]
     const pageSizeItems = [
+        {id: 2, value: 2},
         {id: 10, value: 10},
         {id: 20, value: 20},
         {id: 50, value: 50},
@@ -79,7 +83,7 @@ const DataTable = ({fields, columns}) => {
 
     const fetchProducts = async () => {
         try {
-            const prepareQueryParams = Object.fromEntries(Object.entries(search).map(([attribute, valueObj]) => [valueOprMap(attribute, valueObj.opr), valueObj.value]));
+            const prepareQueryParams = Object.fromEntries(Object.entries(data.search).map(([attribute, valueObj]) => [valueOprMap(attribute, valueObj.opr), valueObj.value]));
             const queryParams = new URLSearchParams(prepareQueryParams).toString();
             const requestUrl = `/api2/product/`
             const response = await baseApiAuth.get(`${requestUrl}?${queryParams}`);
@@ -92,54 +96,95 @@ const DataTable = ({fields, columns}) => {
     };
 
     useEffect(() => {
-        if (fields) {
-            setSearch((prevSearch) => ({
-                ...prevSearch,
+        setData((data) => ({
+            ...data,
+            search: {
+                ...data.search,
                 ...fields
-            }));
-        }
+            }
+        }));
     }, [fields]);
 
     useEffect(() => {
+        setChangeLoading(true);
         const timer = setTimeout(() => {
-            setDebouncedSearch(search);
+            setDebouncedSearch(data.search);
+            setChangeLoading(false);
         }, 500);
 
         return () => clearTimeout(timer);
-    }, [search]);
-
+    }, [data.search]);
 
     useEffect(() => {
-        setLoading(true);
-        fetchProducts().then((data) => {
-            setPageData(data);
-            setLoading(false);
+        if (!debouncedSearch) return;
+        setFetchLoading(true);
+        fetchProducts().then((resData) => {
+            console.log('resData', resData);
+            setData(data => ({
+                ...data,
+                pageData: {
+                    ...resData,
+                    results: [
+                        ...data.pageData.results || [],
+                        ...resData.results
+                    ],
+                }
+            }));
+            setFetchLoading(false);
         });
     }, [debouncedSearch]);
 
     const handleSearchChange = (searchFields, value, opr) => {
-        setSearch((prev) => {
+        setData((data) => {
+            const prevSearch = data.search;
+            const updates = {};
             const updatedFields = searchFields.reduce((acc, field) => {
                 acc[field] = {
-                    value: value !== undefined ? value : prev[field]?.value,
-                    opr: opr !== undefined ? opr : prev[field]?.opr,
+                    value: value !== undefined ? value : prevSearch[field]?.value,
+                    opr: opr !== undefined ? opr : prevSearch[field]?.opr,
                 };
-                if (field !== 'page')
-                    acc['page'] = {...prev['page'], value: 1};
+                if (field !== 'page') {
+                    updates['pageData'] = {
+                        ...data.pageData,
+                        results: []
+                    }
+                    acc['page'] = {...prevSearch['page'], value: 1};
+                }
                 if (field === 'order_by')
-                    if (prev['order_by'].value === value)
-                        acc['order_by'] = {...prev['order_by'], value: `-${value}`};
+                    if (prevSearch['order_by'].value === value)
+                        acc['order_by'] = {...prevSearch['order_by'], value: `-${value}`};
                     else
-                        acc['order_by'] = {...prev['order_by'], value: value};
+                        acc['order_by'] = {...prevSearch['order_by'], value: value};
                 return acc;
             }, {});
 
             return {
-                ...prev,
-                ...updatedFields,
+                ...data,
+                ...updates,
+                search: {
+                    ...prevSearch,
+                    ...updatedFields,
+                },
             };
         });
-        setLoading(true);
+    };
+
+    useEffect(() => {
+        window.addEventListener("scroll", handleScroll);
+        return () => {
+            window.removeEventListener("scroll", handleScroll);
+        };
+    }, [fetchLoading]);
+
+    const handleScroll = () => {
+        if (
+            window.innerHeight + document.documentElement.scrollTop >=
+            document.documentElement.offsetHeight - 100
+        ) {
+            if (!fetchLoading && !changeLoading && data.pageData.current_page !== data.pageData.total_pages) {
+                handleSearchChange(['page'], data.pageData.current_page + 1)
+            }
+        }
     };
 
     return (
@@ -150,7 +195,7 @@ const DataTable = ({fields, columns}) => {
                         attribute_name_en: "q",
                         attribute_name_fa: "جستجو محصول",
                         attr_type: {type: "string"},
-                        attribute_value: search.q.value,
+                        attribute_value: data.search.q.value,
                     }}
                     onChange={(value) => handleSearchChange(["q"], value)}
                 />
@@ -159,7 +204,7 @@ const DataTable = ({fields, columns}) => {
                         <select
                             className={'h-100 form-select'}
                             name={'page_size'}
-                            value={search.page_size.value}
+                            value={data.search.page_size.value}
                             onChange={(e) => handleSearchChange(["page_size"], e.target.value)}
                         >
                             {pageSizeItems.map((item, index) => (
@@ -194,58 +239,69 @@ const DataTable = ({fields, columns}) => {
                         {columns.map((col, index) => (
                             col.search_fields ?
                                 <th role={'button'}
-                                    onClick={(e) => e.target === e.currentTarget && handleSearchChange(['order_by'], col.search_fields[0])} key={index}
+                                    onClick={(e) => e.target === e.currentTarget && handleSearchChange(['order_by'], col.search_fields[0])}
+                                    key={index}
                                     className={'position-relative align-middle'}>
-                                    {search.order_by.value === col.search_fields[0]
+                                    {data.search.order_by.value === col.search_fields[0]
                                         ? <IconChevronUp
                                             className={'position-absolute top-0 translate-middle start-50 border rounded-pill bg-white'}
                                             size={18}/>
-                                        : search.order_by.value === `-${col.search_fields[0]}`
+                                        : data.search.order_by.value === `-${col.search_fields[0]}`
                                             ? <IconChevronDown
                                                 className={'position-absolute top-0 translate-middle start-50 border rounded-pill bg-white'}
                                                 size={18}/>
                                             : undefined
                                     }
-                                    <div className={'position-relative'}>
-                                        <DynamicAttributeField
-                                            data={{
-                                                attribute_name_en: col.search_fields[0],
-                                                attribute_name_fa: col.title,
-                                                attribute_placeholder: 'جستجو ...',
-                                                attr_type: {type: "string"},
-                                                attribute_value: search[col.search_fields[0]]?.value,
-                                            }}
-                                            onChange={(value) => handleSearchChange(col.search_fields, value, undefined)}
-                                        />
-                                        <select
-                                            className={'position-absolute top-0 end-0 mn-1 form-select rounded-pill select-sm lh-lg'}
-                                            value={search[col.search_fields[0]]?.opr}
-                                            onChange={(e) => handleSearchChange(col.search_fields, undefined, e.target.value)}
-                                        >
-                                            {oprItems.map((item, index) => (
-                                                <option key={index} value={item.id}>{item.value}</option>
-                                            ))}
-                                        </select>
-                                    </div>
+                                    {col.title}
+                                    {/*<div className={'position-relative'}>*/}
+                                    {/*    <DynamicAttributeField*/}
+                                    {/*        data={{*/}
+                                    {/*            attribute_name_en: col.search_fields[0],*/}
+                                    {/*            attribute_name_fa: col.title,*/}
+                                    {/*            attribute_placeholder: 'جستجو ...',*/}
+                                    {/*            attr_type: {type: "string"},*/}
+                                    {/*            attribute_value: data.search[col.search_fields[0]]?.value,*/}
+                                    {/*        }}*/}
+                                    {/*        onChange={(value) => handleSearchChange(col.search_fields, value, undefined)}*/}
+                                    {/*    />*/}
+                                    {/*    <select*/}
+                                    {/*        className={'position-absolute top-0 end-0 mn-1 form-select rounded-pill select-sm lh-lg'}*/}
+                                    {/*        value={data.search[col.search_fields[0]]?.opr}*/}
+                                    {/*        onChange={(e) => handleSearchChange(col.search_fields, undefined, e.target.value)}*/}
+                                    {/*    >*/}
+                                    {/*        {oprItems.map((item, index) => (*/}
+                                    {/*            <option key={index} value={item.id}>{item.value}</option>*/}
+                                    {/*        ))}*/}
+                                    {/*    </select>*/}
+                                    {/*</div>*/}
                                 </th>
-                                : <th key={index} className={'align-middle'}>{col.title}</th>
+                                : <th
+                                    key={index}
+                                    className={'align-middle'}
+                                >{col.title}</th>
                         ))}
                     </tr>
                     </thead>
                     <tbody>
-                    {loading ? <tr>
+                    {changeLoading ? <tr>
                         <td colSpan={columns.length} className={'text-center border-0 pt-4'}>
                             <div style={{minWidth: "100%"}}>
-                                <Spinner/>
+                                <Loading text={'در حال اعمال تغییرات ...'}/>
                             </div>
                         </td>
-                    </tr> : !pageData.count ? <tr>
+                    </tr> : fetchLoading ? <tr>
+                        <td colSpan={columns.length} className={'text-center border-0 pt-4'}>
+                            <div style={{minWidth: "100%"}}>
+                                <Loading/>
+                            </div>
+                        </td>
+                    </tr> : !data.pageData.count ? <tr>
                         <td colSpan={columns.length} className={'text-center border-0 pt-4'}>
                             <div style={{minWidth: "100%"}}>
                                 هیچ آیتمی برای نمایش وجود ندارد
                             </div>
                         </td>
-                    </tr> : pageData.results.map((row, rowIndex) =>
+                    </tr> : data.pageData.results.map((row, rowIndex) =>
                         <tr key={rowIndex}>
                             {columns.map((col, index) => {
                                 return (
@@ -263,15 +319,14 @@ const DataTable = ({fields, columns}) => {
                 </table>
             </div>
             <div className="card-footer">
-                <div className="d-flex row-cols-auto justify-content-between align-items-center">
-                    {console.log(pageData)}
-                    <div>نمایش {Math.min((search.page.value - 1) * search.page_size.value + 1, pageData.count)} تا {Math.min(search.page.value * search.page_size.value, pageData.count)} از {pageData.count}</div>
-                    <CustomPagination
-                        currentPage={search.page.value}
-                        totalPages={pageData.total_pages}
-                        onPageChange={(value) => handleSearchChange(['page'], value)}
-                    />
-                </div>
+                {/*<div className="d-flex row-cols-auto justify-content-between align-items-center">*/}
+                {/*    <div>نمایش {Math.min((data.pageData.current_page) * data.search.page_size.value + 1, data.pageData.count)} تا {Math.min(data.pageData.current_page * data.search.page_size.value, data.pageData.count)} از {data.pageData.count}</div>*/}
+                {/*    <CustomPagination*/}
+                {/*        currentPage={data.pageData.current_page}*/}
+                {/*        totalPages={data.pageData.total_pages}*/}
+                {/*        onPageChange={(value) => handleSearchChange(['page'], value)}*/}
+                {/*    />*/}
+                {/*</div>*/}
             </div>
         </div>
     );
