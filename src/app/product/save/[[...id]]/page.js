@@ -74,7 +74,7 @@ const CreateProductPage = () => {
             if (name === 'category') {
                 const mainProduct = updatedProducts.find((vp) => vp.id === pageData.id);
                 const {variant_product_attrs, non_variant_product_attrs, ...rest} = mainProduct;
-                const [status, results] = await saveProduct(rest, {save: false})
+                const [status, results] = await saveProduct({...rest, summary: 'sfd'}, {save: false})
                 console.log('results', results)
                 const mergedNonVariantAttrs = [
                     ...results.non_variant_product_attrs || [],
@@ -273,7 +273,7 @@ const CreateProductPage = () => {
             let reload = true;
             let mainProductId;
             const promises = modifiedLinkedProducts.map(async (linkedProduct) => {
-                const [status, results] = await saveProduct(linkedProduct);
+                const [status, results] = await saveProduct({...linkedProduct, summary: 'sdf'});
 
                 if (status) {
                     if (linkedProduct.id === pageData.id) {
@@ -354,7 +354,7 @@ const CreateProductPage = () => {
                                     {/* Product Information */}
                                     <div className="card h-100">
                                         <div className="card-header">
-                                            <h5 className="card-tile mb-0">اطلاعات محصول</h5>
+                                            <h5 className="card-tile mb-0">اطلاعات محصول [{pageData.id}]</h5>
                                         </div>
                                         <div className="card-body row gy-3 flex-wrap">
                                             {/* Category */}
@@ -375,12 +375,21 @@ const CreateProductPage = () => {
                                             </div>
                                             <div className="col-6">
                                                 <DynamicAttributeField
+                                                    onChange={(value) =>
+                                                        updateMainProduct(
+                                                            "summary",
+                                                            value
+                                                        )
+                                                    }
                                                     className="p-2"
                                                     data={{
-                                                        attribute_name_en: "id",
-                                                        attribute_name_fa: "کد محصول",
-                                                        attr_type: pageData.meta_datas.id,
-                                                        attr_value: pageData.id,
+                                                        attribute_name_en:
+                                                            "summary",
+                                                        attribute_name_fa: "توضیح کوتاه",
+                                                        attr_type:
+                                                        mainProduct.meta_datas
+                                                            .summary,
+                                                        attr_value: mainProduct.summary
                                                     }}
                                                 />
                                             </div>
@@ -388,6 +397,7 @@ const CreateProductPage = () => {
                                             <div className="col-6 d-flex flex-column gap-3">
                                                 <div className="col-12">
                                                     <QuillEditorComponent
+
                                                         id="description"
                                                         name="description"
                                                         onChange={(value) =>
