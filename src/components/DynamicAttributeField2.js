@@ -171,7 +171,7 @@ const DynamicAttributeField = ({data, onChange, parentClassName}) => {
                         <label htmlFor={`${attribute_id}_fake`}>
                             {attribute_name_fa}
                         </label>
-                        <div className="flex-nowrap row row-cols-auto w-100 gap-2 position-absolute bottom-0 m-2 mx-3">
+                        <div className="flex-nowrap row row-cols-auto w-100 gap-3 position-absolute bottom-0 m-2 mx-3">
                             <div className="flex-nowrap row max-w-50">
                                 <input
                                     onChange={(e) => onChange(true)}
@@ -181,7 +181,7 @@ const DynamicAttributeField = ({data, onChange, parentClassName}) => {
                                     className={`form-check-input p-0`}
                                     defaultChecked={attribute_value === true}
                                 />
-                                <label className={'text-truncate'} htmlFor={`${attribute_name_en}_true`}>بله</label>
+                                <label className={'d-block text-truncate'} htmlFor={`${attribute_name_en}_true`}>بله</label>
                             </div>
                             <div className="flex-nowrap row max-w-50">
                                 <input
@@ -192,7 +192,7 @@ const DynamicAttributeField = ({data, onChange, parentClassName}) => {
                                     className={`form-check-input p-0`}
                                     defaultChecked={attribute_value === false}
                                 />
-                                <label className={'text-truncate'} htmlFor={`${attribute_name_en}_false`}>خیر</label>
+                                <label className={'d-block text-truncate'} htmlFor={`${attribute_name_en}_false`}>خیر</label>
                             </div>
                         </div>
                     </div>

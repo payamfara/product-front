@@ -418,3 +418,7 @@ body {
 .form-floating:hover .clear-btn {
     display: block !important;
 }
+
+.max-w-50 {
+    max-width: 50% !important;
+}
