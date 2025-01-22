@@ -437,6 +437,10 @@ const CreateProductPage = () => {
                                                     displayKey="tag_title"
                                                 />
                                             </div>
+                                            <RadioGroup selectedKeys={[1]}>
+                                                <Radio key={1}>1</Radio>
+                                                <Radio key={2}>2</Radio>
+                                            </RadioGroup>
                                             <div className="col-6">
                                                 <div className="card border">
                                                     <div className="card-header">
@@ -444,6 +448,7 @@ const CreateProductPage = () => {
                                                     </div>
                                                     <div className="card-body d-flex flex-column gap-3">
                                                         {/* Part number manual */}
+                                                        {console.log('manu', mainProduct.part_number_is_manual)}
                                                         <DynamicAttributeField
                                                             onChange={(value) =>
                                                                 updateMainProduct(
@@ -454,7 +459,7 @@ const CreateProductPage = () => {
                                                             className="p-2"
                                                             data={{
                                                                 attribute_name_en:
-                                                                    "part_number_is_manual",
+                                                                    "part_number_is_manual_product",
                                                                 attribute_name_fa: "پارت نامبر دستی",
                                                                 attr_type:
                                                                 mainProduct.meta_datas
