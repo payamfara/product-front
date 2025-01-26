@@ -252,6 +252,10 @@ const CreateProductPage = () => {
 
             const modifiedLinkedProducts = linkedProducts.map((linkedProduct) => ({
                 ...linkedProduct,
+                category: mainProduct.category,
+                part_number_en: '',
+                part_number_fa: '',
+                part_number_bz: '',
                 non_variant_product_attrs: linkedProduct.non_variant_product_attrs
                     ? linkedProduct.non_variant_product_attrs.map((nonVariant) => {
                         const foundItem = changedAttrs.find(
