@@ -95,10 +95,17 @@ const VariantProductContainer = ({
         };
     });
 
+    let counter = 0;
+    const makeUUid = () => {
+        counter += 1
+        return `new_${counter}`;
+    }
+
     const emptyCard = {
-        part_number_en: "",
-        part_number_fa: "",
-        part_number_bz: "",
+        part_number_en: "_",
+        part_number_fa: "_",
+        part_number_bz: "_",
+        part_number_is_manual: false,
         images: [],
         meta_datas: pageData.meta_datas,
         variant_product_attrs: emptyFrm,
@@ -113,7 +120,8 @@ const VariantProductContainer = ({
     };
 
     const handleAddCard = () => {
-        updateVariants((cards) => [emptyCard, ...cards]);
+        const _id = makeUUid();
+        updateVariants((cards) => [{_id, ...emptyCard}, ...cards]);
         setActiveCard(0);
         setIsAttributeFrm(true);
     };

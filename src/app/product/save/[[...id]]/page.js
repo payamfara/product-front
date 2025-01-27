@@ -18,6 +18,7 @@ const CreateProductPage = () => {
         const [formDisabled, setFormDisabled] = useState(false);
         const [pageData, setPageData] = useState({});
         const [loading, setLoading] = useState(true);
+        const [errors, setErrors] = useState({});
         const params = useParams();
         const router = useRouter()
         const {id = 0} = params;
@@ -74,7 +75,7 @@ const CreateProductPage = () => {
             if (name === 'category') {
                 const mainProduct = updatedProducts.find((vp) => vp.id === pageData.id);
                 const {variant_product_attrs, non_variant_product_attrs, ...rest} = mainProduct;
-                const [status, results] = await saveProduct({...rest, summary: 'sfd'}, {save: false})
+                const [status, results] = await saveProduct({...rest}, {save: false})
                 console.log('results', results)
                 const mergedNonVariantAttrs = [
                     ...results.non_variant_product_attrs || [],
@@ -192,6 +193,7 @@ const CreateProductPage = () => {
                 non_variant_product_attrs: mergedNonVariantAttrs,
                 variant_product_attrs: mergedVariantAttrs,
                 id: results.id ?? 0,
+                _id: results.id ?? 0,
             }
 
             const variantProducts = [{...finalData, linked: true}, ...finalData.variant_products]
@@ -253,9 +255,6 @@ const CreateProductPage = () => {
             const modifiedLinkedProducts = linkedProducts.map((linkedProduct) => ({
                 ...linkedProduct,
                 category: mainProduct.category,
-                part_number_en: '',
-                part_number_fa: '',
-                part_number_bz: '',
                 non_variant_product_attrs: linkedProduct.non_variant_product_attrs
                     ? linkedProduct.non_variant_product_attrs.map((nonVariant) => {
                         const foundItem = changedAttrs.find(
@@ -268,22 +267,43 @@ const CreateProductPage = () => {
                                 attr_value: foundItem.attr_value,
                                 attr_value_str: foundItem.attr_value_str,
                             }
-                            : nonVariant;
+                            : {...nonVariant, attr_value: 'sdfsdf'};
                     })
-                    : mainProduct.non_variant_product_attrs.map(({id, ...nv}) => nv)
+                    : {...mainProduct.non_variant_product_attrs.map(({id, ...nv}) => nv)}
             }))
 
             let reload = true;
             let mainProductId;
             const promises = modifiedLinkedProducts.map(async (linkedProduct) => {
-                const [status, results] = await saveProduct({...linkedProduct, summary: 'sdf'});
+                const [status, results] = await saveProduct({...linkedProduct});
 
                 if (status) {
                     if (linkedProduct.id === pageData.id) {
+                        console.log('equal', linkedProduct, pageData, linkedProduct.id, pageData.id);
                         mainProductId = results.id;
                     }
                     toast.success(`محصول ${linkedProduct.id} ذخیره شد`);
                 } else {
+                    console.log('log', results.response.data)
+                    setErrors(errors => {
+                        const data = results.response.data;
+
+                        data.nested_data.non_variant_product_attrs =
+                        return {
+                            ...errors,
+                            [linkedProduct._id]: {
+                                ...,
+                            }
+                        }
+                    })
+                    errors[linkedProduct._id] = {
+                        ...results.response.data,
+                        nested_data: {
+                            ...results.response.data.nested_data,
+                            non_variant_product_attrs: linkedProduct.non_variant_product_attrs.map((indx, nv) =>)
+                        }
+                    };
+                    errors[linkedProduct.id].nested_data = results.response.data;
                     reload = false;
                     toast.error(`محصول ${linkedProduct.id} ذخیره نشد`);
                 }
@@ -392,7 +412,8 @@ const CreateProductPage = () => {
                                                         attr_type:
                                                         mainProduct.meta_datas
                                                             .summary,
-                                                        attr_value: mainProduct.summary
+                                                        attr_value: mainProduct.summary,
+                                                        attribute_error: errors[mainProduct._id]?.details?.summary
                                                     }}
                                                 />
                                             </div>
@@ -481,6 +502,7 @@ const CreateProductPage = () => {
                                                                     attr_type: mainProduct.meta_datas.part_number_en,
                                                                     attr_value: mainProduct.part_number_en,
                                                                     attribute_readonly: !mainProduct.part_number_is_manual,
+                                                                    attribute_error: errors[mainProduct._id]?.details?.part_number_en
                                                                 }}
                                                             />
                                                             {mainProduct.part_number_is_manual && (
@@ -508,6 +530,7 @@ const CreateProductPage = () => {
                                                                     attr_type: mainProduct.meta_datas.part_number_fa,
                                                                     attr_value: mainProduct.part_number_fa,
                                                                     attribute_readonly: !mainProduct.part_number_is_manual,
+                                                                    attribute_error: errors[mainProduct._id]?.details?.part_number_fa
                                                                 }}
                                                             />
                                                             {mainProduct.part_number_is_manual && (
@@ -535,6 +558,7 @@ const CreateProductPage = () => {
                                                                     attr_type: mainProduct.meta_datas.part_number_bz,
                                                                     attr_value: mainProduct.part_number_bz,
                                                                     attribute_readonly: !mainProduct.part_number_is_manual,
+                                                                    attribute_error: errors[mainProduct._id]?.details?.part_number_bz
                                                                 }}
                                                             />
                                                             {mainProduct.part_number_is_manual && (

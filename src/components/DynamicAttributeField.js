@@ -16,6 +16,7 @@ const DynamicAttributeField = ({data, onChange, parentClassName}) => {
     // <div className="d-flex justify-content-between align-items-center">
     // {attribute_category && <span id="help_part_number_en" className="badge text-bg-danger fs-tiny form-label">{attribute_category}</span>}
     const attribute_type = localData.attr_type ?? localData.meta_datas?.attr_value;
+    const attribute_error = localData.attribute_error;
     const attribute_name_en = localData.attribute_name_en ?? localData.title_en;
     const attribute_name_fa = localData.attribute_name_fa ?? localData.title_fa;
     const attribute_value = localData.attribute_value ?? localData.attr_value ?? "";
@@ -91,25 +92,30 @@ const DynamicAttributeField = ({data, onChange, parentClassName}) => {
         case "string": // Text
         case "other": // Text
             return (
-                <div className={`${parentClassName} form-floating`}>
-                    {attribute_value ? <RippleButton
-                        className="position-absolute end-0 top-0 z-3 rounded-circle mn-1 btn btn-secondary btn-sm p-01 clear-btn"
-                        title="Clear"
-                        onClick={() => onChange(undefined)}
-                    >
-                        <IconX size={10}/>
-                    </RippleButton> : undefined}
-                    <input
-                        readOnly={attribute_readonly}
-                        onChange={(e) => onChange(e.target.value)}
-                        id={attribute_id}
-                        name={attribute_name_en}
-                        className={`form-control`}
-                        placeholder={attribute_placeholder}
-                        value={attribute_value}
-                    />
-                    <label htmlFor={attribute_id}>{attribute_name_fa}</label>
-                </div>
+                <>
+                    <div className={`${parentClassName} form-floating`}>
+                        {attribute_value ? <RippleButton
+                            className="position-absolute end-0 top-0 z-3 rounded-circle mn-1 btn btn-secondary btn-sm p-01 clear-btn"
+                            title="Clear"
+                            onClick={() => onChange(undefined)}
+                        >
+                            <IconX size={10}/>
+                        </RippleButton> : undefined}
+                        <input
+                            readOnly={attribute_readonly}
+                            onChange={(e) => onChange(e.target.value)}
+                            id={attribute_id}
+                            name={attribute_name_en}
+                            className={`form-control`}
+                            placeholder={attribute_placeholder}
+                            value={attribute_value}
+                        />
+                        <label htmlFor={attribute_id}>{attribute_name_fa}</label>
+                    </div>
+                    {attribute_error
+                        ? <div className="invalid-feedback d-block">{attribute_error}</div>
+                        : undefined}
+                </>
             );
         case "float": // Input type=number
         case "int": // Input type=number
