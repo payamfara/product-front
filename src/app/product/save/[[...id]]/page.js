@@ -255,6 +255,7 @@ const CreateProductPage = () => {
             const modifiedLinkedProducts = linkedProducts.map((linkedProduct) => ({
                 ...linkedProduct,
                 category: mainProduct.category,
+                summary: 'sfdfd',
                 non_variant_product_attrs: linkedProduct.non_variant_product_attrs
                     ? linkedProduct.non_variant_product_attrs.map((nonVariant) => {
                         const foundItem = changedAttrs.find(
@@ -267,7 +268,7 @@ const CreateProductPage = () => {
                                 attr_value: foundItem.attr_value,
                                 attr_value_str: foundItem.attr_value_str,
                             }
-                            : {...nonVariant, attr_value: 'sdfsdf'};
+                            : nonVariant;
                     })
                     : {...mainProduct.non_variant_product_attrs.map(({id, ...nv}) => nv)}
             }))
@@ -284,26 +285,27 @@ const CreateProductPage = () => {
                     }
                     toast.success(`محصول ${linkedProduct.id} ذخیره شد`);
                 } else {
-                    console.log('log', results.response.data)
-                    setErrors(errors => {
-                        const data = results.response.data;
-
-                        data.nested_data.non_variant_product_attrs =
-                        return {
-                            ...errors,
-                            [linkedProduct._id]: {
-                                ...,
-                            }
-                        }
-                    })
-                    errors[linkedProduct._id] = {
-                        ...results.response.data,
-                        nested_data: {
-                            ...results.response.data.nested_data,
-                            non_variant_product_attrs: linkedProduct.non_variant_product_attrs.map((indx, nv) =>)
-                        }
-                    };
-                    errors[linkedProduct.id].nested_data = results.response.data;
+                    // console.log('log', results.response.data)
+                    // setErrors(errors => {
+                    //     const data = results.response.data;
+                    //
+                    //     data.nested_data.non_variant_product_attrs =
+                    //     return {
+                    //         ...errors,
+                    //         [linkedProduct._id]: {
+                    //             ...,
+                    //         }
+                    //     }
+                    // })
+                    // errors[linkedProduct._id] = {
+                    //     ...results.response.data,
+                    //     nested_data: {
+                    //         ...results.response.data.nested_data,
+                    //         non_variant_product_attrs: linkedProduct.non_variant_product_attrs.map((indx, nv) =>)
+                    //     }
+                    // };
+                    // errors[linkedProduct.id].nested_data = results.response.data;
+                    errors[linkedProduct.id] = results.response.data;
                     reload = false;
                     toast.error(`محصول ${linkedProduct.id} ذخیره نشد`);
                 }
