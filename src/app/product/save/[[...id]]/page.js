@@ -286,17 +286,40 @@ const CreateProductPage = () => {
                     toast.success(`محصول ${linkedProduct.id} ذخیره شد`);
                 } else {
                     // console.log('log', results.response.data)
-                    // setErrors(errors => {
-                    //     const data = results.response.data;
-                    //
-                    //     data.nested_data.non_variant_product_attrs =
-                    //     return {
-                    //         ...errors,
-                    //         [linkedProduct._id]: {
-                    //             ...,
-                    //         }
-                    //     }
-                    // })
+                    const attributes = linkedProduct.non_variant_product_attrs;
+                    const errors = results.response.data.nested_data.non_variant_product_attrs;
+
+                    const nonVariants = attributes.reduce((acc, item, index) => {
+                        if (errors[index]) {
+                            acc[item.attribute] = errors[index];
+                        }
+                        return acc;
+                    }, {});
+
+                    const variant_attributes = linkedProduct.variant_product_attrs;
+                    const variant_errors = results.response.data.nested_data.variant_product_attrs;
+
+                    const variants = variant_attributes.reduce((acc, item, index) => {
+                        if (errors[index]) {
+                            acc[item.attribute] = variant_errors[index];
+                        }
+                        return acc;
+                    }, {});
+
+                    setErrors(errors => {
+                        const obj = {
+                            ...results.response.data,
+                            nested_data: {
+                                ...results.response.data.nested_data,
+                                non_variant_product_attrs: nonVariants,
+                                variant_product_attrs: variants,
+                            }
+                        }
+                        return {
+                            ...errors,
+                            [linkedProduct._id]: obj
+                        }
+                    })
                     // errors[linkedProduct._id] = {
                     //     ...results.response.data,
                     //     nested_data: {
@@ -305,7 +328,6 @@ const CreateProductPage = () => {
                     //     }
                     // };
                     // errors[linkedProduct.id].nested_data = results.response.data;
-                    errors[linkedProduct.id] = results.response.data;
                     reload = false;
                     toast.error(`محصول ${linkedProduct.id} ذخیره نشد`);
                 }
@@ -600,6 +622,7 @@ const CreateProductPage = () => {
                                             className="gap-3 d-flex flex-column card-body"
                                         >
                                             <TabsWithInputsComponent
+                                                errors={errors[mainProduct._id]?.nested_data?.non_variant_product_attrs}
                                                 onChange={(valueOrFunction) => updateMainProduct('non_variant_product_attrs', valueOrFunction)}
                                                 inputs={mainProduct.non_variant_product_attrs}
                                             />
@@ -608,6 +631,7 @@ const CreateProductPage = () => {
                                 </div>
                                 <div className="col-12 col-lg-9">
                                     <VariantProductContainer
+                                        errors={errors}
                                         filterItem={filterItem}
                                         onChange={updateVariantAttrs}
                                         updateVariants={updateVariants}

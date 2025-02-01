@@ -7,6 +7,7 @@ import {FaSquareCheck} from "react-icons/fa6";
 import DropzoneComponent from "@/src/components/DropzoneComponent";
 import PlusButton from "../../../../../components/PlusButton";
 import DynamicAttributeField from "@/src/components/DynamicAttributeField";
+import Loading from "../../../../../components/Loading";
 
 const Card = ({
                   card,
@@ -73,6 +74,7 @@ const VariantProductContainer = ({
                                      updateVariants,
                                      onChange,
                                      pageData,
+                                     errors
                                  }) => {
     const [activeCard, setActiveCard] = useState(-1);
     const [isAttributeFrm, setIsAttributeFrm] = useState(true);
@@ -106,6 +108,7 @@ const VariantProductContainer = ({
         part_number_fa: "_",
         part_number_bz: "_",
         part_number_is_manual: false,
+        summary: "_",
         images: [],
         meta_datas: pageData.meta_datas,
         variant_product_attrs: emptyFrm,
@@ -130,6 +133,8 @@ const VariantProductContainer = ({
         toggleLink(0);
     }, []);
 
+
+    const [variantLoading, setVariantLoading] = useState(false);
     const handleCardClick = async (index) => {
         console.log(index, cards[index]);
 
@@ -139,6 +144,7 @@ const VariantProductContainer = ({
             return;
         }
 
+        setVariantLoading(true);
         const requestUrl = `/api2/product/${cards[index].id}`;
         baseApiAuth
             .get(requestUrl)
@@ -165,6 +171,9 @@ const VariantProductContainer = ({
             })
             .catch((err) => {
                 console.error("Error fetching data:", err);
+            })
+            .finally(() => {
+                setVariantLoading(false);
             });
     };
 
@@ -243,188 +252,228 @@ const VariantProductContainer = ({
                             />
                         ))}
                     </div>
-                    {activeCard >= -1 &&
-                    activeCard <= cards.length - 1 &&
-                    cards[activeCard] &&
-                    (cards[activeCard].linked ||
-                        !mainProduct.non_variant_product_attrs.some((nonVariant) => nonVariant.changed)) ? (
-                        <div className="position-relative border border-dashed rounded col-9 p-2">
-                            <div className="position-absolute end-0 top-0 myn-3 mx-3 d-flex gap-3">
-                                {cards[activeCard].id !== pageData.id && (
+                    {variantLoading
+                        ? (
+                            <div className="bg-secondary-subtle border border-dashed rounded col-9">
+                                <div
+                                    className="h-100 d-flex flex-column gap-1 justify-content-center align-items-center fs-5">
+                                    <Loading/>
+                                </div>
+                            </div>
+                        ) : activeCard >= -1 &&
+                        activeCard <= cards.length - 1 &&
+                        cards[activeCard] &&
+                        (cards[activeCard].linked ||
+                            !mainProduct.non_variant_product_attrs.some((nonVariant) => nonVariant.changed)) ? (
+                            <div
+                                className={`position-relative border border-dashed rounded col-9 ${cards[activeCard].variant_product_attrs.length ? 'p-2' : ''}`}>
+                                <div className="position-absolute end-0 top-0 myn-3 mx-3 d-flex gap-3">
+                                    {cards[activeCard].id !== pageData.id && (
+                                        <RippleButton
+                                            className={`z-1 rounded-start-0 border-success btn ${
+                                                !isAttributeFrm
+                                                    ? "btn-success border-1"
+                                                    : "btn-white border-0"
+                                            } btn-sm p-1`}
+                                            onClick={() => setIsAttributeFrm(false)}
+                                            title="Information Form"
+                                        >
+                                            فرم اطلاعات
+                                        </RippleButton>
+                                    )}
                                     <RippleButton
-                                        className={`z-1 rounded-start-0 border-success btn ${
-                                            !isAttributeFrm
-                                                ? "btn-success border-1"
+                                        className={`z-1 rounded-start-0 border-danger btn ${
+                                            isAttributeFrm
+                                                ? "btn-danger border-1"
                                                 : "btn-white border-0"
                                         } btn-sm p-1`}
-                                        onClick={() => setIsAttributeFrm(false)}
-                                        title="Information Form"
+                                        onClick={() => setIsAttributeFrm(true)}
+                                        title="Attributes Form"
                                     >
-                                        فرم اطلاعات
+                                        فرم ویژگی ها
                                     </RippleButton>
-                                )}
-                                <RippleButton
-                                    className={`z-1 rounded-start-0 border-danger btn ${
-                                        isAttributeFrm
-                                            ? "btn-danger border-1"
-                                            : "btn-white border-0"
-                                    } btn-sm p-1`}
-                                    onClick={() => setIsAttributeFrm(true)}
-                                    title="Attributes Form"
-                                >
-                                    فرم ویژگی ها
-                                </RippleButton>
-                            </div>
-                            {isAttributeFrm ? (
-                                <TabsWithInputsComponent
-                                    inputs={cards[activeCard].variant_product_attrs}
-                                    onChange={(updateAttrValuesFunction) =>
-                                        updateAttrValues(
-                                            updateAttrValuesFunction,
-                                            "variant_product_attrs"
+                                </div>
+                                {isAttributeFrm ?
+                                    cards[activeCard].variant_product_attrs.length ? (
+                                            <TabsWithInputsComponent
+                                                errors={errors[cards[activeCard]._id]?.nested_data?.variant_product_attrs}
+                                                inputs={cards[activeCard].variant_product_attrs}
+                                                onChange={(updateAttrValuesFunction) =>
+                                                    updateAttrValues(
+                                                        updateAttrValuesFunction,
+                                                        "variant_product_attrs"
+                                                    )
+                                                }
+                                            />
                                         )
-                                    }
-                                />
-                            ) : (
-                                <div className="row">
-                                    <div className="col-4">
-                                        <div className="card h-100 border">
-                                            <div className="card-header">
-                                                <h5 className="card-title mb-0">جزئیات</h5>
+                                        : (
+                                            <div
+                                                className="h-100 w-100 bg-secondary-subtle border border-dashed rounded col-9">
+                                                <div
+                                                    className="h-100 d-flex flex-column gap-1 justify-content-center align-items-center fs-5">
+                                                    <div className="opacity-70">فرم ویژگی ها</div>
+                                                    <div className="opacity-100 text-danger fs-6">
+                                                        آیتمی یافت نشد!
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div className="card-body d-flex flex-column gap-3">
-                                                {/* Part number manual */}
-                                                <DynamicAttributeField
-                                                    onChange={(value) => {
-                                                        updateAttrValues(value, "part_number_is_manual");
-                                                    }}
-                                                    className="p-2"
-                                                    data={{
-                                                        attribute_name_en: "part_number_is_manual",
-                                                        attribute_name_fa: "پارت نامبر دستی",
-                                                        attr_type:
-                                                        cards[activeCard].meta_datas
-                                                            .part_number_is_manual,
-                                                        attr_value: cards[activeCard].part_number_is_manual,
-                                                    }}
-                                                />
-                                                {/* Part number en */}
-                                                <div>
-                                                    <DynamicAttributeField
-                                                        onChange={(value) =>
-                                                            updateAttrValues(value, "part_number_en")
-                                                        }
-                                                        className="p-2"
-                                                        data={{
-                                                            attribute_name_en: "part_number_en",
-                                                            attribute_name_fa: "پارت نامبر انگلیسی",
-                                                            attr_type: cards[activeCard].meta_datas.part_number_en,
-                                                            attr_value: cards[activeCard].part_number_en,
-                                                            attribute_readonly: !cards[activeCard].part_number_is_manual,
-                                                        }}
-                                                    />
-                                                    {cards[activeCard].part_number_is_manual && (
-                                                        <span
-                                                            id="help_part_number_en"
-                                                            className="fs-tiny form-label"
-                                                        >
+                                        )
+                                    : (
+                                        <div className="row">
+                                            <div className="col-4 d-flex flex-column gap-3">
+                                                <div className="card border flex-grow-1">
+                                                    <div className="card-header">
+                                                        <h5 className="card-title mb-0">جزئیات</h5>
+                                                    </div>
+                                                    <div className="card-body d-flex flex-column gap-3">
+                                                        {/* Part number manual */}
+                                                        <DynamicAttributeField
+                                                            onChange={(value) => {
+                                                                updateAttrValues(value, "part_number_is_manual");
+                                                            }}
+                                                            className="p-2"
+                                                            data={{
+                                                                attribute_name_en: "part_number_is_manual",
+                                                                attribute_name_fa: "پارت نامبر دستی",
+                                                                attr_type:
+                                                                cards[activeCard].meta_datas
+                                                                    .part_number_is_manual,
+                                                                attr_value: cards[activeCard].part_number_is_manual,
+                                                            }}
+                                                        />
+                                                        {/* Part number en */}
+                                                        <div>
+                                                            <DynamicAttributeField
+                                                                onChange={(value) =>
+                                                                    updateAttrValues(value, "part_number_en")
+                                                                }
+                                                                className="p-2"
+                                                                data={{
+                                                                    attribute_name_en: "part_number_en",
+                                                                    attribute_name_fa: "پارت نامبر انگلیسی",
+                                                                    attr_type: cards[activeCard].meta_datas.part_number_en,
+                                                                    attr_value: cards[activeCard].part_number_en,
+                                                                    attribute_readonly: !cards[activeCard].part_number_is_manual,
+                                                                }}
+                                                            />
+                                                            {cards[activeCard].part_number_is_manual && (
+                                                                <span
+                                                                    id="help_part_number_en"
+                                                                    className="fs-tiny form-label"
+                                                                >
                               {cards[activeCard].part_number_auto?.en}
                             </span>
-                                                    )}
-                                                </div>
-                                                {/* Part number fa */}
-                                                <div>
-                                                    <DynamicAttributeField
-                                                        onChange={(value) =>
-                                                            updateAttrValues(value, "part_number_fa")
-                                                        }
-                                                        className="p-2"
-                                                        data={{
-                                                            attribute_name_en: "part_number_fa",
-                                                            attribute_name_fa: "پارت نامبر فارسی",
-                                                            attr_type: cards[activeCard].meta_datas.part_number_fa,
-                                                            attr_value: cards[activeCard].part_number_fa,
-                                                            attribute_readonly: !cards[activeCard].part_number_is_manual,
-                                                        }}
-                                                    />
-                                                    {cards[activeCard].part_number_is_manual && (
-                                                        <span
-                                                            id="help_part_number_fa"
-                                                            className="fs-tiny form-label"
-                                                        >
+                                                            )}
+                                                        </div>
+                                                        {/* Part number fa */}
+                                                        <div>
+                                                            <DynamicAttributeField
+                                                                onChange={(value) =>
+                                                                    updateAttrValues(value, "part_number_fa")
+                                                                }
+                                                                className="p-2"
+                                                                data={{
+                                                                    attribute_name_en: "part_number_fa",
+                                                                    attribute_name_fa: "پارت نامبر فارسی",
+                                                                    attr_type: cards[activeCard].meta_datas.part_number_fa,
+                                                                    attr_value: cards[activeCard].part_number_fa,
+                                                                    attribute_readonly: !cards[activeCard].part_number_is_manual,
+                                                                }}
+                                                            />
+                                                            {cards[activeCard].part_number_is_manual && (
+                                                                <span
+                                                                    id="help_part_number_fa"
+                                                                    className="fs-tiny form-label"
+                                                                >
                               {cards[activeCard].part_number_auto?.fa}
                             </span>
-                                                    )}
-                                                </div>
-                                                {/* Part number bz */}
-                                                <div>
-                                                    <DynamicAttributeField
-                                                        onChange={(value) =>
-                                                            updateAttrValues(value, "part_number_bz")
-                                                        }
-                                                        className="p-2"
-                                                        data={{
-                                                            attribute_name_en: "part_number_bz",
-                                                            attribute_name_fa: "پارت نامبر بازاری",
-                                                            attr_type: cards[activeCard].meta_datas.part_number_bz,
-                                                            attr_value: cards[activeCard].part_number_bz,
-                                                            attribute_readonly: !cards[activeCard].part_number_is_manual,
-                                                        }}
-                                                    />
-                                                    {cards[activeCard].part_number_is_manual && (
-                                                        <span
-                                                            id="help_part_number_bz"
-                                                            className="fs-tiny form-label"
-                                                        >
+                                                            )}
+                                                        </div>
+                                                        {/* Part number bz */}
+                                                        <div>
+                                                            <DynamicAttributeField
+                                                                onChange={(value) =>
+                                                                    updateAttrValues(value, "part_number_bz")
+                                                                }
+                                                                className="p-2"
+                                                                data={{
+                                                                    attribute_name_en: "part_number_bz",
+                                                                    attribute_name_fa: "پارت نامبر بازاری",
+                                                                    attr_type: cards[activeCard].meta_datas.part_number_bz,
+                                                                    attr_value: cards[activeCard].part_number_bz,
+                                                                    attribute_readonly: !cards[activeCard].part_number_is_manual,
+                                                                }}
+                                                            />
+                                                            {cards[activeCard].part_number_is_manual && (
+                                                                <span
+                                                                    id="help_part_number_bz"
+                                                                    className="fs-tiny form-label"
+                                                                >
                               {cards[activeCard].part_number_auto?.bz}
                             </span>
-                                                    )}
+                                                            )}
+                                                        </div>
+                                                        <div className="">
+                                                            <DynamicAttributeField
+                                                                onChange={(value) =>
+                                                                    updateAttrValues("summary", value)
+                                                                }
+                                                                className="p-2"
+                                                                data={{
+                                                                    attribute_name_en:
+                                                                        "summary",
+                                                                    attribute_name_fa: "توضیح کوتاه",
+                                                                    attr_type:
+                                                                    cards[activeCard].meta_datas
+                                                                        .summary,
+                                                                    attr_value: cards[activeCard].summary,
+                                                                }}
+                                                            />
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                {/* Tags */}
+                                            </div>
+                                            <div className="col-8">
+                                                <DropzoneComponent
+                                                    urls={cards[activeCard].images}
+                                                    updateUrls={updateUrls}
+                                                    uploadUrl={
+                                                        `${process.env.NEXT_PUBLIC_API_URL}/api/save_images/products/`
+                                                    }
+                                                />
                                             </div>
                                         </div>
-                                    </div>
-                                    <div className="col-8">
-                                        <DropzoneComponent
-                                            urls={cards[activeCard].images}
-                                            updateUrls={updateUrls}
-                                            uploadUrl={
-                                                `${process.env.NEXT_PUBLIC_API_URL}/api/save_images/products/`
-                                            }
-                                        />
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-                    ) : mainProduct.non_variant_product_attrs.some((nonVariant) => nonVariant.changed) ? (
-                        <div className="bg-secondary-subtle border border-dashed rounded col-9">
-                            <div
-                                className="h-100 d-flex flex-column gap-1 justify-content-center align-items-center fs-5">
-                                <div className="opacity-70">فرم ویژگی ها</div>
-                                <div className="opacity-100 text-danger fs-6">
-                                    (ابتدا فرم{" "}
-                                    <span className="border-bottom border-danger pb-1">
+                                    )}
+                            </div>
+                        ) : mainProduct.non_variant_product_attrs.some((nonVariant) => nonVariant.changed) ? (
+                            <div className="bg-secondary-subtle border border-dashed rounded col-9">
+                                <div
+                                    className="h-100 d-flex flex-column gap-1 justify-content-center align-items-center fs-5">
+                                    <div className="opacity-70">فرم ویژگی ها</div>
+                                    <div className="opacity-100 text-danger fs-6">
+                                        (ابتدا فرم{" "}
+                                        <span className="border-bottom border-danger pb-1">
                     ویژگی های عادی
                   </span>{" "}
-                                    را سیو کنید)
+                                        را سیو کنید)
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    ) : (
-                        <div className="border border-dashed rounded col-9">
-                            <div
-                                className="h-100 d-flex flex-column gap-1 justify-content-center align-items-center fs-5">
-                                <div className="opacity-70">فرم ویژگی ها</div>
-                                <div className="text-danger fs-6">
-                                    (روی{" "}
-                                    <span className="border-bottom border-danger pb-1">
+                        ) : (
+                            <div className="border border-dashed rounded col-9">
+                                <div
+                                    className="h-100 d-flex flex-column gap-1 justify-content-center align-items-center fs-5">
+                                    <div className="opacity-70">فرم ویژگی ها</div>
+                                    <div className="text-danger fs-6">
+                                        (روی{" "}
+                                        <span className="border-bottom border-danger pb-1">
                     کارت ها
                   </span>{" "}
-                                    کلیک کنید)
+                                        کلیک کنید)
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    )}
+                        )}
                 </div>
             </div>
         </div>

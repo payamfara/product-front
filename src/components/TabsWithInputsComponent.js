@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import DynamicAttributeField from "./DynamicAttributeField";
 
-const TabsWithInputs = ({ onChange, inputs }) => {
+const TabsWithInputs = ({ onChange, inputs, errors }) => {
   const categorizeInputs = (sortedInputs) => {
     const priorities = [...new Set(sortedInputs.map((input) => input.priority))];
     const categorized = {};
@@ -85,7 +85,10 @@ const TabsWithInputs = ({ onChange, inputs }) => {
                           return (
                               <DynamicAttributeField
                                   key={index}
-                                  data={input}
+                                  data={{
+                                      ...input,
+                                      attribute_error: errors?.[input.attribute]
+                                  }}
                                   parentClassName={input.changed ? "warning" : ""}
                                   onChange={(value) => handleChange(priorityKey, index, value)}
                               />
