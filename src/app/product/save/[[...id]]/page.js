@@ -1,5 +1,5 @@
 "use client";
-import {useState, useEffect} from "react";
+import {useState, useEffect, useRef} from "react";
 import TagifyComponent from "../../../../components/TagifyComponent";
 import DropzoneComponent from "../../../../components/DropzoneComponent";
 import QuillEditorComponent from "../../../../components/QuillEditorComponent";
@@ -13,6 +13,9 @@ import Loading from "../../../../components/Loading";
 import ClientLayout from "../../../../components/ClientLayout";
 import {useRouter} from 'next/navigation'
 import LoadingBtn from "../../../../components/LoadingBtn";
+import {Button} from "react-bootstrap";
+import {IconCheck, IconX} from "@tabler/icons-react";
+import RippleButton from "../../../../components/RippleButton/RippleButton";
 
 const CreateProductPage = () => {
         const [formDisabled, setFormDisabled] = useState(false);
@@ -28,6 +31,7 @@ const CreateProductPage = () => {
             setReload((prev) => !prev);
         };
         const [filterData, setFilterData] = useState();
+        const mainProductStatusRef = useRef(1);
 
         const updateMainProduct = async (name, valueOrFunction) => {
             const getValue = (dep) =>
@@ -255,7 +259,7 @@ const CreateProductPage = () => {
             const modifiedLinkedProducts = linkedProducts.map((linkedProduct) => ({
                 ...linkedProduct,
                 category: mainProduct.category,
-                summary: 'sfdfd',
+                status: linkedProduct.id === mainProduct.id ? mainProductStatusRef.current : linkedProduct.status,
                 non_variant_product_attrs: linkedProduct.non_variant_product_attrs
                     ? linkedProduct.non_variant_product_attrs.map((nonVariant) => {
                         const foundItem = changedAttrs.find(
@@ -270,74 +274,73 @@ const CreateProductPage = () => {
                             }
                             : nonVariant;
                     })
-                    : {...mainProduct.non_variant_product_attrs.map(({id, ...nv}) => nv)}
+                    : mainProduct.non_variant_product_attrs.map(({id, ...nv}) => nv)
             }))
 
-            let reload = true;
-            let mainProductId;
-            const promises = modifiedLinkedProducts.map(async (linkedProduct) => {
-                const [status, results] = await saveProduct({...linkedProduct});
+            const innerSave = async (save) => {
+                let reload = true;
+                let mainProductId;
+                for (const linkedProduct of modifiedLinkedProducts) {
+                    const [status, results] = await saveProduct({...linkedProduct}, {save})
 
-                if (status) {
-                    if (linkedProduct.id === pageData.id) {
-                        console.log('equal', linkedProduct, pageData, linkedProduct.id, pageData.id);
-                        mainProductId = results.id;
-                    }
-                    toast.success(`محصول ${linkedProduct.id} ذخیره شد`);
-                } else {
-                    // console.log('log', results.response.data)
-                    const attributes = linkedProduct.non_variant_product_attrs;
-                    const errors = results.response.data.nested_data.non_variant_product_attrs;
-
-                    const nonVariants = attributes.reduce((acc, item, index) => {
-                        if (errors[index]) {
-                            acc[item.attribute] = errors[index];
+                    if (status) {
+                        if (linkedProduct.id === pageData.id) {
+                            console.log('equal', linkedProduct, pageData, linkedProduct.id, pageData.id);
+                            mainProductId = results.id;
                         }
-                        return acc;
-                    }, {});
+                        // toast.success(`محصول ${linkedProduct.id} ذخیره شد`);
+                    } else {
+                        const attributes = linkedProduct.non_variant_product_attrs;
+                        const errors = results.response.data.nested_data.non_variant_product_attrs;
 
-                    const variant_attributes = linkedProduct.variant_product_attrs;
-                    const variant_errors = results.response.data.nested_data.variant_product_attrs;
-
-                    const variants = variant_attributes.reduce((acc, item, index) => {
-                        if (errors[index]) {
-                            acc[item.attribute] = variant_errors[index];
-                        }
-                        return acc;
-                    }, {});
-
-                    setErrors(errors => {
-                        const obj = {
-                            ...results.response.data,
-                            nested_data: {
-                                ...results.response.data.nested_data,
-                                non_variant_product_attrs: nonVariants,
-                                variant_product_attrs: variants,
+                        const nonVariants = errors?.reduce((acc, item) => {
+                            const [[idx, err]] = Object.entries(item);
+                            const attrItem = attributes[idx];
+                            if (err) {
+                                acc[attrItem.attribute] = err;
                             }
-                        }
-                        return {
+                            return acc;
+                        }, {});
+
+                        const variant_attributes = linkedProduct.variant_product_attrs;
+                        const variant_errors = results.response.data.nested_data.variant_product_attrs;
+
+                        const variants = variant_errors?.reduce((acc, item) => {
+                            const [[idx, err]] = Object.entries(item);
+                            const attrItem = variant_attributes[idx];
+                            if (err) {
+                                acc[attrItem.attribute] = err;
+                            }
+                            return acc;
+                        }, {});
+
+                        setErrors(errors => ({
                             ...errors,
-                            [linkedProduct._id]: obj
-                        }
-                    })
-                    // errors[linkedProduct._id] = {
-                    //     ...results.response.data,
-                    //     nested_data: {
-                    //         ...results.response.data.nested_data,
-                    //         non_variant_product_attrs: linkedProduct.non_variant_product_attrs.map((indx, nv) =>)
-                    //     }
-                    // };
-                    // errors[linkedProduct.id].nested_data = results.response.data;
-                    reload = false;
-                    toast.error(`محصول ${linkedProduct.id} ذخیره نشد`);
+                            [linkedProduct._id]: {
+                                ...results.response.data,
+                                nested_data: {
+                                    ...results.response.data.nested_data,
+                                    non_variant_product_attrs: nonVariants,
+                                    variant_product_attrs: variants,
+                                }
+                            }
+                        }));
+
+                        reload = false;
+                        toast.error(`محصول ${linkedProduct._id} ذخیره نشد`);
+                    }
                 }
-            });
+                return [reload, mainProductId]
+            }
 
-            await Promise.all(promises);
-
+            const [reload, mainProductId] = await innerSave(false)
             if (reload) {
-                router.push(`/product/save/${mainProductId}`);
-                handleRefresh();
+                const [reload, mainProductId] = await innerSave(true)
+                if (reload) {
+                    toast.success(`موفقیت آمیز بود!`);
+                    router.push(`/product/save/${mainProductId}`);
+                    handleRefresh();
+                }
             }
         }
 
@@ -367,29 +370,49 @@ const CreateProductPage = () => {
                                 )}
                             </div>
                             <div className="d-flex align-content-center flex-wrap gap-3">
-                                <button
+
+                                {mainProduct.is_active
+                                    ? <RippleButton
+                                        onClick={() =>
+                                            updateMainProduct("is_active", (value)=>!value)
+                                        }
+                                        className={`d-flex gap-2 btn btn-success btn-lg btn-block`}
+                                    >
+                                        <IconCheck size={20}/>
+                                        فعال
+                                    </RippleButton>
+                                    : <RippleButton
+                                        onClick={() =>
+                                            updateMainProduct("is_active", (value)=>!value)
+                                        }
+                                        className={`d-flex gap-2 btn btn-danger btn-lg btn-block`}
+                                    >
+                                        <IconX size={20}/>
+                                        غیرفعال
+                                    </RippleButton>
+                                }
+
+                                <LoadingBtn
+                                    type={'submit'}
                                     className={`d-flex gap-2 btn btn-label-primary btn-lg btn-block`}
-                                    // color={''}
-                                    // isLoading={formDisabled}
-                                    // onClick={() =>
-                                    //     updateMainProduct(
-                                    //         "status",
-                                    //         3
-                                    //     )
-                                    // }
+                                    isLoading={formDisabled}
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        mainProductStatusRef.current = 2;
+                                        e.target.form.dispatchEvent(new Event("submit", {bubbles: true, cancelable: true}));
+                                    }}
                                 >
                                     ذخیره پیش نویس
-                                </button>
+                                </LoadingBtn>
                                 <LoadingBtn
                                     type={'submit'}
                                     color={'primary'}
                                     isLoading={formDisabled}
-                                    // onClick={() =>
-                                    //     updateMainProduct(
-                                    //         "status",
-                                    //         1
-                                    //     )
-                                    // }
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        mainProductStatusRef.current = 1;
+                                        e.target.form.dispatchEvent(new Event("submit", {bubbles: true, cancelable: true}));
+                                    }}
                                 >
                                     انتشار محصول
                                 </LoadingBtn>

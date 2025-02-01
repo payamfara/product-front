@@ -131,103 +131,123 @@ const DynamicAttributeField = ({data, onChange, parentClassName}) => {
         case "float": // Input type=number
         case "int": // Input type=number
             return (
-                <div className={`${parentClassName} form-floating`}>
-                    {attribute_value ? <RippleButton
-                        className="position-absolute end-0 top-0 z-3 rounded-circle mn-1 btn btn-secondary btn-sm p-01 clear-btn"
-                        title="Clear"
-                        onClick={() => onChange(undefined)}
-                    >
-                        <IconX size={10}/>
-                    </RippleButton> : undefined}
-                    <input
-                        onChange={(e) => onChange(parseFloat(e.target.value))}
-                        type="number"
-                        id={attribute_id}
-                        name={attribute_name_en}
-                        className={`form-control`}
-                        placeholder={attribute_placeholder}
-                        value={attribute_value}
-                    />
-                    <label htmlFor={attribute_id}>{attribute_name_fa}</label>
-                </div>
+                <>
+                    <div className={`${parentClassName} form-floating`}>
+                        {attribute_value ? <RippleButton
+                            className="position-absolute end-0 top-0 z-3 rounded-circle mn-1 btn btn-secondary btn-sm p-01 clear-btn"
+                            title="Clear"
+                            onClick={() => onChange(undefined)}
+                        >
+                            <IconX size={10}/>
+                        </RippleButton> : undefined}
+                        <input
+                            onChange={(e) => onChange(parseFloat(e.target.value))}
+                            type="number"
+                            id={attribute_id}
+                            name={attribute_name_en}
+                            className={`form-control`}
+                            placeholder={attribute_placeholder}
+                            value={attribute_value}
+                        />
+                        <label htmlFor={attribute_id}>{attribute_name_fa}</label>
+                    </div>
+                    {Object.values(attribute_error || {}).map((err, key)=> (
+                        <div key={key} className="invalid-feedback d-block">{JSON.stringify(err)}</div>
+                    ))}
+                </>
             );
         case "bool":
         case "boolean":
             // For checkbox or radio based on priority
             if (attribute_priority === "mandatory" || attribute_type.required) {
                 return (
-                    <div className={`${parentClassName} position-relative form-floating`}>
-                        <input
-                            id={`${attribute_id}_fake`}
-                            readOnly
-                            type="text"
-                            className="form-control"
-                        />
-                        <label htmlFor={`${attribute_id}_fake`}>
-                            {attribute_name_fa}
-                        </label>
-                        <input
-                            type="checkbox"
-                            onChange={(e) => onChange(e.target.value)}
-                            id={attribute_id}
-                            name={attribute_name_en}
-                            className={`position-absolute bottom-0 mx-3 m-2 form-check-input`}
-                            defaultChecked={!!attribute_value}
-                        />
-                    </div>
+                    <>
+                        <div className={`${parentClassName} position-relative form-floating`}>
+                            <input
+                                id={`${attribute_id}_fake`}
+                                readOnly
+                                type="text"
+                                className="form-control"
+                            />
+                            <label htmlFor={`${attribute_id}_fake`}>
+                                {attribute_name_fa}
+                            </label>
+                            <input
+                                type="checkbox"
+                                onChange={(e) => onChange(e.target.value)}
+                                id={attribute_id}
+                                name={attribute_name_en}
+                                className={`position-absolute bottom-0 mx-3 m-2 form-check-input`}
+                                defaultChecked={!!attribute_value}
+                            />
+                        </div>
+                        {Object.values(attribute_error || {}).map((err, key)=> (
+                            <div key={key} className="invalid-feedback d-block">{JSON.stringify(err)}</div>
+                        ))}
+                    </>
                 );
             } else {
                 return (
-                    <div className={`${parentClassName} form-floating`}>
-                        <input
-                            id={`${attribute_id}_fake`}
-                            readOnly
-                            type="text"
-                            className="form-control"
-                        />
-                        <label htmlFor={`${attribute_id}_fake`}>
-                            {attribute_name_fa}
-                        </label>
-                        <div className="flex-nowrap row row-cols-auto w-100 gap-2 position-absolute bottom-0 m-2 mx-3">
-                            <div className="flex-nowrap row max-w-50">
-                                <input
-                                    onChange={(e) => onChange(true)}
-                                    type="radio"
-                                    id={`${attribute_name_en}_true`}
-                                    name={attribute_name_en}
-                                    className={`form-check-input p-0`}
-                                    defaultChecked={attribute_value === true}
-                                />
-                                <label className={'text-truncate'} htmlFor={`${attribute_name_en}_true`}>بله</label>
-                            </div>
-                            <div className="flex-nowrap row max-w-50">
-                                <input
-                                    onChange={(e) => onChange(false)}
-                                    type="radio"
-                                    id={`${attribute_name_en}_false`}
-                                    name={attribute_name_en}
-                                    className={`form-check-input p-0`}
-                                    defaultChecked={attribute_value === false}
-                                />
-                                <label className={'text-truncate'} htmlFor={`${attribute_name_en}_false`}>خیر</label>
+                    <>
+                        <div className={`${parentClassName} form-floating`}>
+                            <input
+                                id={`${attribute_id}_fake`}
+                                readOnly
+                                type="text"
+                                className="form-control"
+                            />
+                            <label htmlFor={`${attribute_id}_fake`}>
+                                {attribute_name_fa}
+                            </label>
+                            <div className="flex-nowrap row row-cols-auto w-100 gap-2 position-absolute bottom-0 m-2 mx-3">
+                                <div className="flex-nowrap row max-w-50">
+                                    <input
+                                        onChange={(e) => onChange(true)}
+                                        type="radio"
+                                        id={`${attribute_name_en}_true`}
+                                        name={attribute_name_en}
+                                        className={`form-check-input p-0`}
+                                        defaultChecked={attribute_value === true}
+                                    />
+                                    <label className={'text-truncate'} htmlFor={`${attribute_name_en}_true`}>بله</label>
+                                </div>
+                                <div className="flex-nowrap row max-w-50">
+                                    <input
+                                        onChange={(e) => onChange(false)}
+                                        type="radio"
+                                        id={`${attribute_name_en}_false`}
+                                        name={attribute_name_en}
+                                        className={`form-check-input p-0`}
+                                        defaultChecked={attribute_value === false}
+                                    />
+                                    <label className={'text-truncate'} htmlFor={`${attribute_name_en}_false`}>خیر</label>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                        {Object.values(attribute_error || {}).map((err, key)=> (
+                            <div key={key} className="invalid-feedback d-block">{JSON.stringify(err)}</div>
+                        ))}
+                    </>
                 );
             }
         case "date_time":
             return (
-                <div className={`${parentClassName} form-floating`}>
-                    <RippleButton
-                        className="position-absolute end-0 top-0 z-3 rounded-circle mn-1 btn btn-secondary btn-sm p-01 clear-btn"
-                        title="Clear"
-                        onClick={() => onChange(undefined)}
-                    >
-                        <IconX size={10}/>
-                    </RippleButton>
-                    <DatePicker name={attribute_name_en}/>
-                    <label htmlFor={attribute_id}>{attribute_name_en}</label>
-                </div>
+                <>
+                    <div className={`${parentClassName} form-floating`}>
+                        <RippleButton
+                            className="position-absolute end-0 top-0 z-3 rounded-circle mn-1 btn btn-secondary btn-sm p-01 clear-btn"
+                            title="Clear"
+                            onClick={() => onChange(undefined)}
+                        >
+                            <IconX size={10}/>
+                        </RippleButton>
+                        <DatePicker name={attribute_name_en}/>
+                        <label htmlFor={attribute_id}>{attribute_name_en}</label>
+                    </div>
+                    {Object.values(attribute_error || {}).map((err, key)=> (
+                        <div key={key} className="invalid-feedback d-block">{JSON.stringify(err)}</div>
+                    ))}
+                </>
             )
         default:
             return undefined;

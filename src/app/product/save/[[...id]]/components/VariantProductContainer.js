@@ -1,5 +1,5 @@
 import RippleButton from "@/src/components/RippleButton/RippleButton";
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useRef} from "react";
 import {FaTrash, FaSquare} from "react-icons/fa";
 import TabsWithInputsComponent from "../../../../../components/TabsWithInputsComponent";
 import {baseApiAuth} from "@/src/api/baseApi";
@@ -8,6 +8,7 @@ import DropzoneComponent from "@/src/components/DropzoneComponent";
 import PlusButton from "../../../../../components/PlusButton";
 import DynamicAttributeField from "@/src/components/DynamicAttributeField";
 import Loading from "../../../../../components/Loading";
+import {IconCamera, IconCheck, IconX} from "@tabler/icons-react";
 
 const Card = ({
                   card,
@@ -46,17 +47,19 @@ const Card = ({
                 ) : undefined}
             </div>
             <div className={`card shadow-lg h-100 overflow-hidden`}>
-                <div className="card-img card-body p-0">
-                    <img
-                        className="card-img"
-                        src={
-                            card.images.length
-                                ? card.images[0]
-                                : "/images/default-product.png"
-                        }
-                        alt=""
-                    />
-                </div>
+                {card.images.length
+                    ? <div className="card-img card-body p-0">
+                        <img
+                            className="card-img"
+                            src={card.images[0]}
+                            alt=""
+                        />
+                    </div>
+                    : <div
+                        className="bg-secondary-subtle d-flex justify-content-center align-items-center card-img card-body p-0">
+                        <IconCamera size={24}/>
+                    </div>
+                }
                 <div className="card-footer p-0">
                     <p className="card-text">
                         <small className="d-block lh-2 py-1 px-2 m-0 text-truncate">
@@ -97,10 +100,11 @@ const VariantProductContainer = ({
         };
     });
 
-    let counter = 0;
+    const counter = useRef(1);
     const makeUUid = () => {
-        counter += 1
-        return `new_${counter}`;
+        const uuid = `new_${counter.current}`
+        counter.current = counter.current + 1;
+        return uuid;
     }
 
     const emptyCard = {
@@ -108,6 +112,8 @@ const VariantProductContainer = ({
         part_number_fa: "_",
         part_number_bz: "_",
         part_number_is_manual: false,
+        is_active: true,
+        status: 1,
         summary: "_",
         images: [],
         meta_datas: pageData.meta_datas,
@@ -266,7 +272,7 @@ const VariantProductContainer = ({
                         (cards[activeCard].linked ||
                             !mainProduct.non_variant_product_attrs.some((nonVariant) => nonVariant.changed)) ? (
                             <div
-                                className={`position-relative border border-dashed rounded col-9 ${cards[activeCard].variant_product_attrs.length ? 'p-2' : ''}`}>
+                                className={`position-relative border border-dashed rounded col-9 ${!isAttributeFrm || cards[activeCard].variant_product_attrs.length ? 'p-2' : 'p-0'}`}>
                                 <div className="position-absolute end-0 top-0 myn-3 mx-3 d-flex gap-3">
                                     {cards[activeCard].id !== pageData.id && (
                                         <RippleButton
@@ -339,6 +345,7 @@ const VariantProductContainer = ({
                                                                 cards[activeCard].meta_datas
                                                                     .part_number_is_manual,
                                                                 attr_value: cards[activeCard].part_number_is_manual,
+                                                                attribute_error: errors[cards[activeCard]._id]?.details?.part_number_is_manual,
                                                             }}
                                                         />
                                                         {/* Part number en */}
@@ -354,6 +361,7 @@ const VariantProductContainer = ({
                                                                     attr_type: cards[activeCard].meta_datas.part_number_en,
                                                                     attr_value: cards[activeCard].part_number_en,
                                                                     attribute_readonly: !cards[activeCard].part_number_is_manual,
+                                                                    attribute_error: errors[cards[activeCard]._id]?.details?.part_number_en,
                                                                 }}
                                                             />
                                                             {cards[activeCard].part_number_is_manual && (
@@ -378,6 +386,7 @@ const VariantProductContainer = ({
                                                                     attr_type: cards[activeCard].meta_datas.part_number_fa,
                                                                     attr_value: cards[activeCard].part_number_fa,
                                                                     attribute_readonly: !cards[activeCard].part_number_is_manual,
+                                                                    attribute_error: errors[cards[activeCard]._id]?.details?.part_number_fa,
                                                                 }}
                                                             />
                                                             {cards[activeCard].part_number_is_manual && (
@@ -402,6 +411,7 @@ const VariantProductContainer = ({
                                                                     attr_type: cards[activeCard].meta_datas.part_number_bz,
                                                                     attr_value: cards[activeCard].part_number_bz,
                                                                     attribute_readonly: !cards[activeCard].part_number_is_manual,
+                                                                    attribute_error: errors[cards[activeCard]._id]?.details?.part_number_bz,
                                                                 }}
                                                             />
                                                             {cards[activeCard].part_number_is_manual && (
@@ -416,7 +426,7 @@ const VariantProductContainer = ({
                                                         <div className="">
                                                             <DynamicAttributeField
                                                                 onChange={(value) =>
-                                                                    updateAttrValues("summary", value)
+                                                                    updateAttrValues(value, "summary")
                                                                 }
                                                                 className="p-2"
                                                                 data={{
@@ -427,8 +437,49 @@ const VariantProductContainer = ({
                                                                     cards[activeCard].meta_datas
                                                                         .summary,
                                                                     attr_value: cards[activeCard].summary,
+                                                                    attribute_error: errors[cards[activeCard]._id]?.details?.summary,
                                                                 }}
                                                             />
+                                                        </div>
+                                                        <div className="d-flex gap-2">
+                                                            {cards[activeCard].is_active
+                                                                ? <RippleButton
+                                                                    onClick={() =>
+                                                                        updateAttrValues(value => !value, "is_active")
+                                                                    }
+                                                                    className={`d-flex btn border-success btn-success border-1 btn-sm p-1`}
+                                                                >
+                                                                    <IconCheck className={'flex-shrink-0'} size={20}/>
+                                                                    <div className={'text-truncate'}>فعال</div>
+                                                                </RippleButton>
+                                                                : <RippleButton
+                                                                    onClick={() =>
+                                                                        updateAttrValues(value => !value, "is_active")
+                                                                    }
+                                                                    className={`d-flex btn border-danger btn-danger border-1 btn-sm p-1`}
+                                                                >
+                                                                    <IconX className={'flex-shrink-0'} size={20}/>
+                                                                    <div className={'text-truncate'}>غیرفعال</div>
+                                                                </RippleButton>
+                                                            }
+                                                            {cards[activeCard].status === 1
+                                                                ? <RippleButton
+                                                                    onClick={() =>
+                                                                        updateAttrValues(value => 2, "status")
+                                                                    }
+                                                                    className={`d-flex btn border-primary btn-label-primary border-1 btn-sm p-1`}
+                                                                >
+                                                                    <div className={'text-truncate'}>قابل انتشار</div>
+                                                                </RippleButton>
+                                                                : <RippleButton
+                                                                    onClick={() =>
+                                                                        updateAttrValues(value => 1, "status")
+                                                                    }
+                                                                    className={`d-flex btn border-primary btn-primary border-1 btn-sm p-1`}
+                                                                >
+                                                                    <div className={'text-truncate'}>پیش نویس</div>
+                                                                </RippleButton>
+                                                            }
                                                         </div>
                                                     </div>
                                                 </div>
