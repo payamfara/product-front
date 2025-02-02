@@ -13,7 +13,6 @@ import Loading from "../../../../components/Loading";
 import ClientLayout from "../../../../components/ClientLayout";
 import {useRouter} from 'next/navigation'
 import LoadingBtn from "../../../../components/LoadingBtn";
-import {Button} from "react-bootstrap";
 import {IconCheck, IconX} from "@tabler/icons-react";
 import RippleButton from "../../../../components/RippleButton/RippleButton";
 
@@ -201,12 +200,6 @@ const CreateProductPage = () => {
             }
 
             const variantProducts = [{...finalData, linked: true}, ...finalData.variant_products]
-            // const variantProducts = [{...finalData, linked: true}, ...finalData.variant_products].map(vp => ({
-            //     ...vp,
-            //     part_number_en_default: vp.part_number_en,
-            //     part_number_fa_default: vp.part_number_fa,
-            //     part_number_bz_default: vp.part_number_bz,
-            // }))
 
             setPageData({
                 ...finalData,
@@ -1104,6 +1097,8 @@ const CreateProductPage = () => {
                                                     attribute_name_en: "price",
                                                     attr_type: pageData.meta_datas.price,
                                                     attr_value: pageData.price,
+                                                    attribute_readonly: true,
+
                                                 }}
                                             />
                                             {/* Discounted Price */}
@@ -1112,45 +1107,49 @@ const CreateProductPage = () => {
                                                 data={{
                                                     attribute_name_fa: "قیمت با تخفیف",
                                                     attribute_name_en: "discountedPrice",
-                                                    attr_type: pageData.meta_datas.price,
+                                                    attr_type: pageData.meta_datas.discount_price,
+                                                    attr_value: pageData.discount_price,
+                                                    attribute_readonly: true,
                                                 }}
                                             />
-                                            {/* Charge tax check box */}
-                                            <div className="form-check">
-                                                <input
-                                                    defaultChecked
-                                                    className="form-check-input"
-                                                    id="price-charge-tax"
-                                                    type="checkbox"
-                                                    value=""
-                                                />
-                                                <label
-                                                    className="form-label"
-                                                    htmlFor="price-charge-tax"
-                                                >
-                                                    {" "}
-                                                    دارای مالیات
-                                                </label>
-                                            </div>
-                                            {/* Instock switch */}
-                                            <div
-                                                className="d-flex justify-content-between align-items-center border-top pt-3">
-                                                <h6 className="mb-0">موجود در انبار</h6>
-                                                <div className="w-25 d-flex justify-content-end">
-                                                    <label className="switch switch-primary switch-sm me-4 pe-2">
-                                                        <input
-                                                            defaultChecked
-                                                            className="switch-input"
-                                                            type="checkbox"
-                                                        />
-                                                        <span className="switch-toggle-slider">
-                                                        <span className="switch-on">
-                                                            <span className="switch-off"></span>
-                                                        </span>
-                                                    </span>
-                                                    </label>
+                                            <div className="d-flex flex-wrap gap-x-3 gap-2">
+                                                <div className="btn-group">
+                                                    <RippleButton className="p-1 btn btn-sm btn-label-primary">
+                                                        حد موجودی فروشگاه
+                                                    </RippleButton>
+                                                    <RippleButton className="p-1 btn btn-sm btn-label-primary">
+                                                        {pageData.limit}
+                                                    </RippleButton>
+                                                </div>
+                                                <div className="btn-group">
+                                                    <RippleButton className="p-1 btn btn-sm btn-light">
+                                                        موجود در انبار
+                                                    </RippleButton>
+                                                    <RippleButton className="p-1 btn btn-sm btn-light">
+                                                        {pageData.stock_quantity}
+                                                    </RippleButton>
+                                                </div>
+                                                <div className="btn-group">
+                                                    <RippleButton className="p-1 btn btn-sm btn-dark">
+                                                        تعداد رزرو شده
+                                                    </RippleButton>
+                                                    <RippleButton className="p-1 btn btn-sm btn-dark">
+                                                        {pageData.reserved_quantity}
+                                                    </RippleButton>
                                                 </div>
                                             </div>
+
+                                            <div className="d-flex flex-wrap gap-2">
+                                                {Object.entries(pageData.discount_dict).map(([count, percent], index)=>
+                                                    <RippleButton key={index} className={`d-flex flex-column gap-1 btn border-primary btn-label-primary border-1 btn-sm`}
+                                                    >
+                                                        {count} +
+                                                        <hr className={'w-100 rotate-4 m-0'} />
+                                                        % {percent}
+                                                    </RippleButton>
+                                                )}
+                                            </div>
+
                                         </div>
                                     </div>
                                 </div>

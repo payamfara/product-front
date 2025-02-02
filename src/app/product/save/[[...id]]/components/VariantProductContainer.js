@@ -11,6 +11,7 @@ import Loading from "../../../../../components/Loading";
 import {IconCamera, IconCheck, IconX} from "@tabler/icons-react";
 
 const Card = ({
+                  isMain,
                   card,
                   isActive,
                   toggleLink,
@@ -22,11 +23,18 @@ const Card = ({
         <div
             onClick={onClick}
             className={`p-2 rounded border ${
-                card.linked ? "border-success" : isActive ? "border-primary" : ""
+                isMain ? isActive ? "border-success" : "border-danger" : card.id && isActive || (card.linked && isActive) ? "border-success" : isActive ? "border-primary" : ""
             } border-dashed position-relative`}
         >
             <div
                 className="position-absolute d-flex flex-column justify-content-center gap-4 top-0 start-0 h-100 mxn-2">
+                {isMain ? (
+                    <RippleButton
+                        className="pe-none z-1 rounded-start-0 border-0 border-danger ribbon btn btn-danger btn-sm p-1"
+                    >
+                        اصلی
+                    </RippleButton>
+                ) : undefined}
                 {card.id === undefined ? (
                     <RippleButton
                         className="z-1 rounded-start-0 border-0 border-danger ribbon btn btn-danger btn-sm p-1"
@@ -130,7 +138,7 @@ const VariantProductContainer = ({
 
     const handleAddCard = () => {
         const _id = makeUUid();
-        updateVariants((cards) => [{_id, ...emptyCard}, ...cards]);
+        updateVariants((cards) => [cards[0], {_id, ...emptyCard}, ...cards?.slice(1)]);
         setActiveCard(0);
         setIsAttributeFrm(true);
     };
@@ -142,7 +150,6 @@ const VariantProductContainer = ({
 
     const [variantLoading, setVariantLoading] = useState(false);
     const handleCardClick = async (index) => {
-        console.log(index, cards[index]);
 
         if (cards[index].variant_product_attrs) {
             setActiveCard(index);
@@ -251,6 +258,7 @@ const VariantProductContainer = ({
                                 isLinkable={mainProduct.non_variant_product_attrs.some(
                                     (nonVariant) => nonVariant.changed
                                 )}
+                                isMain={card.id === pageData.id}
                                 isActive={activeCard === index}
                                 onDelete={() => handleDelete(index)}
                                 toggleLink={() => toggleLink(index)}

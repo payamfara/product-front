@@ -15,10 +15,11 @@ import CustomPagination from "./CustomPagination";
 import Link from "next/link";
 import Loading from "./Loading";
 
-const DataTable = ({fields, columns}) => {
+const DataTable = ({fields, columns, shouldRefresh}) => {
     const [data, setData] = useState({
         pageData: {},
         search: {
+            parent: {value: 1, opr: '='},
             page_size: {value: 20, opr: '='},
             page: {value: 1, opr: '='},
             search_q: {value: '', opr: '='},
@@ -85,11 +86,11 @@ const DataTable = ({fields, columns}) => {
         try {
             const prepareQueryParams = Object.fromEntries(Object.entries(data.search).map(([attribute, valueObj]) => [valueOprMap(attribute, valueObj.opr), valueObj.value]));
             const queryParams = new URLSearchParams(prepareQueryParams).toString();
-            const requestUrl = `/api2/product/`
+            const requestUrl = `/api2/category/`
             const response = await baseApiAuth.get(`${requestUrl}?${queryParams}`);
             return response.data || [];
         } catch (error) {
-            console.error("Error fetching products:", error);
+            console.error("Error fetching categories:", error);
             return [];
         }
 
@@ -117,7 +118,7 @@ const DataTable = ({fields, columns}) => {
         }, 500);
 
         return () => clearTimeout(timer);
-    }, [data.search]);
+    }, [data.search, shouldRefresh]);
 
     useEffect(() => {
         if (!debouncedSearch) return;
@@ -197,7 +198,7 @@ const DataTable = ({fields, columns}) => {
                 <DynamicAttributeField
                     data={{
                         attribute_name_en: "search_q",
-                        attribute_name_fa: "جستجو محصول",
+                        attribute_name_fa: "جستجو دسته بندی",
                         attr_type: {type: "string"},
                         attribute_value: data.search.search_q.value,
                     }}
@@ -217,10 +218,10 @@ const DataTable = ({fields, columns}) => {
                         </select>
                     </div>
                     <CustomDropdown hasSpace data={btnItems}/>
-                    <Link href={'/product/save/'}>
+                    <Link href={'/category/save/'}>
                         <RippleButton
                             className="h-100 d-flex align-items-center gap-1 z-1 btn btn-primary p-1 px-4"
-                            title="Add Product"
+                            title="Add Category"
                         >
                             <IconPlus size={18}/>
                             افزودن محصول

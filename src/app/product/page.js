@@ -110,7 +110,6 @@ const ListProductPage = () => {
                 opr: opr
             }
 
-        console.log(attribute, value);
         setFields(fields => ({
             ...fields,
             [attribute]: {...fields[attribute], ...extraData}
@@ -158,20 +157,20 @@ const ListProductPage = () => {
                                 onChange={(value) => updateFields('category', value, '=')}
                             />
                         </div>
-                        <div>
-                            <DynamicAttributeField
-                                data={{
-                                    attribute_name_en: "status",
-                                    attribute_name_fa: "وضعیت انبار",
-                                    attr_type: {
-                                        type: "select_2",
-                                        url: "/api2/myapp-category/",
-                                    },
-                                    attribute_value: fields.category,
-                                }}
-                                onChange={(value) => updateFields('status', value)}
-                            />
-                        </div>
+                        {/*<div>*/}
+                        {/*    <DynamicAttributeField*/}
+                        {/*        data={{*/}
+                        {/*            attribute_name_en: "status",*/}
+                        {/*            attribute_name_fa: "وضعیت انبار",*/}
+                        {/*            attr_type: {*/}
+                        {/*                type: "list",*/}
+                        {/*                choices: [{id: 1, name}]*/}
+                        {/*            },*/}
+                        {/*            attribute_value: fields.category,*/}
+                        {/*        }}*/}
+                        {/*        onChange={(value) => updateFields('limit', value, '>')}*/}
+                        {/*    />*/}
+                        {/*</div>*/}
                     </div>
                     <DataTable columns={columns} fields={fields}/>
                 </div>

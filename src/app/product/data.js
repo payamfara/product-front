@@ -1,4 +1,4 @@
-const data = [
+<const data = [
   {
     id: 1,
     avatar: "8.png",
