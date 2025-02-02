@@ -1,18 +1,40 @@
 "use client";
 import DynamicAttributeField from "@/src/components/DynamicAttributeField";
 import DataTable from "../../components/DataTable";
-import {IconEdit, IconTrash} from "@tabler/icons-react";
+import {IconCamera, IconEdit, IconTrash} from "@tabler/icons-react";
 import ClientLayout from "../../components/ClientLayout";
-import {useState} from "react";
+import React, {useState} from "react";
 import Link from "next/link";
 import {confirm} from "../../components/ConfirmModalComponent";
+import {baseApiAuth} from "../../api/baseApi";
 
 const ListProductPage = () => {
+
+    const deleteProduct = async (id) => {
+        const requestUrl = `/api2/product/${id}/`;
+        // setFormDisabled(true);
+        try {
+            const response = await baseApiAuth
+                .delete(requestUrl)
+            return [true, response.data];
+        } catch (err) {
+            console.error("Error fetching tags:", err);
+            return [false, err]
+        } finally {
+            // setFormDisabled(false);
+        }
+    }
+
     const handleDelete = async (id) => {
         const result = await confirm({});
+        console.log('result', result);
 
         if (result) {
-            console.log("Item deleted!");
+            console.log('')
+            const [status, results] = await deleteProduct(id)
+            console.log(status, results)
+            if (status)
+                console.log("Item deleted!");
         } else {
             console.log("Action canceled.");
         }
@@ -27,7 +49,13 @@ const ListProductPage = () => {
                 return <div className="d-flex justify-content-start align-items-center product-name">
                     <div className="avatar-wrapper">
                         <div className="avatar avatar me-2 rounded-2 bg-label-secondary">
-                            <img src={row.images[0]} alt={row.part_number_en} className="rounded-2"/>
+                            {row.images[0]
+                                ? <img src={row.images[0]} alt={row.part_number_en} className="rounded-2"/>
+                                : <div
+                                    className="bg-secondary-subtle d-flex justify-content-center align-items-center card-img card-body p-0">
+                                    <IconCamera size={24}/>
+                                </div>
+                            }
                         </div>
                     </div>
                     <div className="d-flex flex-column">

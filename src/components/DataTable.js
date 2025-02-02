@@ -19,7 +19,7 @@ const DataTable = ({fields, columns}) => {
     const [data, setData] = useState({
         pageData: {},
         search: {
-            page_size: {value: 2, opr: '='},
+            page_size: {value: 20, opr: '='},
             page: {value: 1, opr: '='},
             q: {value: '', opr: '='},
             order_by: {value: '-pk', opr: '='},
@@ -179,7 +179,7 @@ const DataTable = ({fields, columns}) => {
     const handleScroll = () => {
         if (
             window.innerHeight + document.documentElement.scrollTop >=
-            document.documentElement.offsetHeight - 100
+            document.documentElement.offsetHeight
         ) {
             if (!fetchLoading && !changeLoading && data.pageData.current_page !== data.pageData.total_pages) {
                 handleSearchChange(['page'], data.pageData.current_page + 1)

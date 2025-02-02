@@ -118,32 +118,37 @@ const CreateCategoryPage = () => {
     }
 
     const updateData = (prevArr, field, newVal = '') => {
-        console.log('dfgfdgfd', prevArr, field, newVal)
+        // console.log('dfgfdgfd', prevArr, field, newVal)
         setCategories(categories => {
             const innerFunc = (items) => {
                 let name = prevArr.shift()
                 return items.map(item => {
-                    return item.title_fa === name ? field !== 'values' ? {...item, [field]: newVal} : {
-                        ...item, values: prevArr.length ? innerFunc(item.values) : [{
-                            id: makeUUid(), title_fa: 'جدید', title_en: 'new', values: []
-                        }, ...item.values]
+                    const dd = field === 'values' ? {
+                        id: makeUUid(), title_fa: 'جدید', title_en: 'new', values: []
+                    } : {}
+                    const ss = prevArr.length || field === 'values' ? {} : {[field]: newVal}
+                    console.log('name', name, item.id, item, dd, ss, prevArr.length || field === 'values')
+                    const obj = item.id === name ? {
+                        ...item,
+                        values: prevArr.length ? innerFunc(item.values) : [...dd, ...item.values],
+                        ...ss
                     } : item
+                    console.log('sdfsdfd')
+                    return obj
                 })
             }
             const obj = innerFunc(categories)
-            console.log('obj', obj);
+            // console.log('obj', obj);
             return obj
         })
     }
-
-    console.log('activeItem', activeItem);
 
     const renderCat = (item, index = 0, prevArr = []) => {
         return <>
             <div
                 className={`py-2 ps-${index * 4} btn-group`}>
                 <RippleButton
-                    onClick={() => updateData([...prevArr, item.title_fa], 'values')}
+                    onClick={() => updateData([...prevArr, item.id], 'values')}
                     className={`btn btn-${colors[index % 4]}`}
                 >
                     <IconPlus/>
@@ -160,7 +165,7 @@ const CreateCategoryPage = () => {
                     {activeItems?.[item.title_fa] ? <IconCircleChevronUp/> : <IconChevronDown/>}
                 </RippleButton> : undefined}
                 <RippleButton
-                    onClick={() => setActiveItem(activeItem => activeItem?.title_fa === item.title_fa ? undefined : item)}
+                    onClick={() => setActiveItem(activeItem => activeItem?.id === item.id ? undefined : item)}
                     className={`btn btn-${colors[index % 4]}`}
                 >
                     <IconPencil/>
@@ -169,7 +174,7 @@ const CreateCategoryPage = () => {
                     className="shadow-lg card position-absolute end-0 translate translate-y-middle -translate-x-100">
                     <div className="card-body d-flex flex-column gap-3">
                         <DynamicAttributeField
-                            onChange={(value) => updateData([...prevArr, item.title_fa], 'title_en', value)}
+                            onChange={(value) => updateData([...prevArr, item.id], 'title_en', value)}
                             className="p-2"
                             data={{
                                 attribute_name_en: "title_en",
@@ -179,7 +184,7 @@ const CreateCategoryPage = () => {
                             }}
                         />
                         <DynamicAttributeField
-                            onChange={(value) => updateData([...prevArr, item.title_fa], 'title_fa', value)}
+                            onChange={(value) => updateData([...prevArr, item.id], 'title_fa', value)}
                             className="p-2"
                             data={{
                                 attribute_name_en: "title_fa",
@@ -189,7 +194,7 @@ const CreateCategoryPage = () => {
                             }}
                         />
                         <DynamicAttributeField
-                            onChange={(value) => updateData([...prevArr, item.title_fa], 'title_bz', value)}
+                            onChange={(value) => updateData([...prevArr, item.id], 'title_bz', value)}
                             className="p-2"
                             data={{
                                 attribute_name_en: "title_bz",
@@ -202,7 +207,7 @@ const CreateCategoryPage = () => {
                 </div> : undefined}
             </div>
             {activeItems?.[item.title_fa] ? item.values.map((inner, key) => <Fragment
-                key={key}>{renderCat(inner, index + 1, [...prevArr, item.title_fa])}</Fragment>) : undefined}
+                key={key}>{renderCat(inner, index + 1, [...prevArr, item.id])}</Fragment>) : undefined}
         </>
     }
 
