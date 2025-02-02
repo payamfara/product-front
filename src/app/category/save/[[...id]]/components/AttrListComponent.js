@@ -19,12 +19,22 @@ const AttrListComponent = ({ inputs, updateAttrList }) => {
     }
   }, [activeRow]);
 
-  const handleInputChange = (name, value, rowIndex) => {
-    console.log(name, value);
+  const handleInputChange = (name, valueOrFunction, rowIndex) => {
+    const getValue = (dep) =>
+        typeof valueOrFunction === 'function' ? valueOrFunction(dep) : valueOrFunction;
 
+    const getValueDict = (dep) => {
+      const val = getValue(dep);
+      return typeof val === 'object' && !Array.isArray(val)
+          ? {
+            [name]: val.pk || val.id || val.value,
+            [`${name}_str`]: val.value || val.label || val.name || val.title_en,
+          }
+          : {[name]: val};
+    };
     updateAttrList((prevValues) =>
       prevValues.map((row, index) =>
-        index === rowIndex ? { ...row, [name]: value } : row
+        index === rowIndex ? { ...row, ...getValueDict(row[name]) } : row
       )
     );
   };
