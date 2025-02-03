@@ -6,6 +6,8 @@
  */
 :root,
 [data-bs-theme=light] {
+  --bg-dark-dark: #444444;
+  --bg-light-dark: #e7e7ea;
   --bs-blue: #007bff;
   --bs-indigo: #6610f2;
   --bs-purple: #7367f0;
@@ -7847,10 +7849,12 @@ label.btn {
   background: #ea5455;
   border-color: #ea5455;
 }
-
+.btn-light-light{
+  background-color: var(--bg-light-dark);
+}
 .btn-light {
   color: #4b465c;
-  background-color: #dfdfe3;
+  background-color: var(--bg-light-dark);
   border-color: #dfdfe3;
 }
 .btn-light:hover {
@@ -7983,9 +7987,12 @@ label.btn {
   background-color: #4b4b4b;
   border-color: #4b4b4b;
 }
+.btn-dark-dark{
+  background-color: var(--bg-dark-dark);
+}
 .btn-dark:hover {
   color: #fff !important;
-  background-color: #444444 !important;
+  background-color: var(--bg-dark-dark) !important;
   border-color: #444444 !important;
 }
 .btn-check:focus + .btn-dark, .btn-dark:focus, .btn-dark.focus {

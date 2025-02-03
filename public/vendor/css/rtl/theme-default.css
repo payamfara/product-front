@@ -2,6 +2,10 @@
 /*
 * Pages Mixins
 */
+:root {
+  --bg-primary-dark: #685dd8;
+  --bg-label-primary-dark: #dddbfb;
+}
 .layout-navbar-fixed .layout-wrapper:not(.layout-horizontal) .layout-page:before {
   content: "";
   width: 100%;
@@ -296,9 +300,12 @@ button.list-group-item-primary.active {
   background-color: #7367f0;
   border-color: #7367f0;
 }
+.btn-primary-dark {
+  background-color: var(--bg-primary-dark);
+}
 .btn-primary:hover {
   color: #fff !important;
-  background-color: #685dd8 !important;
+  background-color: var(--bg-primary-dark) !important;
   border-color: #685dd8 !important;
 }
 .btn-check:focus + .btn-primary, .btn-primary:focus, .btn-primary.focus {
@@ -338,9 +345,12 @@ button.list-group-item-primary.active {
 .btn-label-primary.waves-effect .waves-ripple {
   background: radial-gradient(rgba(115, 103, 240, 0.2) 0, rgba(115, 103, 240, 0.3) 40%, rgba(115, 103, 240, 0.4) 50%, rgba(115, 103, 240, 0.5) 60%, rgba(255, 255, 255, 0) 70%);
 }
+.btn-label-primary-dark {
+  background-color: var(--bg-label-primary-dark);
+}
 .btn-label-primary:hover {
   border-color: transparent !important;
-  background: #dddbfb !important;
+  background: var(--bg-label-primary-dark) !important;
   color: #7367f0 !important;
 }
 .btn-label-primary:focus, .btn-label-primary.focus {

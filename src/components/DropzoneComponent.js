@@ -6,6 +6,7 @@ import Flickity from "react-flickity-component";
 import "flickity/css/flickity.css";
 import RippleButton from "./RippleButton/RippleButton";
 import {IconDownload, IconTrash, IconUpload} from "@tabler/icons-react";
+import ButtonImageUpload from "./ButtonImageUpload";
 
 const DropzoneComponent = ({urls = [], updateUrls, uploadUrl}) => {
     const [isAddFromLinkModalOpen, setIsAddFromLinkModalOpen] = useState(false);
@@ -204,12 +205,7 @@ const DropzoneComponent = ({urls = [], updateUrls, uploadUrl}) => {
         removeFile(item.url);
         setActiveFile((activeFile) => Math.max(0, activeFile - 1));
     };
-    const handleFileChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            console.log("Selected file:", file);
-        }
-    };
+
     return (
         <div className="card h-100">
             <div className="card-header d-flex justify-content-between align-items-center">
@@ -344,15 +340,14 @@ const DropzoneComponent = ({urls = [], updateUrls, uploadUrl}) => {
                         </Fragment>
                     ) : undefined}
                 </div>
-                <RippleButton className={'justify-content-center align-items-center btn btn-lg border-success border-1 w-100 gap-1'}>
-                    <input
-                        type="file"
-                        onChange={handleFileChange}
-                        className={'cursor-pointer position-absolute w-100 h-100 opacity-0'}
-                    />
-                    <IconUpload size={32}/>
-                       <span className="col-3"> آپــلود دیــتاشیــت</span>
-                </RippleButton>
+                <ButtonImageUpload
+                    icon={<IconUpload size={32}/>}
+                    text={'آپــلود دیــتاشیــت'}
+                    className={'justify-content-center align-items-center btn btn-lg border-success border-1 w-100 gap-1'}
+                    onChange={(file) => {
+                        console.log("Selected file:", file)
+                    }}
+                />
             </div>
             <AddFromLinkModal
                 show={isAddFromLinkModalOpen}

@@ -15,3 +15,10 @@ export const baseApiAuth = axios.create({
     "Content-Type": "application/json",
   },
 });
+export const baseApiAuthFrm = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  headers: {
+    Authorization: `Bearer ${Cookies.get('authToken')}`,
+    "Content-Type": "multipart/form-data",
+  },
+});

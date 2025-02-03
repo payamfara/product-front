@@ -3,7 +3,7 @@ import "./RippleButton.css";
 
 const RippleButton = ({ children, className, ...props }) => {
   const handleRipple = (e) => {
-    if (e.target !== e.currentTarget) return;
+    // if (e.target !== e.currentTarget) return;
 
     const button = e.currentTarget;
 

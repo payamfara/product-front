@@ -19,7 +19,7 @@ const DataTable = ({fields, columns, shouldRefresh}) => {
     const [data, setData] = useState({
         pageData: {},
         search: {
-            parent: {value: 1, opr: '='},
+            // parent__isnull: {value: true, opr: '='},
             page_size: {value: 20, opr: '='},
             page: {value: 1, opr: '='},
             search_q: {value: '', opr: '='},
