@@ -1,6 +1,6 @@
 "use client";
 import {Fragment, useState, useEffect, useRef} from "react";
-import {useParams} from "next/navigation";
+import {useParams, useRouter} from "next/navigation";
 import {baseApiAuth} from "../../../../api/baseApi";
 import AttrListComponent from "./components/AttrListComponent";
 import DynamicAttributeField from "@/src/components/DynamicAttributeField";
@@ -14,8 +14,8 @@ import {IconChevronDown, IconCircleChevronUp, IconPencil, IconPlus} from "@table
 const CreateCategoryPage = () => {
     const [pageData, setPageData] = useState({});
     const [loading, setLoading] = useState(true);
-    const [loading2, setLoading2] = useState(true);
     const params = useParams();
+    const router = useRouter()
     const {id = "0"} = params;
     const updateAttrList = (updateAttrListFunction) => setPageData((pageData) => ({
         ...pageData, category_attrs: updateAttrListFunction(pageData.category_attrs || []),
@@ -39,13 +39,13 @@ const CreateCategoryPage = () => {
         setPageData((pageData) => ({...pageData, ...getValueDict(pageData[name])}));
     };
 
-    useEffect(() => {
+    const loadData = () => {
         const requestUrl = id ? `/api2/category/${id}` : `/api2/category/`;
         baseApiAuth
             .get(requestUrl)
             .then((res) => {
                 console.log("res", res.data);
-                setPageData(res.data);
+                setPageData({...res.data, childes: [res.data]});
             })
             .catch((err) => {
                 console.error("Error fetching data:", err);
@@ -53,30 +53,23 @@ const CreateCategoryPage = () => {
             .finally((err) => {
                 setLoading(false);
             });
-    }, []);
+    }
 
-    const [categories, setCategories] = useState([]);
-    useEffect(() => {
-        const requestUrl = `/api/categories/`
-        baseApiAuth
-            .get(requestUrl)
-            .then((res) => {
-                console.log("res", res.data);
-                setCategories(res.data);
-            })
-            .catch((err) => {
-                console.error("Error fetching data:", err);
-            })
-            .finally(() => {
-                setLoading2(false);
-            });
-    }, []);
     const [activeItems, setActiveItems] = useState({});
     const [activeItem, setActiveItem] = useState();
     const updateItems = (name) => setActiveItems((prevState) => ({...prevState, [name]: !prevState[name]}))
     const counter = useRef(1);
 
-    if (loading || loading2) {
+    const [reload, setReload] = useState(false);
+    const handleRefresh = () => {
+        setReload((prev) => !prev);
+    };
+
+    useEffect(() => {
+        loadData();
+    }, [reload]);
+
+    if (loading) {
         return <Loading isFullHeight/>;
     }
 
@@ -84,30 +77,32 @@ const CreateCategoryPage = () => {
         e.preventDefault();
 
         const {created_at, updated_at, ...data} = pageData;
-        data.category_attrs = data.category_attrs?.map((created_at, updated_at, ...mainData) => mainData);
+        data.category_attrs = data.category_attrs?.map(({created_at, updated_at, ...mainData}) => mainData);
 
 
         let url = id ? `/api2/category/${id}/` : `/api2/category/`;
+        const nonReadOnly = (data) =>
+            Object.fromEntries(
+                Object.entries(data).filter(
+                    ([name, dict]) => name === 'id' || pageData.meta_datas[name] && !pageData.meta_datas[name]?.read_only
+                )
+            )
+        const nonReadOnlyData = (data) => ({
+            ...nonReadOnly(data),
+            childes: data.childes.map((child) => nonReadOnlyData(child)),
+        })
+
         baseApiAuth
-            .post(url, data)
+            .post(url, nonReadOnlyData(data))
             .then((res) => {
                 toast.success("موفقیت آمیز بود!");
-                console.log("ress", res);
+                router.push(`/category/save/${id}`);
+                handleRefresh();
             })
             .catch((err) => {
-                console.error("Error fetching tags:", err);
+                toast.error(err);
             });
 
-        url = `/api/categories/`
-        baseApiAuth
-            .post(url, categories)
-            .then((res) => {
-                toast.success("موفقیت آمیز بود!");
-                console.log("ress", res);
-            })
-            .catch((err) => {
-                console.error("Error fetching tags:", err);
-            });
     };
 
     const colors = ['primary', 'label-primary', 'light', 'dark', 'danger', 'success', 'warning'];
@@ -118,28 +113,28 @@ const CreateCategoryPage = () => {
     }
 
     const updateData = (prevArr, field, newVal = '') => {
-        // console.log('dfgfdgfd', prevArr, field, newVal)
-        setCategories(categories => {
+        const tempData = [...prevArr];
+        setPageData(pageData => {
             const innerFunc = (items) => {
-                let name = prevArr.shift()
+                let name = tempData.shift();
                 return items.map(item => {
-                    const dd = field === 'values' ? {
+                    const dd = field === 'values' ? [{
                         id: makeUUid(), title_fa: 'جدید', title_en: 'new', values: []
-                    } : {}
-                    const ss = prevArr.length || field === 'values' ? {} : {[field]: newVal}
-                    console.log('name', name, item.id, item, dd, ss, prevArr.length || field === 'values')
+                    }] : []
+                    const ss = tempData.length || field === 'values' ? {} : {[field]: newVal}
+                    console.log('name', name, item.id, item, dd, ss, tempData.length || field === 'values')
                     const obj = item.id === name ? {
                         ...item,
-                        values: prevArr.length ? innerFunc(item.values) : [...dd, ...item.values],
-                        ...ss
+                        ...ss,
+                        childes: tempData.length ? innerFunc(item.childes) : [...dd, ...item.childes],
                     } : item
                     console.log('sdfsdfd')
                     return obj
                 })
             }
-            const obj = innerFunc(categories)
+            const childes = tempData.length ? innerFunc(pageData.childes) : pageData.childes;
             // console.log('obj', obj);
-            return obj
+            return {...pageData, childes}
         })
     }
 
@@ -156,13 +151,13 @@ const CreateCategoryPage = () => {
                 <RippleButton className={`justify-content-start col-8 btn btn-${colors[index % 4]}`}>
                     {item.title_fa}
                 </RippleButton>
-                {item.values.length ? <RippleButton
+                {item.childes.length ? <RippleButton
                     onClick={() => {
-                        updateItems(item.title_fa)
+                        updateItems(item.id)
                     }}
                     className={`btn btn-${colors[index % 4]} p-1`}
                 >
-                    {activeItems?.[item.title_fa] ? <IconCircleChevronUp/> : <IconChevronDown/>}
+                    {activeItems?.[item.id] ? <IconCircleChevronUp/> : <IconChevronDown/>}
                 </RippleButton> : undefined}
                 <RippleButton
                     onClick={() => setActiveItem(activeItem => activeItem?.id === item.id ? undefined : item)}
@@ -206,7 +201,7 @@ const CreateCategoryPage = () => {
                     </div>
                 </div> : undefined}
             </div>
-            {activeItems?.[item.title_fa] ? item.values.map((inner, key) => <Fragment
+            {activeItems?.[item.id] ? item.childes.map((inner, key) => <Fragment
                 key={key}>{renderCat(inner, index + 1, [...prevArr, item.id])}</Fragment>) : undefined}
         </>
     }
@@ -241,83 +236,6 @@ const CreateCategoryPage = () => {
                     </div>
                 </div>
                 <div className="row">
-                    {/* First colum */}
-                    <div className="col-12">
-                        {/* category Information */}
-                        <div className="card mb-4">
-                            <div className="card-header">
-                                <h5 className="card-tile mb-0">اطلاعات دسته</h5>
-                            </div>
-                            <div className="card-body row row-cols-4">
-                                <div>
-                                    <DynamicAttributeField
-                                        onChange={(vals) => {
-                                            handleChange("parent", prev => vals)
-                                        }}
-                                        data={{
-                                            attribute_name_en: "parent",
-                                            attribute_name_fa: "دسته بالاتر",
-                                            attr_type: pageData.meta_datas.parent,
-                                            attribute_value: pageData.parent,
-                                            attribute_value_str: pageData.parent_str,
-                                        }}
-                                    />
-                                </div>
-                                {/* Part number en */}
-                                <div>
-                                    <DynamicAttributeField
-                                        onChange={(value) => handleChange("title_en", value)}
-                                        className="p-2"
-                                        data={{
-                                            attribute_name_en: "title_en",
-                                            attribute_name_fa: "مقدار انگلیسی",
-                                            attr_type: pageData.meta_datas.title_en,
-                                            attr_value: pageData.title_en,
-                                        }}
-                                    />
-                                    <span
-                                        id="help_value_en"
-                                        className="fs-tiny form-label"
-                                    ></span>
-                                </div>
-                                {/* Part number fa */}
-                                <div>
-                                    <DynamicAttributeField
-                                        onChange={(value) => handleChange("title_fa", value)}
-                                        className="p-2"
-                                        data={{
-                                            attribute_name_en: "title_fa",
-                                            attribute_name_fa: "مقدار فارسی",
-                                            attr_type: pageData.meta_datas.title_fa,
-                                            attr_value: pageData.title_fa,
-                                        }}
-                                    />
-                                    <span
-                                        id="help_value_en"
-                                        className="fs-tiny form-label"
-                                    ></span>
-                                </div>
-                                {/* Part number bz */}
-                                <div>
-                                    <DynamicAttributeField
-                                        onChange={(value) => handleChange("title_bz", value)}
-                                        className="p-2"
-                                        data={{
-                                            attribute_name_en: "title_bz",
-                                            attribute_name_fa: "مقدار بازاری",
-                                            attr_type: pageData.meta_datas.title_bz,
-                                            attr_value: pageData.title_bz,
-                                        }}
-                                    />
-                                    <span
-                                        id="help_value_en"
-                                        className="fs-tiny form-label"
-                                    ></span>
-                                </div>
-                            </div>
-                        </div>
-                        {/* /category Information */}
-                    </div>
                     <div className="col-12">
                         <div className="card mb-4">
                             <div className="card-header d-flex align-items-center gap-3">
@@ -338,7 +256,7 @@ const CreateCategoryPage = () => {
                                 <h5 className="card-tile mb-0">سلسله مراتب</h5>
                             </div>
                             <div className="max-w-30 card-body d-flex flex-column">
-                                {categories.map((item, key) => <Fragment key={key}>{renderCat(item)}</Fragment>)}
+                                {pageData.childes.map((item, key) => <Fragment key={key}>{renderCat(item)}</Fragment>)}
                             </div>
                         </div>
                     </div>
