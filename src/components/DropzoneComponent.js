@@ -340,14 +340,6 @@ const DropzoneComponent = ({urls = [], updateUrls, uploadUrl}) => {
                         </Fragment>
                     ) : undefined}
                 </div>
-                <ButtonImageUpload
-                    icon={<IconUpload size={32}/>}
-                    text={'آپــلود دیــتاشیــت'}
-                    className={'justify-content-center align-items-center btn btn-lg border-success border-1 w-100 gap-1'}
-                    onChange={(file) => {
-                        console.log("Selected file:", file)
-                    }}
-                />
             </div>
             <AddFromLinkModal
                 show={isAddFromLinkModalOpen}

@@ -297,6 +297,7 @@ const CreateCategoryPage = () => {
                                 <div className="card-header d-flex align-items-center gap-3">
                                     <h5 className="card-tile mb-0">اطلاعات دسته</h5>
                                     <ButtonImageUpload
+                                        verticalProgress
                                         uploadPath={'categories/'}
                                         icon={<IconCamera size={24}/>}
                                         value={pageData.image}

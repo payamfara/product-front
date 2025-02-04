@@ -4,6 +4,7 @@ import {baseApiAuthFrm} from "../api/baseApi";
 import {IconTrash} from "@tabler/icons-react";
 
 const ButtonImageUpload = ({
+                               verticalProgress = false,
                                uploadPath = 'products/',
                                uploadUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/save_images/products/`,
                                icon,
@@ -14,7 +15,6 @@ const ButtonImageUpload = ({
                            }) => {
     const [uploadProgress, setUploadProgress] = useState(0);
     const handleFileChange = async (e) => {
-        console.log('12121')
         const file = e.target.files[0];
         if (!file) return;
         const formData = new FormData();
@@ -49,7 +49,7 @@ const ButtonImageUpload = ({
                     />
                 </label>
                 {uploadProgress !== 100 ? <div
-                    className={`bg-success cursor-pointer position-absolute bottom-0 w-100 h-${uploadProgress} opacity-50`}>
+                    className={`bg-success cursor-pointer position-absolute bottom-0 ${verticalProgress ? `h-${uploadProgress} w-100` : `w-${uploadProgress} h-100`} opacity-50`}>
                 </div> : null}
                 {value ? <img className={'img-sm'} src={`${process.env.NEXT_PUBLIC_API_URL}${value}`}/> : icon}
                 {text ? <span className="col-3">{text} </span> : undefined}
