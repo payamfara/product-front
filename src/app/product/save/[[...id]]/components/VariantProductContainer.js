@@ -8,7 +8,9 @@ import DropzoneComponent from "@/src/components/DropzoneComponent";
 import PlusButton from "../../../../../components/PlusButton";
 import DynamicAttributeField from "@/src/components/DynamicAttributeField";
 import Loading from "../../../../../components/Loading";
-import {IconCamera, IconCheck, IconX} from "@tabler/icons-react";
+import {IconCamera, IconCheck, IconUpload, IconX} from "@tabler/icons-react";
+import {mediaUrl} from "../../../../../utils/funcs";
+import ButtonImageUpload from "../../../../../components/ButtonImageUpload";
 
 const Card = ({
                   isMain,
@@ -59,7 +61,7 @@ const Card = ({
                     ? <div className="card-img card-body p-0">
                         <img
                             className="card-img"
-                            src={card.images[0]}
+                            src={mediaUrl(card.images[0])}
                             alt=""
                         />
                     </div>
@@ -87,6 +89,7 @@ const VariantProductContainer = ({
                                      pageData,
                                      errors
                                  }) => {
+    const dropzoneRef = useRef(null);
     const [activeCard, setActiveCard] = useState(-1);
     const [isAttributeFrm, setIsAttributeFrm] = useState(true);
 
@@ -123,6 +126,7 @@ const VariantProductContainer = ({
         is_active: true,
         status: 1,
         summary: "_",
+        data_sheet: '',
         images: [],
         meta_datas: pageData.meta_datas,
         variant_product_attrs: emptyFrm,
@@ -493,13 +497,88 @@ const VariantProductContainer = ({
                                                 </div>
                                             </div>
                                             <div className="col-8">
-                                                <DropzoneComponent
-                                                    urls={cards[activeCard].images}
-                                                    updateUrls={updateUrls}
-                                                    uploadUrl={
-                                                        `${process.env.NEXT_PUBLIC_API_URL}/api/save_images/products/`
-                                                    }
-                                                />
+
+                                                <div className="card h-100">
+                                                    <div
+                                                        className="card-header d-flex justify-content-between align-items-center">
+                                                        <h5 className="mb-0 card-title">رسانه ها</h5>
+                                                        <a className="d-flex align-items-center gap-1 fw-medium ql-snow">
+                                                            افزودن از
+                                                            <button
+                                                                onClick={() => dropzoneRef.current?.handleOpenAddFromLinkModal()}
+                                                                id="showAddLinkModal"
+                                                                type="button"
+                                                                className="rounded-pill lh-sm px-1 border"
+                                                            >
+                                                                <svg width="18" height="18" viewBox="0 0 18 18">
+                                                                    {" "}
+                                                                    <line
+                                                                        className="ql-stroke"
+                                                                        x1="7"
+                                                                        x2="11"
+                                                                        y1="7"
+                                                                        y2="11"
+                                                                    ></line>
+                                                                    {" "}
+                                                                    <path
+                                                                        className="ql-even ql-stroke"
+                                                                        d="M8.9,4.577a3.476,3.476,0,0,1,.36,4.679A3.476,3.476,0,0,1,4.577,8.9C3.185,7.5,2.035,6.4,4.217,4.217S7.5,3.185,8.9,4.577Z"
+                                                                    ></path>
+                                                                    {" "}
+                                                                    <path
+                                                                        className="ql-even ql-stroke"
+                                                                        d="M13.423,9.1a3.476,3.476,0,0,0-4.679-.36,3.476,3.476,0,0,0,.36,4.679c1.392,1.392,2.5,2.542,4.679.36S14.815,10.5,13.423,9.1Z"
+                                                                    ></path>
+                                                                    {" "}
+                                                                </svg>
+                                                            </button>
+                                                            <button
+                                                                onClick={() => dropzoneRef.current?.handleOpenGalleryModal()}
+                                                                id="showAddFromGalleryModal"
+                                                                type="button"
+                                                                className="rounded-pill lh-sm px-1 border"
+                                                            >
+                                                                <svg width="18" height="18" viewBox="0 0 18 18">
+                                                                    {" "}
+                                                                    <rect
+                                                                        className="ql-stroke"
+                                                                        height="10"
+                                                                        width="12"
+                                                                        x="3"
+                                                                        y="4"
+                                                                    ></rect>
+                                                                    {" "}
+                                                                    <circle className="ql-fill" cx="6" cy="7"
+                                                                            r="1"></circle>
+                                                                    {" "}
+                                                                    <polyline
+                                                                        className="ql-even ql-fill"
+                                                                        points="5 12 5 11 7 9 8 10 11 7 13 9 13 12 5 12"
+                                                                    ></polyline>
+                                                                    {" "}
+                                                                </svg>
+                                                            </button>
+                                                        </a>
+                                                    </div>
+                                                    <div className="card-body d-flex flex-column gap-3">
+                                                        <DropzoneComponent
+                                                            ref={dropzoneRef}
+                                                            urls={cards[activeCard].images}
+                                                            updateUrls={updateUrls}
+                                                        />
+                                                    </div>
+                                                    <ButtonImageUpload
+                                                        fillOnly
+                                                        icon={<IconUpload size={32}/>}
+                                                        text={'آپــلود دیــتاشیــت'}
+                                                        className={'justify-content-center align-items-center btn btn-lg border-success border-1 w-100 gap-1'}
+                                                        value={cards[activeCard].data_sheet}
+                                                        onChange={(url) => {
+                                                            updateAttrValues(url, "data_sheet")
+                                                        }}
+                                                    />
+                                                </div>
+
                                             </div>
                                         </div>
                                     )}

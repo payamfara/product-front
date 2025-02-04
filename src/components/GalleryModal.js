@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Button, Row, Col } from "react-bootstrap";
+import {mediaUrl} from "../utils/funcs";
 
 const GalleryModal = ({ show, onHide, onSubmit }) => {
     const [dataList, setDataList] = useState([]);
@@ -75,8 +76,8 @@ const GalleryModal = ({ show, onHide, onSubmit }) => {
                                                             onChange={() => handleCheckboxChange(image)}
                                                         />
                                                         <img
-                                                            src={image}
-                                                            alt={image}
+                                                            src={mediaUrl(image)}
+                                                            alt={product.part_number_en}
                                                             className="img-thumbnail gallery-img"
                                                         />
                                                         {selectedUrls.includes(image) && (
@@ -132,8 +133,8 @@ const GalleryModal = ({ show, onHide, onSubmit }) => {
                                                         />
                                                         {file.match(/\.(jpeg|jpg|png|gif|bmp|svg|webp)$/i) ? (
                                                             <img
-                                                                src={file}
-                                                                alt={file}
+                                                                src={mediaUrl(file)}
+                                                                alt={product.part_number_en}
                                                                 className="img-thumbnail gallery-img"
                                                                 onError={(e) =>
                                                                     (e.target.src = "/static/images/file-placeholder.png")

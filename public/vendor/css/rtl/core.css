@@ -20330,7 +20330,7 @@ html:not(.layout-menu-fixed) .menu-inner-shadow {
   pointer-events: auto;
 }
 .menu-horizontal .menu-inner > .menu-item > .menu-sub {
-  margin-top: 0.625rem;
+  /*margin-top: 0.625rem;*/
 }
 .menu-horizontal .menu-sub .menu-item.open:not(.menu-item-closing) > .menu-toggle::after {
   transform: translateY(-50%) rotate(45deg);

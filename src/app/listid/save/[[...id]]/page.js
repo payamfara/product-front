@@ -309,22 +309,18 @@ const CreateCategoryPage = () => {
                                             }))
                                         }}
                                     />
-                                    {/*<RippleButton*/}
-                                    {/*    className="btn btn-label-dark bg-secondary-subtle d-flex justify-content-center align-items-center">*/}
-                                    {/*    <IconCamera size={24}/>*/}
-                                    {/*</RippleButton>*/}
                                 </div>
                                 <div className="card-body d-flex">
                                     {/* Part number en */}
                                     <div className={'col-4 p-2'}>
                                         <DynamicAttributeField
-                                            onChange={(value) => handleChange("title_en", value)}
+                                            onChange={(value) => handleChange("title", value)}
                                             className="p-2"
                                             data={{
-                                                attribute_name_en: "title_en",
-                                                attribute_name_fa: "مقدار انگلیسی",
-                                                attr_type: pageData.meta_datas.title_en,
-                                                attr_value: pageData.title_en,
+                                                attribute_name_en: "title",
+                                                attribute_name_fa: "مقدار",
+                                                attr_type: pageData.meta_datas.title,
+                                                attr_value: pageData.title,
                                             }}
                                         />
                                         <span
@@ -332,74 +328,24 @@ const CreateCategoryPage = () => {
                                             className="fs-tiny form-label"
                                         ></span>
                                     </div>
-                                    {/* Part number fa */}
-                                    <div className={'col-4 p-2'}>
-                                        <DynamicAttributeField
-                                            onChange={(value) => handleChange("title_fa", value)}
-                                            className="p-2"
-                                            data={{
-                                                attribute_name_en: "title_fa",
-                                                attribute_name_fa: "مقدار فارسی",
-                                                attr_type: pageData.meta_datas.title_fa,
-                                                attr_value: pageData.title_fa,
-                                            }}
-                                        />
-                                        <span
-                                            id="help_value_en"
-                                            className="fs-tiny form-label"
-                                        ></span>
-                                    </div>
-                                    {/* Part number bz */}
-                                    <div className={'col-4 p-2'}>
-                                        <DynamicAttributeField
-                                            onChange={(value) => handleChange("title_bz", value)}
-                                            className="p-2"
-                                            data={{
-                                                attribute_name_en: "title_bz",
-                                                attribute_name_fa: "مقدار بازاری",
-                                                attr_type: pageData.meta_datas.title_bz,
-                                                attr_value: pageData.title_bz,
-                                            }}
-                                        />
-                                        <span
-                                            id="help_value_en"
-                                            className="fs-tiny form-label"
-                                        ></span>
-                                    </div>
+
                                 </div>
                             </div>
                         </div>
-                        <div className="col-12">
-                            <div className="card mb-4">
-                                <div className="card-header d-flex align-items-center gap-3">
-                                    <h5 className="card-tile mb-0">ویژگی های دسته</h5>
-                                    <PlusButton onClick={handleAddCard}/>
-                                </div>
-                                <div className="card-body">
-                                    <AttrListComponent
-                                        updateAttrList={updateAttrList}
-                                        inputs={pageData.category_attrs || []}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                        <div className="col-12">
-                            <div className="card mb-4">
-                                <div className="card-header d-flex align-items-center gap-3">
-                                    <h5 className="card-tile mb-0">سلسله مراتب</h5>
-                                    <PlusButton onClick={() => {
-                                        setPageData(pageData => ({
-                                            ...pageData,
-                                            childes: [emptyCategory(), ...pageData.childes],
-                                        }))
-                                    }}/>
-                                </div>
-                                <div className="max-w-30 card-body d-flex flex-column">
-                                    {pageData.childes?.map((item, key) => <Fragment
-                                        key={key}>{renderCat(item)}</Fragment>)}
-                                </div>
-                            </div>
-                        </div>
+                        {/*<div className="col-12">*/}
+                        {/*    <div className="card mb-4">*/}
+                        {/*        <div className="card-header d-flex align-items-center gap-3">*/}
+                        {/*            <h5 className="card-tile mb-0">ویژگی های دسته</h5>*/}
+                        {/*            <PlusButton onClick={handleAddCard}/>*/}
+                        {/*        </div>*/}
+                        {/*        <div className="card-body">*/}
+                        {/*            <AttrListComponent*/}
+                        {/*                updateAttrList={updateAttrList}*/}
+                        {/*                inputs={pageData.category_attrs || []}*/}
+                        {/*            />*/}
+                        {/*        </div>*/}
+                        {/*    </div>*/}
+                        {/*</div>*/}
                     </div>
                 </form>
             </div>

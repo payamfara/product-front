@@ -36,16 +36,37 @@ const Menu = () => {
                         </a>
                         <ul className="menu-sub">
                         <li className="menu-item">
-                                <Link className="menu-link" href="/product/">
+                                <Link className="menu-link" href="/category/">
                                     <i className="menu-icon tf-icons ti ti-list"></i>
                                     <div data-i18n="Front Pages">لیست دسته بندی ها</div>
                                 </Link>
                                 <Link
                                     className="menu-link"
-                                    href="/product/save/"
+                                    href="/category/save/"
                                 >
                                     <i className="menu-icon tf-icons ti ti-plus"></i>
                                     <div data-i18n="Pricing">افزودن دسته بندی</div>
+                                </Link>
+                            </li>
+                        </ul>
+                    </li>
+                    <li className="menu-item">
+                        <a className="menu-link menu-toggle" role="button">
+                            <i className="menu-icon tf-icons ti ti-file-text"></i>
+                            <div data-i18n="Pages">مقادیر</div>
+                        </a>
+                        <ul className="menu-sub">
+                        <li className="menu-item">
+                                <Link className="menu-link" href="/listid/">
+                                    <i className="menu-icon tf-icons ti ti-list"></i>
+                                    <div data-i18n="Front Pages">لیست مقادیر</div>
+                                </Link>
+                                <Link
+                                    className="menu-link"
+                                    href="/listid/save/"
+                                >
+                                    <i className="menu-icon tf-icons ti ti-plus"></i>
+                                    <div data-i18n="Pricing">افزودن مقادیر</div>
                                 </Link>
                             </li>
                         </ul>

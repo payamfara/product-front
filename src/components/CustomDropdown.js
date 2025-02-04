@@ -2,7 +2,7 @@ import { Fragment } from "react";
 import { Dropdown } from "react-bootstrap";
 import PerfectScrollbar from "react-perfect-scrollbar";
 import "react-perfect-scrollbar/dist/css/styles.css";
-import { getFirstLetters } from "../utils/funcs";
+import {getFirstLetters, mediaUrl} from "../utils/funcs";
 
 const CustomDropdown = ({
   data,

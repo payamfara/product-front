@@ -1,4 +1,4 @@
-import React, {Fragment, useEffect, useRef, useState} from "react";
+import React, {forwardRef, Fragment, useEffect, useImperativeHandle, useRef, useState} from "react";
 import Dropzone from "dropzone";
 import AddFromLinkModal from "./AddFromLinkModal";
 import GalleryModal from "./GalleryModal";
@@ -7,8 +7,15 @@ import "flickity/css/flickity.css";
 import RippleButton from "./RippleButton/RippleButton";
 import {IconDownload, IconTrash, IconUpload} from "@tabler/icons-react";
 import ButtonImageUpload from "./ButtonImageUpload";
+import {mediaUrl} from "../utils/funcs";
 
-const DropzoneComponent = ({urls = [], updateUrls, uploadUrl}) => {
+const DropzoneComponent = forwardRef(({urls = [], updateUrls, uploadUrl = mediaUrl('/api/save_images/products/')}, ref) => {
+
+    useImperativeHandle(ref, () => ({
+        handleOpenAddFromLinkModal,
+        handleOpenGalleryModal
+    }));
+
     const [isAddFromLinkModalOpen, setIsAddFromLinkModalOpen] = useState(false);
     const [isGalleryModalOpen, setIsGalleryModalOpen] = useState(false);
     const handleOpenAddFromLinkModal = () => setIsAddFromLinkModalOpen(true);
@@ -33,21 +40,15 @@ const DropzoneComponent = ({urls = [], updateUrls, uploadUrl}) => {
     };
 
     const [activeFile, setActiveFile] = useState(0);
-    const [files, setFiles] = useState(
-        urls.map((url) => {
-            const fileType = getFileTypeFromURL(url);
+    const [files, setFiles] = useState(urls.map((url) => {
+        const fileType = getFileTypeFromURL(url);
 
-            var mockFile = {
-                name: url.split("/").pop(),
-                size: 12345,
-                type: fileType,
-                url: url,
-                complete: true,
-            };
+        var mockFile = {
+            name: url.split("/").pop(), size: 12345, type: fileType, url: url, complete: true,
+        };
 
-            return mockFile;
-        })
-    );
+        return mockFile;
+    }));
     const dropzoneRef = useRef(null);
     const dzInstanceRef = useRef(null);
     const isInitialized = useRef(false);
@@ -72,10 +73,8 @@ const DropzoneComponent = ({urls = [], updateUrls, uploadUrl}) => {
     const faOption = {
         dictDefaultMessage: "فایل‌ها را برای ارسال اینجا رها کنید",
         dictFallbackMessage: "مرورگر شما از کشیدن و رهاکردن پشتیبانی نمی‌کند.",
-        dictFallbackText:
-            "لطفا از فرم زیر برای ارسال فایل های خود مانند دوران های گذشته استفاده کنید.",
-        dictFileTooBig:
-            "فایل خیلی بزرگ است ({{filesize}}MB). حداکثر اندازه فایل: {{maxFilesize}}MB.",
+        dictFallbackText: "لطفا از فرم زیر برای ارسال فایل های خود مانند دوران های گذشته استفاده کنید.",
+        dictFileTooBig: "فایل خیلی بزرگ است ({{filesize}}MB). حداکثر اندازه فایل: {{maxFilesize}}MB.",
         dictInvalidFileType: "ارسال این نوع فرمت فایل‌ها مجاز نیست.",
         dictResponseError: "سرور با کد {{statusCode}} پاسخ داد.",
         dictCancelUpload: "لغو ارسال",
@@ -131,22 +130,14 @@ const DropzoneComponent = ({urls = [], updateUrls, uploadUrl}) => {
             file.url = response?.url || file.url;
             file.success = true;
             file.complete = true;
-            setFiles((files) =>
-                files.map((f) =>
-                    f.url === prevUrl ? file : f
-                )
-            );
+            setFiles((files) => files.map((f) => f.url === prevUrl ? file : f));
             updateUrls((urls) => [file.url, ...urls]);
             return file;
         });
         dz.on("error", function (file, response) {
             file.error = response;
             file.complete = true;
-            setFiles((files) =>
-                files.map((f) =>
-                    f.url === file.url ? file : f
-                )
-            );
+            setFiles((files) => files.map((f) => f.url === file.url ? file : f));
         });
 
         dz.on("addedfile", function (file, response) {
@@ -158,11 +149,7 @@ const DropzoneComponent = ({urls = [], updateUrls, uploadUrl}) => {
         dz.on("uploadprogress", function (file, progress) {
             console.log(file, progress);
             file.progress = progress;
-            setFiles((files) =>
-                files.map((f) =>
-                    f.url === file.url ? file : f
-                )
-            );
+            setFiles((files) => files.map((f) => f.url === file.url ? file : f));
         });
         // return () => dz.destroy();
     }, []);
@@ -172,12 +159,7 @@ const DropzoneComponent = ({urls = [], updateUrls, uploadUrl}) => {
             const fileType = getFileTypeFromURL(url);
 
             var mockFile = {
-                name: url.split("/").pop(),
-                size: 12345,
-                type: fileType,
-                url: url,
-                complete: true,
-                success: true,
+                name: url.split("/").pop(), size: 12345, type: fileType, url: url, complete: true, success: true,
             };
 
             addFile(mockFile);
@@ -185,174 +167,98 @@ const DropzoneComponent = ({urls = [], updateUrls, uploadUrl}) => {
     };
 
     const handleAddFromLinkSubmit = (selectedFiles) => {
-        selectedFiles.forEach(
-            dzInstanceRef.current.addFile.bind(dzInstanceRef.current)
-        );
+        selectedFiles.forEach(dzInstanceRef.current.addFile.bind(dzInstanceRef.current));
     };
 
     const handleGallerySubmit = (selectedUrls) => {
         selectedUrls.forEach(addLocalImage);
     };
     const flickityOptions = {
-        freeScroll: true,
-        pageDots: false,
-        prevNextButtons: false,
+        freeScroll: true, pageDots: false, prevNextButtons: false,
     };
 
     const handleDelete = (item) => {
-        if (!item.complete)
-            dzInstanceRef.current.cancelUpload(item)
+        if (!item.complete) dzInstanceRef.current.cancelUpload(item)
         removeFile(item.url);
         setActiveFile((activeFile) => Math.max(0, activeFile - 1));
     };
 
-    return (
-        <div className="card h-100">
-            <div className="card-header d-flex justify-content-between align-items-center">
-                <h5 className="mb-0 card-title">رسانه ها</h5>
-                <a className="d-flex align-items-center gap-1 fw-medium ql-snow">
-                    افزودن از
-                    <button
-                        onClick={handleOpenAddFromLinkModal}
-                        id="showAddLinkModal"
-                        type="button"
-                        className="rounded-pill lh-sm px-1 border"
-                    >
-                        <svg width="18" height="18" viewBox="0 0 18 18">
-                            {" "}
-                            <line
-                                className="ql-stroke"
-                                x1="7"
-                                x2="11"
-                                y1="7"
-                                y2="11"
-                            ></line>
-                            {" "}
-                            <path
-                                className="ql-even ql-stroke"
-                                d="M8.9,4.577a3.476,3.476,0,0,1,.36,4.679A3.476,3.476,0,0,1,4.577,8.9C3.185,7.5,2.035,6.4,4.217,4.217S7.5,3.185,8.9,4.577Z"
-                            ></path>
-                            {" "}
-                            <path
-                                className="ql-even ql-stroke"
-                                d="M13.423,9.1a3.476,3.476,0,0,0-4.679-.36,3.476,3.476,0,0,0,.36,4.679c1.392,1.392,2.5,2.542,4.679.36S14.815,10.5,13.423,9.1Z"
-                            ></path>
-                            {" "}
-                        </svg>
-                    </button>
-                    <button
-                        onClick={handleOpenGalleryModal}
-                        id="showAddFromGalleryModal"
-                        type="button"
-                        className="rounded-pill lh-sm px-1 border"
-                    >
-                        <svg width="18" height="18" viewBox="0 0 18 18">
-                            {" "}
-                            <rect
-                                className="ql-stroke"
-                                height="10"
-                                width="12"
-                                x="3"
-                                y="4"
-                            ></rect>
-                            {" "}
-                            <circle className="ql-fill" cx="6" cy="7" r="1"></circle>
-                            {" "}
-                            <polyline
-                                className="ql-even ql-fill"
-                                points="5 12 5 11 7 9 8 10 11 7 13 9 13 12 5 12"
-                            ></polyline>
-                            {" "}
-                        </svg>
-                    </button>
-                </a>
+    return (<Fragment>
+        <div ref={dropzoneRef} className="d-flex flex-column justify-content-between flex-grow-1 dropzone">
+            <div
+                className={`flex-grow-1 dz-message needsclick ${pages.length ? "d-none" : ""}`}
+            >
+                <p className="fs-4 note needsclick pt-3 mb-1">کشیدن و رهاکردن</p>
+                <p className="text-muted d-block fw-normal mb-2">یا</p>
+                <span className="note needsclick btn bg-label-primary d-inline">
+      انتخاب از فایل‌ها
+    </span>
             </div>
-            <div className="card-body d-flex flex-column gap-3">
-                <div ref={dropzoneRef} className="dropzone">
-                    <div
-                        className={`dz-message needsclick ${pages.length ? "d-none" : ""}`}
-                    >
-                        <p className="fs-4 note needsclick pt-3 mb-1">کشیدن و رهاکردن</p>
-                        <p className="text-muted d-block fw-normal mb-2">یا</p>
-                        <span className="note needsclick btn bg-label-primary d-inline">
-              انتخاب از فایل‌ها
-            </span>
-                    </div>
 
-                    {pages.length ? (
-                        <Fragment>
-                            <img className="w-100 img-medium rounded-2" src={files[activeFile].url}/>
-                            <Flickity className="carousel" options={flickityOptions}>
-                                {files.map((item, index) => {
-                                    return <div key={index} className="p-2">
-                                        <div
-                                            className={`dz-preview ${
-                                                item.success ? "dz-success" : ""
-                                            } ${
-                                                item.complete ? "dz-complete" : ""
-                                            } ${
-                                                item.error ? "dz-error" : ""
-                                            } dz-file-preview m-0 w-100`}
-                                        >
+            {pages.length ? (<Fragment>
+                <img className="w-100 img-medium rounded-2" src={mediaUrl(files[activeFile].url)}/>
+                <Flickity className="carousel" options={flickityOptions}>
+                    {files.map((item, index) => {
+                        return <div key={index} className="p-2">
+                            <div
+                                className={`dz-preview ${item.success ? "dz-success" : ""} ${item.complete ? "dz-complete" : ""} ${item.error ? "dz-error" : ""} dz-file-preview m-0 w-100`}
+                            >
+                                <div
+                                    className="dz-details position-relative"
+                                    onClick={() => setActiveFile(index)}
+                                >
+                                    <div className="dz-thumbnail border-0">
+                                        <img src={mediaUrl(item.url)} className="w-100 img-small rounded-2"/>
+                                        <span className="dz-nopreview">بدون پیشنمایش</span>
+                                        <div className="dz-success-mark"></div>
+                                        <div className="dz-error-mark"></div>
+                                        <div className="dz-error-message">
+                                            <span>{item.error}</span>
+                                        </div>
+                                        <div className="progress">
                                             <div
-                                                className="dz-details position-relative"
-                                                onClick={() => setActiveFile(index)}
-                                            >
-                                                <div className="dz-thumbnail border-0">
-                                                    <img src={item.url} className="w-100 img-small rounded-2"/>
-                                                    <span className="dz-nopreview">بدون پیشنمایش</span>
-                                                    <div className="dz-success-mark"></div>
-                                                    <div className="dz-error-mark"></div>
-                                                    <div className="dz-error-message">
-                                                        <span>{item.error}</span>
-                                                    </div>
-                                                    <div className="progress">
-                                                        <div
-                                                            className="progress-bar progress-bar-primary"
-                                                            role="progressbar"
-                                                            aria-valuemin="0"
-                                                            aria-valuemax="100"
-                                                            style={{width: `${item.progress}%`}}
-                                                            data-dz-uploadprogress
-                                                        ></div>
-                                                    </div>
-                                                </div>
-                                                <div
-                                                    className={'position-absolute top-50 start-50 translate-middle w-50 rounded-2 shadow-md overflow-hidden hover-opacity'}>
-                                                    <div className="dz-filename">
-                                                        {item.name}
-                                                    </div>
-                                                    <div className="dz-size bg-white">
-                                                        <strong>{Math.round((item.size / 1000) * 10) / 10}</strong> KB
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <RippleButton
-                                                className="btn btn-danger dz-remove position-absolute top-0 text-white p-1 mn-1 border-0"
-                                                onClick={() => handleDelete(item)}
-                                            >
-                                                <IconTrash size={18}/>
-                                            </RippleButton>
+                                                className="progress-bar progress-bar-primary"
+                                                role="progressbar"
+                                                aria-valuemin="0"
+                                                aria-valuemax="100"
+                                                style={{width: `${item.progress}%`}}
+                                                data-dz-uploadprogress
+                                            ></div>
                                         </div>
                                     </div>
-                                })}
-                            </Flickity>
-                        </Fragment>
-                    ) : undefined}
-                </div>
-            </div>
-            <AddFromLinkModal
-                show={isAddFromLinkModalOpen}
-                onHide={handleCloseAddFromLinkModal}
-                onSubmit={handleAddFromLinkSubmit}
-            />
-            <GalleryModal
-                show={isGalleryModalOpen}
-                onHide={handleCloseGalleryModal}
-                onSubmit={handleGallerySubmit}
-            />
+                                    <div
+                                        className={'position-absolute top-50 start-50 translate-middle w-50 rounded-2 shadow-md overflow-hidden hover-opacity'}>
+                                        <div className="dz-filename">
+                                            {item.name}
+                                        </div>
+                                        <div className="dz-size bg-white">
+                                            <strong>{Math.round((item.size / 1000) * 10) / 10}</strong> KB
+                                        </div>
+                                    </div>
+                                </div>
+                                <RippleButton
+                                    className="z-50 btn btn-danger dz-remove position-absolute top-0 text-white p-1 mn-1 border-0"
+                                    onClick={() => handleDelete(item)}
+                                >
+                                    <IconTrash size={18}/>
+                                </RippleButton>
+                            </div>
+                        </div>
+                    })}
+                </Flickity>
+            </Fragment>) : undefined}
         </div>
-    );
-};
+        <AddFromLinkModal
+            show={isAddFromLinkModalOpen}
+            onHide={handleCloseAddFromLinkModal}
+            onSubmit={handleAddFromLinkSubmit}
+        />
+        <GalleryModal
+            show={isGalleryModalOpen}
+            onHide={handleCloseGalleryModal}
+            onSubmit={handleGallerySubmit}
+        />
+    </Fragment>);
+});
 
 export default DropzoneComponent;

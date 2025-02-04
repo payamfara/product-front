@@ -7,6 +7,7 @@ import React, {useState} from "react";
 import Link from "next/link";
 import {confirm} from "../../components/ConfirmModalComponent";
 import {baseApiAuth} from "../../api/baseApi";
+import {mediaUrl} from "../../utils/funcs";
 
 const ListProductPage = () => {
 
@@ -50,7 +51,7 @@ const ListProductPage = () => {
                     <div className="avatar-wrapper">
                         <div className="avatar avatar me-2 rounded-2 bg-label-secondary">
                             {row.images[0]
-                                ? <img src={row.images[0]} alt={row.part_number_en} className="rounded-2"/>
+                                ? <img src={mediaUrl(row.images[0])} alt={row.part_number_en} className="rounded-2"/>
                                 : <div
                                     className="bg-secondary-subtle d-flex justify-content-center align-items-center card-img card-body p-0">
                                     <IconCamera size={24}/>

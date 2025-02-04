@@ -9,11 +9,12 @@ import {confirm} from "../../components/ConfirmModalComponent";
 import {baseApiAuth} from "../../api/baseApi";
 import DataTable2 from "../../components/DataTable2";
 import {mediaUrl} from "../../utils/funcs";
+import DataTable3 from "../../components/DataTable3";
 
 const ListProductPage = () => {
 
     const deleteProduct = async (id) => {
-        const requestUrl = `/api2/category/${id}/`;
+        const requestUrl = `/api2/listid/${id}/`;
         // setFormDisabled(true);
         try {
             const response = await baseApiAuth
@@ -47,7 +48,7 @@ const ListProductPage = () => {
         {
             search_fields: ['title_en', 'title_fa', 'title_bz'],
             width: '40',
-            title: "عنوان دسته بندی",
+            title: "عنوان کلید مقدار",
             render: (data, type, row) => {
                 return <div className="d-flex justify-content-start align-items-center product-name">
                     <div className="avatar-wrapper">
@@ -62,8 +63,7 @@ const ListProductPage = () => {
                         </div>
                     </div>
                     <div className="d-flex flex-column">
-                        <h6 className="text-body text-nowrap mb-0">{row.title_en}</h6>
-                        <small className="text-muted text-truncate d-none d-sm-block">{row.title_fa}</small>
+                        <h6 className="text-body text-nowrap mb-0">{row.title}</h6>
                     </div>
                 </div>;
             },
@@ -71,7 +71,7 @@ const ListProductPage = () => {
         {
             search_fields: ['id'],
             width: '15',
-            title: "کد دسته بندی",
+            title: "کد کلید مقدار",
             data: "id"
         },
         {
@@ -80,7 +80,7 @@ const ListProductPage = () => {
             render: (data, type, row) => {
                 return (
                     <div className="d-flex gap-2">
-                        <Link href={`/category/save/${row.id}`}><IconEdit size={20}/></Link>
+                        <Link href={`/listid/save/${row.id}`}><IconEdit size={20}/></Link>
                         <IconTrash role={'button'} onClick={()=>handleDelete(row.id)} size={20}/>
                     </div>
                 );
@@ -113,13 +113,13 @@ const ListProductPage = () => {
             <div className="container-xxl flex-grow-1 container-p-y">
                 <h4 className="py-3 mb-4">
                     <span className="text-muted fw-light"> صفحه اصلی / </span>
-                    لیست دسته بندی ها
+                    لیست کلید مقدار ها
                 </h4>
                 <div className="card">
                     <div className="card-header row row-cols-3 gy-3 flex-wrap">
-                        <h5 className="card-title col-12">لیست دسته بندی ها</h5>
+                        <h5 className="card-title col-12">لیست کلید مقدار ها</h5>
                     </div>
-                    <DataTable2 columns={columns} fields={fields} shouldRefresh={shouldRefresh}/>
+                    <DataTable3 columns={columns} fields={fields} shouldRefresh={shouldRefresh}/>
                 </div>
             </div>
         </ClientLayout>

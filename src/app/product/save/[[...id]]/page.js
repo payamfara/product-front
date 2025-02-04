@@ -1,5 +1,5 @@
 "use client";
-import {useState, useEffect, useRef} from "react";
+import React, {useState, useEffect, useRef, Fragment} from "react";
 import TagifyComponent from "../../../../components/TagifyComponent";
 import DropzoneComponent from "../../../../components/DropzoneComponent";
 import QuillEditorComponent from "../../../../components/QuillEditorComponent";
@@ -13,10 +13,15 @@ import Loading from "../../../../components/Loading";
 import ClientLayout from "../../../../components/ClientLayout";
 import {useRouter} from 'next/navigation'
 import LoadingBtn from "../../../../components/LoadingBtn";
-import {IconCheck, IconX} from "@tabler/icons-react";
+import {IconCheck, IconTrash, IconUpload, IconX} from "@tabler/icons-react";
 import RippleButton from "../../../../components/RippleButton/RippleButton";
+import Flickity from "react-flickity-component";
+import AddFromLinkModal from "../../../../components/AddFromLinkModal";
+import GalleryModal from "../../../../components/GalleryModal";
+import ButtonImageUpload from "../../../../components/ButtonImageUpload";
 
 const CreateProductPage = () => {
+        const dropzoneRef = useRef(null);
         const [formDisabled, setFormDisabled] = useState(false);
         const [pageData, setPageData] = useState({});
         const [loading, setLoading] = useState(true);
@@ -150,7 +155,7 @@ const CreateProductPage = () => {
             const nonReadOnlyData =
                 Object.fromEntries(
                     Object.entries(data).filter(
-                        ([name, dict]) => !data.meta_datas[name]?.read_only
+                        ([name, dict]) => name === 'id' || !data.meta_datas[name]?.read_only
                     )
                 )
             console.log('nonReadOnlyData', nonReadOnlyData)
@@ -278,7 +283,6 @@ const CreateProductPage = () => {
 
                     if (status) {
                         if (linkedProduct.id === pageData.id) {
-                            console.log('equal', linkedProduct, pageData, linkedProduct.id, pageData.id);
                             mainProductId = results.id;
                         }
                         // toast.success(`محصول ${linkedProduct.id} ذخیره شد`);
@@ -367,7 +371,7 @@ const CreateProductPage = () => {
                                 {mainProduct.is_active
                                     ? <RippleButton
                                         onClick={() =>
-                                            updateMainProduct("is_active", (value)=>!value)
+                                            updateMainProduct("is_active", (value) => !value)
                                         }
                                         className={`d-flex gap-2 btn btn-success btn-lg btn-block`}
                                     >
@@ -376,7 +380,7 @@ const CreateProductPage = () => {
                                     </RippleButton>
                                     : <RippleButton
                                         onClick={() =>
-                                            updateMainProduct("is_active", (value)=>!value)
+                                            updateMainProduct("is_active", (value) => !value)
                                         }
                                         className={`d-flex gap-2 btn btn-danger btn-lg btn-block`}
                                     >
@@ -618,13 +622,84 @@ const CreateProductPage = () => {
                                     </div>
                                 </div>
                                 <div className="col-12 col-lg-4">
-                                    <DropzoneComponent
-                                        urls={mainProduct.images}
-                                        updateUrls={(valueOrFunction) => updateMainProduct('images', valueOrFunction)}
-                                        uploadUrl={
-                                            `${process.env.NEXT_PUBLIC_API_URL}/api/save_images/products/`
-                                        }
-                                    />
+                                    <div className="card h-100">
+                                        <div className="card-header d-flex justify-content-between align-items-center">
+                                            <h5 className="mb-0 card-title">رسانه ها</h5>
+                                            <a className="d-flex align-items-center gap-1 fw-medium ql-snow">
+                                                افزودن از
+                                                <button
+                                                    onClick={() => dropzoneRef.current?.handleOpenAddFromLinkModal()}
+                                                    id="showAddLinkModal"
+                                                    type="button"
+                                                    className="rounded-pill lh-sm px-1 border"
+                                                >
+                                                    <svg width="18" height="18" viewBox="0 0 18 18">
+                                                        {" "}
+                                                        <line
+                                                            className="ql-stroke"
+                                                            x1="7"
+                                                            x2="11"
+                                                            y1="7"
+                                                            y2="11"
+                                                        ></line>
+                                                        {" "}
+                                                        <path
+                                                            className="ql-even ql-stroke"
+                                                            d="M8.9,4.577a3.476,3.476,0,0,1,.36,4.679A3.476,3.476,0,0,1,4.577,8.9C3.185,7.5,2.035,6.4,4.217,4.217S7.5,3.185,8.9,4.577Z"
+                                                        ></path>
+                                                        {" "}
+                                                        <path
+                                                            className="ql-even ql-stroke"
+                                                            d="M13.423,9.1a3.476,3.476,0,0,0-4.679-.36,3.476,3.476,0,0,0,.36,4.679c1.392,1.392,2.5,2.542,4.679.36S14.815,10.5,13.423,9.1Z"
+                                                        ></path>
+                                                        {" "}
+                                                    </svg>
+                                                </button>
+                                                <button
+                                                    onClick={() => dropzoneRef.current?.handleOpenGalleryModal()}
+                                                    id="showAddFromGalleryModal"
+                                                    type="button"
+                                                    className="rounded-pill lh-sm px-1 border"
+                                                >
+                                                    <svg width="18" height="18" viewBox="0 0 18 18">
+                                                        {" "}
+                                                        <rect
+                                                            className="ql-stroke"
+                                                            height="10"
+                                                            width="12"
+                                                            x="3"
+                                                            y="4"
+                                                        ></rect>
+                                                        {" "}
+                                                        <circle className="ql-fill" cx="6" cy="7" r="1"></circle>
+                                                        {" "}
+                                                        <polyline
+                                                            className="ql-even ql-fill"
+                                                            points="5 12 5 11 7 9 8 10 11 7 13 9 13 12 5 12"
+                                                        ></polyline>
+                                                        {" "}
+                                                    </svg>
+                                                </button>
+                                            </a>
+                                        </div>
+                                        <div className="card-body d-flex flex-column gap-3">
+                                            <DropzoneComponent
+                                                ref={dropzoneRef}
+                                                urls={mainProduct.images}
+                                                updateUrls={(valueOrFunction) => updateMainProduct('images', valueOrFunction)}
+                                            />
+                                            <ButtonImageUpload
+                                                fillOnly
+                                                icon={<IconUpload size={32}/>}
+                                                text={'آپــلود دیــتاشیــت'}
+                                                className={'justify-content-center align-items-center btn btn-lg border-success border-1 w-100 gap-1'}
+                                                value={mainProduct.data_sheet}
+                                                onChange={(url) => {
+                                                    updateMainProduct('data_sheet', url)
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div className="row">
@@ -1140,11 +1215,12 @@ const CreateProductPage = () => {
                                             </div>
 
                                             <div className="d-flex flex-wrap gap-2">
-                                                {Object.entries(pageData.discount_dict).map(([count, percent], index)=>
-                                                    <RippleButton key={index} className={`d-flex flex-column gap-1 btn border-primary btn-label-primary border-1 btn-sm`}
+                                                {Object.entries(pageData.discount_dict).map(([count, percent], index) =>
+                                                    <RippleButton key={index}
+                                                                  className={`d-flex flex-column gap-1 btn border-primary btn-label-primary border-1 btn-sm`}
                                                     >
                                                         {count} +
-                                                        <hr className={'w-100 rotate-4 m-0'} />
+                                                        <hr className={'w-100 rotate-4 m-0'}/>
                                                         % {percent}
                                                     </RippleButton>
                                                 )}
