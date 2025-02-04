@@ -2,15 +2,12 @@
 import React, {Fragment, useState, useEffect, useRef} from "react";
 import {useParams, useRouter} from "next/navigation";
 import {baseApiAuth} from "../../../../api/baseApi";
-import AttrListComponent from "./components/AttrListComponent";
 import DynamicAttributeField from "@/src/components/DynamicAttributeField";
 import toast from "react-hot-toast";
-import PlusButton from "../../../../components/PlusButton";
 import Loading from "../../../../components/Loading";
 import ClientLayout from "../../../../components/ClientLayout";
-import RippleButton from "../../../../components/RippleButton/RippleButton";
-import {IconCamera, IconChevronDown, IconCircleChevronUp, IconPencil, IconPlus, IconTrash} from "@tabler/icons-react";
-import ButtonImageUpload from "../../../../components/ButtonImageUpload";
+import AttrListComponent from "../../../../components/AttrListComponent";
+import PlusButton from "../../../../components/PlusButton";
 
 const CreateCategoryPage = () => {
     const [pageData, setPageData] = useState({});
@@ -18,43 +15,9 @@ const CreateCategoryPage = () => {
     const params = useParams();
     const router = useRouter()
     const {id = "0"} = params;
-    const updateAttrList = (updateAttrListFunction) => setPageData((pageData) => ({
-        ...pageData, category_attrs: updateAttrListFunction(pageData.category_attrs || []),
-    }));
-    const handleAddCard = () => {
-        setPageData((pageData) => ({
-            ...pageData, category_attrs: [pageData.blank_objects.category_attrs, ...pageData.category_attrs || []],
-        }));
-    };
-
-    const handleClickOutside = () => {
-        console.log('sdf')
-        setActiveItem(undefined)
-    };
-
-    useEffect(() => {
-
-        document.addEventListener("click", handleClickOutside);
-        return () => {
-            document.removeEventListener("click", handleClickOutside);
-        };
-    }, [])
-
-    const handleChange = (name, valueOrFunction) => {
-        const getValue = (dep) => typeof valueOrFunction === 'function' ? valueOrFunction(dep) : valueOrFunction;
-
-        const getValueDict = (dep) => {
-            const val = getValue(dep);
-            return typeof val === 'object' && !Array.isArray(val) ? {
-                [name]: val.pk || val.id || val.value,
-                [`${name}_str`]: val.value || val.label || val.name || val.title_en,
-            } : {[name]: val};
-        };
-        setPageData((pageData) => ({...pageData, ...getValueDict(pageData[name])}));
-    };
 
     const loadData = () => {
-        const requestUrl = id ? `/api2/category/${id}` : `/api2/category/`;
+        const requestUrl = id ? `/api2/listid/${id}` : `/api2/listid/`;
         setLoading(true);
         baseApiAuth
             .get(requestUrl)
@@ -93,10 +56,8 @@ const CreateCategoryPage = () => {
         e.preventDefault();
 
         const {created_at, updated_at, ...data} = pageData;
-        data.category_attrs = data.category_attrs?.map(({created_at, updated_at, ...mainData}) => mainData);
 
-
-        let url = id ? `/api2/category/${id}/` : `/api2/category/`;
+        let url = id ? `/api2/listid/${id}/` : `/api2/listid/`;
         const nonReadOnly = (data) =>
             Object.fromEntries(
                 Object.entries(data).filter(
@@ -113,7 +74,7 @@ const CreateCategoryPage = () => {
             .post(url, data)
             .then((res) => {
                 toast.success("موفقیت آمیز بود!");
-                router.push(`/category/save/${res.data.id}`);
+                router.push(`/listid/save/${res.data.id}`);
                 handleRefresh();
             })
             .catch((err) => {
@@ -123,150 +84,32 @@ const CreateCategoryPage = () => {
 
     };
 
-    const colors = ['primary', 'label-primary', 'light', 'dark', 'danger', 'success', 'warning'];
-    const makeUUid = () => {
-        const uuid = `new_${counter.current}`
-        counter.current = counter.current + 1;
-        return uuid;
-    }
+    const handleChange = (name, valueOrFunction) => {
+        const getValue = (dep) => typeof valueOrFunction === 'function' ? valueOrFunction(dep) : valueOrFunction;
 
-    const emptyCategory = () => ({
-        _id: makeUUid(),
-        title_fa: '_',
-        title_en: '_',
-        title_bz: '_',
-        childes: []
-    })
-
-    const updateData = (prevArr, field, newVal = '') => {
-        const tempData = [...prevArr];
-        setPageData(pageData => {
-            const innerFunc = (items) => {
-                let name = tempData.shift();
-                return items.map(item => {
-                    const dd = field === 'childes' ? [emptyCategory()] : []
-                    const ss = !tempData.length && field !== 'childes' ? {[field]: newVal} : {}
-                    const obj = item._id === name ? {
-                        ...item,
-                        ...ss,
-                        childes: tempData.length ? tempData.length === 1 && field === 'remove_child' ? item.childes.filter(item => item._id !== tempData.shift()) : innerFunc(item.childes) : [...dd, ...item.childes],
-                    } : item
-                    return obj
-                })
-            }
-            const childes = tempData.length ? innerFunc(pageData.childes) : pageData.childes;
-            // console.log('obj', obj);
-            return {...pageData, childes}
-        })
-    }
-
-    const renderCat = (item, index = 0, prevArr = []) => {
-        return <>
-            <div
-                className={`py-2 ps-${index * 4} btn-group`}>
-                <RippleButton
-                    onClick={() => updateData([...prevArr, item._id], 'childes')}
-                    className={`btn btn-${colors[index % 4]}`}
-                >
-                    <IconPlus/>
-                </RippleButton>
-                <RippleButton
-                    onClick={() => updateData([...prevArr, item._id], 'remove_child')}
-                    className={`btn btn-${colors[index % 4]} btn-${colors[index % 4]}-dark p-1`}
-                >
-                    <IconTrash/>
-                </RippleButton>
-                <RippleButton className={`justify-content-start col-8 btn btn-${colors[index % 4]}`}>
-                    {item.title_fa}
-                </RippleButton>
-                {item.childes.length ? <RippleButton
-                    onClick={() => {
-                        updateItems(item._id)
-                    }}
-                    className={`btn btn-${colors[index % 4]} btn-${colors[index % 4]}-dark p-1`}
-                >
-                    {activeItems?.[item._id] ? <IconCircleChevronUp/> : <IconChevronDown/>}
-                </RippleButton> : undefined}
-                <RippleButton
-                    onClick={(e) => {
-                        // e.nativeEvent.stopImmediatePropagation()
-                        setActiveItem(activeItem => activeItem?._id === item._id ? undefined : item)
-                    }}
-                    className={`btn btn-${colors[index % 4]}`}
-                >
-                    <IconPencil/>
-                </RippleButton>
-                {activeItem?._id === item._id ? <div
-                        onClick={(e) => {
-                            // e.nativeEvent.stopImmediatePropagation()
-                        }}
-                        className="shadow-lg card position-absolute end-0 translate translate-y-middle -translate-x-100">
-                        <div className="card mb-4">
-                            <div className="card-header justify-content-between d-flex align-items-center gap-3">
-                                <h5 className="card-tile mb-0">اطلاعات دسته</h5>
-                                <ButtonImageUpload
-                                    verticalProgress
-                                    uploadPath={'categories/'}
-                                    icon={<IconCamera size={24}/>}
-                                    value={item.image}
-                                    onChange={(url) => {
-                                        updateData([...prevArr, item._id], 'image', url)
-                                    }}
-                                />
-                                {/*<RippleButton*/}
-                                {/*    className="btn btn-label-dark bg-secondary-subtle d-flex justify-content-center align-items-center">*/}
-                                {/*    <IconCamera size={24}/>*/}
-                                {/*</RippleButton>*/}
-                            </div>
-                        </div>
-                        <div className="card-body d-flex flex-column gap-3">
-                            <DynamicAttributeField
-                                onChange={(value) => updateData([...prevArr, item._id], 'title_en', value)}
-                                className="p-2"
-                                data={{
-                                    attribute_name_en: "title_en",
-                                    attribute_name_fa: "مقدار انگلیسی",
-                                    attr_type: pageData.meta_datas.title_en,
-                                    attr_value: item.title_en,
-                                    attribute_error: errors.details?.title_en
-                                }}
-                            />
-                            <DynamicAttributeField
-                                onChange={(value) => updateData([...prevArr, item._id], 'title_fa', value)}
-                                className="p-2"
-                                data={{
-                                    attribute_name_en: "title_fa",
-                                    attribute_name_fa: "مقدار فارسی",
-                                    attr_type: pageData.meta_datas.title_fa,
-                                    attr_value: item.title_fa,
-                                    attribute_error: errors.details?.title_fa
-                                }}
-                            />
-                            <DynamicAttributeField
-                                onChange={(value) => updateData([...prevArr, item._id], 'title_bz', value)}
-                                className="p-2"
-                                data={{
-                                    attribute_name_en: "title_bz",
-                                    attribute_name_fa: "مقدار بازاری",
-                                    attr_type: pageData.meta_datas.title_bz,
-                                    attr_value: item.title_bz,
-                                    attribute_error: errors.details?.title_bz
-                                }}
-                            />
-                        </div>
-                    </div>
-                    : undefined}
-            </div>
-            {activeItems?.[item._id] ? item.childes.map((inner, key) => <Fragment
-                key={key}>{renderCat(inner, index + 1, [...prevArr, item._id])}</Fragment>) : undefined}
-        </>
-    }
+        const getValueDict = (dep) => {
+            const val = getValue(dep);
+            return typeof val === 'object' && !Array.isArray(val) ? {
+                [name]: val.pk || val.id || val.value,
+                [`${name}_str`]: val.value || val.label || val.name || val.title_en,
+            } : {[name]: val};
+        };
+        setPageData((pageData) => ({...pageData, ...getValueDict(pageData[name])}));
+    };
+    const handleAddCard = () => {
+        setPageData((pageData) => ({
+            ...pageData, attr_values: [pageData.blank_objects.attr_values, ...pageData.attr_values || []],
+        }));
+    };
+    const updateAttrList = (updateAttrListFunction) => setPageData((pageData) => ({
+        ...pageData, attr_values: updateAttrListFunction(pageData.attr_values || []),
+    }));
 
     return (<ClientLayout>
             <div className="container-xxl flex-grow-1 container-p-y">
                 <h4 className="py-3 mb-4">
                     <span className="text-muted fw-light"> صفحه اصلی / </span>
-                    لیست محصولات
+                    صفحه مقادیر
                 </h4>
                 <form onSubmit={handleSubmit} className="app-ecommerce">
                     {/* Add category */}
@@ -296,19 +139,7 @@ const CreateCategoryPage = () => {
                             {/* category Information */}
                             <div className="card mb-4">
                                 <div className="card-header d-flex align-items-center gap-3">
-                                    <h5 className="card-tile mb-0">اطلاعات دسته</h5>
-                                    <ButtonImageUpload
-                                        verticalProgress
-                                        uploadPath={'categories/'}
-                                        icon={<IconCamera size={24}/>}
-                                        value={pageData.image}
-                                        onChange={(url) => {
-                                            setPageData(pageData => ({
-                                                ...pageData,
-                                                image: url
-                                            }))
-                                        }}
-                                    />
+                                    <h5 className="card-tile mb-0">اطلاعات کلید مقدار</h5>
                                 </div>
                                 <div className="card-body d-flex">
                                     {/* Part number en */}
@@ -318,7 +149,7 @@ const CreateCategoryPage = () => {
                                             className="p-2"
                                             data={{
                                                 attribute_name_en: "title",
-                                                attribute_name_fa: "مقدار",
+                                                attribute_name_fa: "کلید مقدار",
                                                 attr_type: pageData.meta_datas.title,
                                                 attr_value: pageData.title,
                                             }}
@@ -332,20 +163,26 @@ const CreateCategoryPage = () => {
                                 </div>
                             </div>
                         </div>
-                        {/*<div className="col-12">*/}
-                        {/*    <div className="card mb-4">*/}
-                        {/*        <div className="card-header d-flex align-items-center gap-3">*/}
-                        {/*            <h5 className="card-tile mb-0">ویژگی های دسته</h5>*/}
-                        {/*            <PlusButton onClick={handleAddCard}/>*/}
-                        {/*        </div>*/}
-                        {/*        <div className="card-body">*/}
-                        {/*            <AttrListComponent*/}
-                        {/*                updateAttrList={updateAttrList}*/}
-                        {/*                inputs={pageData.category_attrs || []}*/}
-                        {/*            />*/}
-                        {/*        </div>*/}
-                        {/*    </div>*/}
-                        {/*</div>*/}
+                        <div className="col-12">
+                            <div className="card mb-4">
+                                <div className="card-header d-flex align-items-center gap-3">
+                                    <h5 className="card-tile mb-0">مقادیر</h5>
+                                    <PlusButton onClick={handleAddCard}/>
+                                </div>
+                                <div className="card-body">
+                                    <AttrListComponent
+                                        onlyCollapse
+                                        collapseFields={[
+                                            'title_en',
+                                            'title_fa',
+                                            'title_bz',
+                                        ]}
+                                        updateAttrList={updateAttrList}
+                                        inputs={pageData.attr_values || []}
+                                    />
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </form>
             </div>

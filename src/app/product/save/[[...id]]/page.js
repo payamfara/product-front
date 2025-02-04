@@ -155,7 +155,7 @@ const CreateProductPage = () => {
             const nonReadOnlyData =
                 Object.fromEntries(
                     Object.entries(data).filter(
-                        ([name, dict]) => name === 'id' || !data.meta_datas[name]?.read_only
+                        ([name, dict]) => !data.meta_datas[name]?.read_only
                     )
                 )
             console.log('nonReadOnlyData', nonReadOnlyData)
@@ -346,7 +346,7 @@ const CreateProductPage = () => {
                 <div className="container-xxl flex-grow-1 container-p-y">
                     <h4 className="py-3 mb-4">
                         <span className="text-muted fw-light"> صفحه اصلی / </span>
-                        لیست محصولات
+                        صفحه محصول
                     </h4>
                     <form onSubmit={handleSubmit} className={`app-ecommerce ${formDisabled ? "disabled" : ""}`}>
                         {/* Add Product */}

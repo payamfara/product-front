@@ -1,12 +1,23 @@
 import React, {Fragment, useState, useRef, useEffect} from "react";
 import {FaTrash, FaExpandAlt, FaCompressAlt} from "react-icons/fa";
-import RippleButton from "../../../../../components/RippleButton/RippleButton";
 import AttrCollapsed from './AttrCollapsed';
 import AttrExpanded from './AttrExpanded';
+import RippleButton from "./RippleButton/RippleButton";
 
-const AttrListComponent = ({inputs, updateAttrList}) => {
+const AttrListComponent = ({inputs, updateAttrList, collapseFields = [], onlyCollapse = false}) => {
     const [activeRow, setActiveRow] = useState(-1);
     const [hoverRow, setHoverRow] = useState(-1);
+
+    const rowRefs = useRef([]);
+
+    useEffect(() => {
+        if (activeRow !== -1 && rowRefs.current[activeRow]) {
+            rowRefs.current[activeRow].scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+            });
+        }
+    }, [activeRow]);
 
     const handleInputChange = (name, valueOrFunction, rowIndex) => {
         const getValue = (dep) =>
@@ -52,6 +63,7 @@ const AttrListComponent = ({inputs, updateAttrList}) => {
                             <div className={`col-3 p-2 order-${rowIndex}`}></div>
                         )}
                         <div
+                            ref={(el) => (rowRefs.current[rowIndex] = el)}
                             className={`${activeRow === rowIndex
                                 ? `col-12 order-${Math.min(inputs.length, rowIndex + 4 - (rowIndex % 4))}`
                                 : `order-${rowIndex} col-3`
@@ -68,14 +80,23 @@ const AttrListComponent = ({inputs, updateAttrList}) => {
                                     className={`d-flex align-items-start flex-wrap w-100 ${activeRow === rowIndex ? "row-cols-5" : "row-cols-2"
                                     } `}
                                 >
-                                    <AttrCollapsed
-                                        rowIndex={rowIndex}
-                                        items={rowInputs}
-                                        meta_datas={meta_datas}
-                                        onChange={(name, value) =>
-                                            handleInputChange(name, value, rowIndex)
-                                        }
-                                    />
+                                    {activeRow === rowIndex && !onlyCollapse
+                                        ? <AttrExpanded
+                                            rowIndex={rowIndex}
+                                            items={rowInputs}
+                                            meta_datas={meta_datas}
+                                            onChange={(name, value) =>
+                                                handleInputChange(name, value, rowIndex)
+                                            }/>
+                                        : <AttrCollapsed
+                                            dataKeys={collapseFields}
+                                            rowIndex={rowIndex}
+                                            items={rowInputs}
+                                            meta_datas={meta_datas}
+                                            onChange={(name, value) =>
+                                                handleInputChange(name, value, rowIndex)
+                                            }/>
+                                    }
                                 </div>
                                 {(hoverRow === rowIndex || activeRow === rowIndex) && (
                                     <div

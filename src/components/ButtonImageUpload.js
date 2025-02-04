@@ -41,7 +41,7 @@ const ButtonImageUpload = ({
             setIsUploading(false)
         }
     };
-    console.log('value', value)
+
     return (
         <div className={'position-relative'}>
             <RippleButton

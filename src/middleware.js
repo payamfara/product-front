@@ -11,7 +11,7 @@ export function middleware(request) {
   }
 
   if (publicRoutes.some((route) => pathname.startsWith(route)) && token) {
-    return NextResponse.redirect(new URL('/product/save/1', request.url));
+    return NextResponse.redirect(new URL('/product/', request.url));
   }
 
   return NextResponse.next();
@@ -22,6 +22,7 @@ export const config = {
     '/',                
     '/product/:path*',  
     '/category/:path*',
+    '/listid/:path*',
     '/login',
   ],
 };

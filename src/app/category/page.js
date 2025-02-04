@@ -32,11 +32,13 @@ const ListProductPage = () => {
         console.log('result', result);
 
         if (result) {
-            console.log('')
             const [status, results] = await deleteProduct(id)
             console.log(status, results)
             if (status) {
-                setFields(fields=>{})
+                setFields(fields => ({
+                    ...fields,
+                    is_delete: id,
+                }))
             }
         } else {
             console.log("Action canceled.");
@@ -52,8 +54,8 @@ const ListProductPage = () => {
                 return <div className="d-flex justify-content-start align-items-center product-name">
                     <div className="avatar-wrapper">
                         <div className="avatar avatar me-2 rounded-2 bg-label-secondary">
-                            {false
-                                ? <img src={mediaUrl(row.images[0])} alt={row.title_en} className="rounded-2"/>
+                            {row.image
+                                ? <img src={mediaUrl(row.image)} alt={row.title_en} className="rounded-2"/>
                                 : <div
                                     className="bg-secondary-subtle d-flex justify-content-center align-items-center card-img card-body p-0">
                                     <IconCamera size={24}/>
@@ -81,7 +83,7 @@ const ListProductPage = () => {
                 return (
                     <div className="d-flex gap-2">
                         <Link href={`/category/save/${row.id}`}><IconEdit size={20}/></Link>
-                        <IconTrash role={'button'} onClick={()=>handleDelete(row.id)} size={20}/>
+                        <IconTrash role={'button'} onClick={() => handleDelete(row.id)} size={20}/>
                     </div>
                 );
             },
@@ -103,7 +105,8 @@ const ListProductPage = () => {
 
         setFields(fields => ({
             ...fields,
-            [attribute]: {...fields[attribute], ...extraData}
+            [attribute]: {...fields[attribute], ...extraData},
+            is_delete: false,
         }))
     }
 

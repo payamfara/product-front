@@ -60,7 +60,7 @@ const CreateCategoryPage = () => {
             .get(requestUrl)
             .then((res) => {
                 console.log('res', res)
-                setPageData({...res.data, _id: id});
+                setPageData({...res.data});
             })
             .catch((err) => {
                 console.error("Error fetching data:", err);
@@ -131,25 +131,28 @@ const CreateCategoryPage = () => {
     }
 
     const emptyCategory = () => ({
-        _id: makeUUid(),
+        id: makeUUid(),
         title_fa: '_',
         title_en: '_',
         title_bz: '_',
         childes: []
     })
 
-    const updateData = (prevArr, field, newVal = '') => {
+    const updateData = (prevArr = [], field, newVal = '') => {
+        console.log('prevArr', prevArr, field, newVal);
         const tempData = [...prevArr];
         setPageData(pageData => {
             const innerFunc = (items) => {
                 let name = tempData.shift();
-                return items.map(item => {
+                return tempData.length === 0 && field === 'remove_child'
+                    ? items.filter(item => item.id !== name)
+                    : items.map(item => {
                     const dd = field === 'childes' ? [emptyCategory()] : []
                     const ss = !tempData.length && field !== 'childes' ? {[field]: newVal} : {}
-                    const obj = item._id === name ? {
+                    const obj = item.id === name ? {
                         ...item,
                         ...ss,
-                        childes: tempData.length ? tempData.length === 1 && field === 'remove_child' ? item.childes.filter(item => item._id !== tempData.shift()) : innerFunc(item.childes) : [...dd, ...item.childes],
+                        childes: tempData.length ? innerFunc(item.childes) : [...dd, ...item.childes],
                     } : item
                     return obj
                 })
@@ -165,13 +168,13 @@ const CreateCategoryPage = () => {
             <div
                 className={`py-2 ps-${index * 4} btn-group`}>
                 <RippleButton
-                    onClick={() => updateData([...prevArr, item._id], 'childes')}
+                    onClick={() => updateData([...prevArr, item.id], 'childes')}
                     className={`btn btn-${colors[index % 4]}`}
                 >
                     <IconPlus/>
                 </RippleButton>
                 <RippleButton
-                    onClick={() => updateData([...prevArr, item._id], 'remove_child')}
+                    onClick={() => updateData([...prevArr, item.id], 'remove_child')}
                     className={`btn btn-${colors[index % 4]} btn-${colors[index % 4]}-dark p-1`}
                 >
                     <IconTrash/>
@@ -181,24 +184,24 @@ const CreateCategoryPage = () => {
                 </RippleButton>
                 {item.childes.length ? <RippleButton
                     onClick={() => {
-                        updateItems(item._id)
+                        updateItems(item.id)
                     }}
                     className={`btn btn-${colors[index % 4]} btn-${colors[index % 4]}-dark p-1`}
                 >
-                    {activeItems?.[item._id] ? <IconCircleChevronUp/> : <IconChevronDown/>}
+                    {activeItems?.[item.id] ? <IconCircleChevronUp/> : <IconChevronDown/>}
                 </RippleButton> : undefined}
                 <RippleButton
                     onClick={(e) => {
-                        // e.nativeEvent.stopImmediatePropagation()
-                        setActiveItem(activeItem => activeItem?._id === item._id ? undefined : item)
+                        e.nativeEvent.stopImmediatePropagation()
+                        setActiveItem(activeItem => activeItem?.id === item.id ? undefined : item)
                     }}
                     className={`btn btn-${colors[index % 4]}`}
                 >
                     <IconPencil/>
                 </RippleButton>
-                {activeItem?._id === item._id ? <div
+                {activeItem?.id === item.id ? <div
                         onClick={(e) => {
-                            // e.nativeEvent.stopImmediatePropagation()
+                            e.nativeEvent.stopImmediatePropagation()
                         }}
                         className="shadow-lg card position-absolute end-0 translate translate-y-middle -translate-x-100">
                         <div className="card mb-4">
@@ -210,7 +213,7 @@ const CreateCategoryPage = () => {
                                     icon={<IconCamera size={24}/>}
                                     value={item.image}
                                     onChange={(url) => {
-                                        updateData([...prevArr, item._id], 'image', url)
+                                        updateData([...prevArr, item.id], 'image', url)
                                     }}
                                 />
                                 {/*<RippleButton*/}
@@ -221,7 +224,7 @@ const CreateCategoryPage = () => {
                         </div>
                         <div className="card-body d-flex flex-column gap-3">
                             <DynamicAttributeField
-                                onChange={(value) => updateData([...prevArr, item._id], 'title_en', value)}
+                                onChange={(value) => updateData([...prevArr, item.id], 'title_en', value)}
                                 className="p-2"
                                 data={{
                                     attribute_name_en: "title_en",
@@ -232,7 +235,7 @@ const CreateCategoryPage = () => {
                                 }}
                             />
                             <DynamicAttributeField
-                                onChange={(value) => updateData([...prevArr, item._id], 'title_fa', value)}
+                                onChange={(value) => updateData([...prevArr, item.id], 'title_fa', value)}
                                 className="p-2"
                                 data={{
                                     attribute_name_en: "title_fa",
@@ -243,7 +246,7 @@ const CreateCategoryPage = () => {
                                 }}
                             />
                             <DynamicAttributeField
-                                onChange={(value) => updateData([...prevArr, item._id], 'title_bz', value)}
+                                onChange={(value) => updateData([...prevArr, item.id], 'title_bz', value)}
                                 className="p-2"
                                 data={{
                                     attribute_name_en: "title_bz",
@@ -257,8 +260,8 @@ const CreateCategoryPage = () => {
                     </div>
                     : undefined}
             </div>
-            {activeItems?.[item._id] ? item.childes.map((inner, key) => <Fragment
-                key={key}>{renderCat(inner, index + 1, [...prevArr, item._id])}</Fragment>) : undefined}
+            {activeItems?.[item.id] ? item.childes.map((inner, key) => <Fragment
+                key={key}>{renderCat(inner, index + 1, [...prevArr, item.id])}</Fragment>) : undefined}
         </>
     }
 
@@ -266,16 +269,16 @@ const CreateCategoryPage = () => {
             <div className="container-xxl flex-grow-1 container-p-y">
                 <h4 className="py-3 mb-4">
                     <span className="text-muted fw-light"> صفحه اصلی / </span>
-                    لیست محصولات
+                    صفحه دسته بندی
                 </h4>
                 <form onSubmit={handleSubmit} className="app-ecommerce">
                     {/* Add category */}
                     <div
                         className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3">
                         <div className="d-flex flex-column justify-content-center">
-                            {pageData._id ? (<h4 className="mb-1 mt-3">ویرایش دسته بندی</h4>) : (
+                            {pageData.id ? (<h4 className="mb-1 mt-3">ویرایش دسته بندی</h4>) : (
                                 <h4 className="mb-1 mt-3">ایجاد دسته بندی</h4>)}
-                            {pageData._id ? (<p className="text-muted">{pageData.title_fa}</p>) : (
+                            {pageData.id ? (<p className="text-muted">{pageData.title_fa}</p>) : (
                                 <p className="text-muted">
                                     دسته بندی هایی که در سراسر فروشگاه شما ثبت می شود
                                 </p>)}
@@ -377,6 +380,14 @@ const CreateCategoryPage = () => {
                                 </div>
                                 <div className="card-body">
                                     <AttrListComponent
+                                        collapseFields={[
+                                            'title_en',
+                                            'title_fa',
+                                            'type',
+                                            'priority',
+                                            'priority_str',
+                                            'type_str',
+                                        ]}
                                         updateAttrList={updateAttrList}
                                         inputs={pageData.category_attrs || []}
                                     />

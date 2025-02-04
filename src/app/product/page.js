@@ -34,8 +34,12 @@ const ListProductPage = () => {
             console.log('')
             const [status, results] = await deleteProduct(id)
             console.log(status, results)
-            if (status)
-                console.log("Item deleted!");
+            if (status) {
+                setFields(fields => ({
+                    ...fields,
+                    is_delete: id,
+                }))
+            }
         } else {
             console.log("Action canceled.");
         }
@@ -113,7 +117,8 @@ const ListProductPage = () => {
 
         setFields(fields => ({
             ...fields,
-            [attribute]: {...fields[attribute], ...extraData}
+            [attribute]: {...fields[attribute], ...extraData},
+            is_delete: false,
         }))
     }
 

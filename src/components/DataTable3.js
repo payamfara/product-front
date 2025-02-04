@@ -15,7 +15,7 @@ import CustomPagination from "./CustomPagination";
 import Link from "next/link";
 import Loading from "./Loading";
 
-const DataTable = ({fields, columns, shouldRefresh}) => {
+const DataTable = ({fields, columns}) => {
     const [data, setData] = useState({
         pageData: {},
         search: {
@@ -83,14 +83,19 @@ const DataTable = ({fields, columns, shouldRefresh}) => {
     }
 
     const fetchProducts = async () => {
+        const {is_delete, ...searchData} = data.search;
+        const extraParams = is_delete ? {
+            page_size: {value: 1, opr: '='},
+            page: {value: Math.min(data.pageData.count, data.search.page_size.value * data.pageData.current_page), opr: '='},
+        } : {}
         try {
-            const prepareQueryParams = Object.fromEntries(Object.entries(data.search).map(([attribute, valueObj]) => [valueOprMap(attribute, valueObj.opr), valueObj.value]));
+            const prepareQueryParams = Object.fromEntries(Object.entries({...searchData, ...extraParams}).map(([attribute, valueObj]) => [valueOprMap(attribute, valueObj.opr), valueObj.value]));
             const queryParams = new URLSearchParams(prepareQueryParams).toString();
             const requestUrl = `/api2/listid/`
             const response = await baseApiAuth.get(`${requestUrl}?${queryParams}`);
             return response.data || [];
         } catch (error) {
-            console.error("Error fetching categories:", error);
+            console.log("Error fetching categories:", error);
             return [];
         }
 
@@ -101,7 +106,7 @@ const DataTable = ({fields, columns, shouldRefresh}) => {
             ...data,
             pageData: {
                 ...data.pageData,
-                results: []
+                results: fields.is_delete ? data.pageData.results.filter(item => item.id !== fields.is_delete) : []
             },
             search: {
                 ...data.search,
@@ -118,23 +123,25 @@ const DataTable = ({fields, columns, shouldRefresh}) => {
         }, 500);
 
         return () => clearTimeout(timer);
-    }, [data.search, shouldRefresh]);
+    }, [data.search]);
 
     useEffect(() => {
         if (!debouncedSearch) return;
         setFetchLoading(true);
         fetchProducts().then((resData) => {
             console.log('resData', resData);
-            setData(data => ({
-                ...data,
-                pageData: {
-                    ...resData,
-                    results: [
-                        ...data.pageData.results || [],
-                        ...resData.results
-                    ],
-                }
-            }));
+            if (resData.results && resData.results.length) {
+                setData(data => ({
+                    ...data,
+                    pageData: {
+                        ...resData,
+                        results: [
+                            ...data.pageData.results || [],
+                            ...resData.results || []
+                        ],
+                    }
+                }))
+            }
             setFetchLoading(false);
         });
     }, [debouncedSearch]);
@@ -148,6 +155,7 @@ const DataTable = ({fields, columns, shouldRefresh}) => {
                     value: value !== undefined ? value : prevSearch[field]?.value,
                     opr: opr !== undefined ? opr : prevSearch[field]?.opr,
                 };
+                acc['is_delete'] = false;
                 if (field !== 'page') {
                     updates['pageData'] = {
                         ...data.pageData,
@@ -224,7 +232,7 @@ const DataTable = ({fields, columns, shouldRefresh}) => {
                             title="Add ListId"
                         >
                             <IconPlus size={18}/>
-                            افزودن محصول
+                            افزودن کلید مقدار
                         </RippleButton>
                     </Link>
                 </div>
