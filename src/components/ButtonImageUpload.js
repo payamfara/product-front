@@ -1,11 +1,12 @@
 import React, {useState} from 'react';
 import RippleButton from "./RippleButton/RippleButton";
 import {baseApiAuthFrm} from "../api/baseApi";
-import {IconTrash} from "@tabler/icons-react";
+import {IconEye, IconTrash} from "@tabler/icons-react";
 import {mediaUrl} from "../utils/funcs";
+import Link from "next/link";
 
 const ButtonImageUpload = ({
-                               fillOnly= false,
+                               openOnly = false,
                                verticalProgress = false,
                                uploadPath = 'products/',
                                uploadUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/save_images/products/`,
@@ -45,30 +46,40 @@ const ButtonImageUpload = ({
     return (
         <div className={'position-relative'}>
             <RippleButton
-                className={className + ` ${!fillOnly && value ? 'p-0' : ''}`}>
+                className={className + ` ${value || isUploading ? 'pe-none' : ''} ${!openOnly && value ? 'p-0' : ''}`}>
                 <div
-                    className={`bg-success cursor-pointer position-absolute start-0 bottom-0 ${isUploading ? verticalProgress ? `h-${uploadProgress} w-100` : `w-${uploadProgress} h-100` : (fillOnly && value) ? `h-100 w-100` : ''} opacity-50`}>
+                    className={`bg-success cursor-pointer position-absolute start-0 bottom-0 ${isUploading ? verticalProgress ? `h-${uploadProgress} w-100` : `w-${uploadProgress} h-100` :  ''} opacity-50`}>
                 </div>
                 <label className={'cursor-pointer position-absolute w-100 h-100 opacity-0'}>
                     <input
                         type="file"
                         onInput={handleFileChange}
                         className={'d-none'}
-                        disabled={isUploading}
                     />
                 </label>
 
-                {!fillOnly && value ? <img className={'img-sm'} src={mediaUrl(value)}/> : icon}
+                {!openOnly && value ? <img className={'img-sm'} src={mediaUrl(value)}/> : icon}
                 {text ? <span className="col-4">{text} </span> : undefined}
             </RippleButton>
-            <RippleButton
-                onClick={() => {
-                    onChange('');
-                }}
-                className={'overflow-hidden btn btn-danger rounded-circle position-absolute top-0 end-0 p-01 translate -translate-x-middle translate-y-middle'}
-            >
-                <IconTrash size={16}/>
-            </RippleButton>
+
+            {value ? <div
+                className={`d-flex ${openOnly ? "bg-white p-01 mx-2 translate-middle-y" : "-translate-middle"} rounded-2 gap-1 position-absolute top-0 end-0`}>
+                {openOnly ? <RippleButton
+                    className={'btn btn-success rounded-circle p-01'}
+                >
+                    <Link className={'text-white'} href={mediaUrl(value)} target={'_blank'}>
+                        <IconEye size={16}/>
+                    </Link>
+                </RippleButton> : undefined }
+                <RippleButton
+                    onClick={() => {
+                        onChange('');
+                    }}
+                    className={'btn btn-danger rounded-circle p-01'}
+                >
+                    <IconTrash size={16}/>
+                </RippleButton>
+            </div> : undefined}
         </div>
     );
 };

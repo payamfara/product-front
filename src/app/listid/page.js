@@ -49,7 +49,7 @@ const ListProductPage = () => {
 
     const columns = [
         {
-            search_fields: ['title_en', 'title_fa', 'title_bz'],
+            search_fields: ['title'],
             width: '40',
             title: "عنوان کلید مقدار",
             render: (data, type, row) => {
@@ -57,7 +57,7 @@ const ListProductPage = () => {
                     <div className="avatar-wrapper">
                         <div className="avatar avatar me-2 rounded-2 bg-label-secondary">
                             {row.image
-                                ? <img src={mediaUrl(row.image)} alt={row.title_en} className="rounded-2"/>
+                                ? <img src={mediaUrl(row.image)} alt={row.title} className="rounded-2"/>
                                 : <div
                                     className="bg-secondary-subtle d-flex justify-content-center align-items-center card-img card-body p-0">
                                     <IconCamera size={24}/>

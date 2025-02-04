@@ -689,7 +689,7 @@ const CreateProductPage = () => {
                                                 updateUrls={(valueOrFunction) => updateMainProduct('images', valueOrFunction)}
                                             />
                                             <ButtonImageUpload
-                                                fillOnly
+                                                openOnly
                                                 icon={<IconUpload size={32}/>}
                                                 text={'آپــلود دیــتاشیــت'}
                                                 className={'justify-content-center align-items-center btn btn-lg border-success border-1 w-100 gap-1'}

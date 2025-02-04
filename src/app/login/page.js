@@ -20,7 +20,7 @@ const Login = () => {
             .then(res => {
                 localStorage.setItem('msg', 'خوش آمدید!');
                 Cookies.set("authToken", res.data.access, { expires: 1 }); 
-                window.location.href = "/product/save/1"; 
+                window.location.href = "/product/";
             })
             .catch(err => {
                 console.log('err', err);

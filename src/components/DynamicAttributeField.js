@@ -28,12 +28,13 @@ const DynamicAttributeField = ({data, onChange, parentClassName}) => {
     const attribute_prefix = localData.attribute_prefix ?? localData.prefix;
     const attribute_postfix = localData.attribute_postfix ?? localData.postfix;
     const attribute_placeholder = localData.attribute_placeholder ?? attribute_name_fa;
+    const attribute_description = localData.description;
     const attribute_readonly = localData.attribute_readonly ?? attribute_type.type === "readonly";
 
     switch (attribute_type?.type) {
         case "select_2": // Select_2
             return (
-                <>
+                <div className={'d-flex flex-column gap-1'}>
                     <div className={`${parentClassName} form-floating`}>
                         {attribute_value ? <RippleButton
                             className="position-absolute end-0 top-0 z-3 rounded-circle mn-1 btn btn-secondary btn-sm p-01 clear-btn"
@@ -60,15 +61,16 @@ const DynamicAttributeField = ({data, onChange, parentClassName}) => {
                             className={`position-absolute bottom-0 w-100 custom-select--nobrorder`}
                         />
                     </div>
-                    {Object.values(attribute_error || {}).map((err, key)=> (
+                    {attribute_description ? <div className="text-justify invalid-feedback text-gray d-block">{attribute_description}</div> : undefined}
+                    {Object.values(attribute_error || {}).map((err, key) => (
                         <div key={key} className="invalid-feedback d-block">{JSON.stringify(err)}</div>
                     ))}
-                </>
+                </div>
             );
         case "list": // Select_2
             return (
                 <>
-                    <div className={`${parentClassName} form-floating`}>
+                <div className={`${parentClassName} form-floating`}>
                         {attribute_value ? <RippleButton
                             className="position-absolute end-0 top-0 z-3 rounded-circle mn-1 btn btn-secondary btn-sm p-01 clear-btn"
                             title="Clear"

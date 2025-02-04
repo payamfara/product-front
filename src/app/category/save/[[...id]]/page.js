@@ -4,7 +4,6 @@ import {useParams, useRouter} from "next/navigation";
 import {baseApiAuth} from "../../../../api/baseApi";
 import AttrListComponent from "./components/AttrListComponent";
 import DynamicAttributeField from "@/src/components/DynamicAttributeField";
-import toast from "react-hot-toast";
 import PlusButton from "../../../../components/PlusButton";
 import Loading from "../../../../components/Loading";
 import ClientLayout from "../../../../components/ClientLayout";
@@ -29,7 +28,6 @@ const CreateCategoryPage = () => {
     };
 
     const handleClickOutside = () => {
-        console.log('sdf')
         setActiveItem(undefined)
     };
 

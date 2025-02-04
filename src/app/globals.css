@@ -699,3 +699,9 @@ body {
 .z-50 {
     z-index: 50;
 }
+.-translate-middle {
+  transform: translate(-50%, -50%);
+}
+.text-justify {
+    text-align: justify;
+}

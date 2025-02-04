@@ -24,6 +24,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
   return (
     <html
       className="light-style layout-navbar-fixed layout-menu-fixed layout-compact"

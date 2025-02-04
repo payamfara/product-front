@@ -123,7 +123,7 @@ const Header = () => {
               <img alt="logo" src="/logo-sm.svg" />
             </span>
             <span className="app-brand-text demo menu-text fw-bold">
-              میکرومدرن
+              میکـرومـدرن
             </span>
           </a>
           <a
