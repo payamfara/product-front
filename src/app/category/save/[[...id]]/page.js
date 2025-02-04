@@ -11,6 +11,7 @@ import ClientLayout from "../../../../components/ClientLayout";
 import RippleButton from "../../../../components/RippleButton/RippleButton";
 import {IconCamera, IconChevronDown, IconCircleChevronUp, IconPencil, IconPlus, IconTrash} from "@tabler/icons-react";
 import ButtonImageUpload from "../../../../components/ButtonImageUpload";
+import Toast from "../../../../utils/funcs";
 
 const CreateCategoryPage = () => {
     const [pageData, setPageData] = useState({});
@@ -112,7 +113,7 @@ const CreateCategoryPage = () => {
         baseApiAuth
             .post(url, data)
             .then((res) => {
-                toast.success("موفقیت آمیز بود!");
+                Toast.success("موفقیت آمیز بود!");
                 router.push(`/category/save/${res.data.id}`);
                 handleRefresh();
             })

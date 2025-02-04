@@ -8,6 +8,7 @@ import Loading from "../../../../components/Loading";
 import ClientLayout from "../../../../components/ClientLayout";
 import AttrListComponent from "../../../../components/AttrListComponent";
 import PlusButton from "../../../../components/PlusButton";
+import Toast from "../../../../utils/funcs";
 
 const CreateCategoryPage = () => {
     const [pageData, setPageData] = useState({});
@@ -73,7 +74,7 @@ const CreateCategoryPage = () => {
         baseApiAuth
             .post(url, data)
             .then((res) => {
-                toast.success("موفقیت آمیز بود!");
+                Toast.success("موفقیت آمیز بود!");
                 router.push(`/listid/save/${res.data.id}`);
                 handleRefresh();
             })

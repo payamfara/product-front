@@ -1,6 +1,7 @@
 "use client";
 import React, { createContext, useContext, useState, useEffect } from "react";
-import toast from "react-hot-toast";
+import toast, {Toaster} from "react-hot-toast";
+import Toast from "../utils/funcs";
 
 const WebSocketContext = createContext(null);
 
@@ -21,7 +22,7 @@ export const WebSocketProvider = ({ children }) => {
     socket.onmessage = (event) => {
       setUnreadCount((prevCount) => {
         const newCount = prevCount + 1;
-        toast.success(`${newCount} پیغام خوانده نشده دارید`);
+        Toast.success(`${newCount} پیغام خوانده نشده دارید`);
         return newCount;
       });
     };

@@ -8,7 +8,7 @@ import {useParams} from "next/navigation";
 import {baseApiAuth} from "../../../../api/baseApi";
 import VariantProductContainer from "./components/VariantProductContainer";
 import DynamicAttributeField from "@/src/components/DynamicAttributeField";
-import toast from "react-hot-toast";
+import toast, {Toaster} from "react-hot-toast";
 import Loading from "../../../../components/Loading";
 import ClientLayout from "../../../../components/ClientLayout";
 import {useRouter} from 'next/navigation'
@@ -19,6 +19,7 @@ import Flickity from "react-flickity-component";
 import AddFromLinkModal from "../../../../components/AddFromLinkModal";
 import GalleryModal from "../../../../components/GalleryModal";
 import ButtonImageUpload from "../../../../components/ButtonImageUpload";
+import Toast from "../../../../utils/funcs";
 
 const CreateProductPage = () => {
         const dropzoneRef = useRef(null);
@@ -285,7 +286,6 @@ const CreateProductPage = () => {
                         if (linkedProduct.id === pageData.id) {
                             mainProductId = results.id;
                         }
-                        // toast.success(`محصول ${linkedProduct.id} ذخیره شد`);
                     } else {
                         const attributes = linkedProduct.non_variant_product_attrs;
                         const errors = results.response.data.nested_data.non_variant_product_attrs;
@@ -324,7 +324,7 @@ const CreateProductPage = () => {
                         }));
 
                         reload = false;
-                        toast.error(`محصول ${linkedProduct._id} ذخیره نشد`);
+                        Toast.error(`محصول ${linkedProduct._id} ذخیره نشد`);
                     }
                 }
                 return [reload, mainProductId]
@@ -334,7 +334,7 @@ const CreateProductPage = () => {
             if (reload) {
                 const [reload, mainProductId] = await innerSave(true)
                 if (reload) {
-                    toast.success(`موفقیت آمیز بود!`);
+                    Toast.success(`موفقیت آمیز بود!`);
                     router.push(`/product/save/${mainProductId}`);
                     handleRefresh();
                 }
