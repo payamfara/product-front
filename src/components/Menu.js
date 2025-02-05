@@ -19,6 +19,8 @@ const Menu = () => {
                                     <i className="menu-icon tf-icons ti ti-list"></i>
                                     <div data-i18n="Front Pages">لیست محصولات</div>
                                 </Link>
+                            </li>
+                            <li className="menu-item">
                                 <Link
                                     className="menu-link"
                                     href="/product/save/"
@@ -35,11 +37,13 @@ const Menu = () => {
                             <div data-i18n="Pages">دسته بندی ها</div>
                         </a>
                         <ul className="menu-sub">
-                        <li className="menu-item">
+                            <li className="menu-item">
                                 <Link className="menu-link" href="/category/">
                                     <i className="menu-icon tf-icons ti ti-list"></i>
                                     <div data-i18n="Front Pages">لیست دسته بندی ها</div>
                                 </Link>
+                            </li>
+                            <li className="menu-item">
                                 <Link
                                     className="menu-link"
                                     href="/category/save/"
@@ -56,11 +60,13 @@ const Menu = () => {
                             <div data-i18n="Pages">مقادیر</div>
                         </a>
                         <ul className="menu-sub">
-                        <li className="menu-item">
+                            <li className="menu-item">
                                 <Link className="menu-link" href="/listid/">
                                     <i className="menu-icon tf-icons ti ti-list"></i>
                                     <div data-i18n="Front Pages">لیست مقادیر</div>
                                 </Link>
+                            </li>
+                            <li className="menu-item">
                                 <Link
                                     className="menu-link"
                                     href="/listid/save/"

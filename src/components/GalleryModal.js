@@ -49,8 +49,8 @@ const GalleryModal = ({ show, onHide, onSubmit }) => {
                                 (product.images && product.images.length) ||
                                 (product.files && product.files.length)
                         )
-                        .map((product) => (
-                            <div className="product-section mb-4" key={product.part_number_en}>
+                        .map((product, key) => (
+                            <div className="product-section mb-4" key={key}>
                                 <h5 className="mb-3">پارت نامبر: {product.part_number_en}</h5>
 
                                 {/* بخش تصاویر */}

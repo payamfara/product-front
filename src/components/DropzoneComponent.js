@@ -9,7 +9,11 @@ import {IconDownload, IconTrash, IconUpload} from "@tabler/icons-react";
 import ButtonImageUpload from "./ButtonImageUpload";
 import {mediaUrl} from "../utils/funcs";
 
-const DropzoneComponent = forwardRef(({urls = [], updateUrls, uploadUrl = mediaUrl('/api/save_images/products/')}, ref) => {
+const DropzoneComponent = forwardRef(({
+                                          urls = [],
+                                          updateUrls,
+                                          uploadUrl = mediaUrl('/api/save_images/products/')
+                                      }, ref) => {
 
     useImperativeHandle(ref, () => ({
         handleOpenAddFromLinkModal,
@@ -185,14 +189,12 @@ const DropzoneComponent = forwardRef(({urls = [], updateUrls, uploadUrl = mediaU
 
     return (<Fragment>
         <div ref={dropzoneRef} className="d-flex flex-column justify-content-between flex-grow-1 dropzone">
-            <div
-                className={`flex-grow-1 dz-message needsclick ${pages.length ? "d-none" : ""}`}
-            >
+            <div className={`flex-grow-1 dz-message needsclick ${pages.length ? "d-none" : "d-block"}`}>
                 <p className="fs-4 note needsclick pt-3 mb-1">کشیدن و رهاکردن</p>
                 <p className="text-muted d-block fw-normal mb-2">یا</p>
                 <span className="note needsclick btn bg-label-primary d-inline">
-      انتخاب از فایل‌ها
-    </span>
+                  انتخاب از فایل‌ها
+                </span>
             </div>
 
             {pages.length ? (<Fragment>
