@@ -55,9 +55,9 @@ html:not([dir=rtl]) .bg-menu-theme.menu-horizontal .menu-inner > .menu-item > .m
   border-radius: 0.375rem;
 }
 .layout-horizontal .bg-menu-theme .menu-inner > .menu-item {
-  margin: 0.625rem 0;
+  padding: 0.625rem 0;
 }
-@media (min-width: 1200px) {
+@media (min-width: 992px) {
   .layout-horizontal .bg-menu-theme .menu-inner > .menu-item:not(:first-child) {
     margin-left: 0.125rem;
   }
@@ -1434,7 +1434,7 @@ li.ui-timepicker-selected,
   background: rgba(93, 89, 108, 0.2) !important;
 }
 
-@media (min-width: 1200px) {
+@media (min-width: 768px) {
   .bg-menu-theme {
     box-shadow: 0 0.125rem 0.25rem rgba(165, 163, 174, 0.3);
   }

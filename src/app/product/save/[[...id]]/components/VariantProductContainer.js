@@ -502,7 +502,7 @@ const VariantProductContainer = ({
                                                     <div
                                                         className="card-header d-flex justify-content-between align-items-center">
                                                         <h5 className="mb-0 card-title">رسانه ها</h5>
-                                                        <a className="d-flex align-items-center gap-1 fw-medium ql-snow">
+                                                        <div className="d-flex align-items-center gap-1 fw-medium ql-snow">
                                                             افزودن از
                                                             <button
                                                                 onClick={() => dropzoneRef.current?.handleOpenAddFromLinkModal()}
@@ -558,7 +558,7 @@ const VariantProductContainer = ({
                                                                     {" "}
                                                                 </svg>
                                                             </button>
-                                                        </a>
+                                                        </div>
                                                     </div>
                                                     <div className="card-body d-flex flex-column gap-3">
                                                         <DropzoneComponent

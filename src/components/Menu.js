@@ -1,4 +1,5 @@
 import Link from "next/link";
+import RippleButton from "./RippleButton/RippleButton";
 
 const Menu = () => {
     return (
@@ -9,22 +10,19 @@ const Menu = () => {
             <div className="container-xxl d-flex h-100">
                 <ul className="menu-inner">
                     <li className="menu-item active">
-                        <a className="menu-link menu-toggle" role="button">
+                        <button className="menu-link menu-toggle">
                             <i className="menu-icon tf-icons ti ti-box"></i>
                             <div data-i18n="Pages">محصولات</div>
-                        </a>
+                        </button>
                         <ul className="menu-sub">
                             <li className="menu-item">
-                                <Link className="menu-link" href="/product/">
+                                <Link href="/product/" className="menu-link">
                                     <i className="menu-icon tf-icons ti ti-list"></i>
                                     <div data-i18n="Front Pages">لیست محصولات</div>
                                 </Link>
                             </li>
                             <li className="menu-item">
-                                <Link
-                                    className="menu-link"
-                                    href="/product/save/"
-                                >
+                                <Link href="/product/save/" className="menu-link">
                                     <i className="menu-icon tf-icons ti ti-plus"></i>
                                     <div data-i18n="Pricing">افزودن محصول</div>
                                 </Link>
@@ -32,10 +30,10 @@ const Menu = () => {
                         </ul>
                     </li>
                     <li className="menu-item">
-                        <a className="menu-link menu-toggle" role="button">
+                        <button className="menu-link menu-toggle">
                             <i className="menu-icon tf-icons ti ti-layout-grid-add"></i>
                             <div data-i18n="Pages">دسته بندی ها</div>
-                        </a>
+                        </button>
                         <ul className="menu-sub">
                             <li className="menu-item">
                                 <Link className="menu-link" href="/category/">
@@ -55,10 +53,10 @@ const Menu = () => {
                         </ul>
                     </li>
                     <li className="menu-item">
-                        <a className="menu-link menu-toggle" role="button">
+                        <button className="menu-link menu-toggle">
                             <i className="menu-icon tf-icons ti ti-file-text"></i>
                             <div data-i18n="Pages">مقادیر</div>
-                        </a>
+                        </button>
                         <ul className="menu-sub">
                             <li className="menu-item">
                                 <Link className="menu-link" href="/listid/">

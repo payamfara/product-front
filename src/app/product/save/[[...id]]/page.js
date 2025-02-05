@@ -625,7 +625,7 @@ const CreateProductPage = () => {
                                     <div className="card h-100">
                                         <div className="card-header d-flex justify-content-between align-items-center">
                                             <h5 className="mb-0 card-title">رسانه ها</h5>
-                                            <a className="d-flex align-items-center gap-1 fw-medium ql-snow">
+                                            <div className="d-flex align-items-center gap-1 fw-medium ql-snow">
                                                 افزودن از
                                                 <button
                                                     onClick={() => dropzoneRef.current?.handleOpenAddFromLinkModal()}
@@ -680,7 +680,7 @@ const CreateProductPage = () => {
                                                         {" "}
                                                     </svg>
                                                 </button>
-                                            </a>
+                                            </div>
                                         </div>
                                         <div className="card-body d-flex flex-column gap-3">
                                             <DropzoneComponent
@@ -926,9 +926,9 @@ const CreateProductPage = () => {
                                                                 <p className="mb-0">
                                                                     {" "}
                                                                     برای جزئیات بیشتر به
-                                                                    <a role="button;">
+                                                                    <button>
                                                                         شرایط و ضوابط تحویل
-                                                                    </a>
+                                                                    </button>
                                                                     مراجعه کنید
                                                                 </p>
                                                             </div>
@@ -957,9 +957,9 @@ const CreateProductPage = () => {
                                                                 </span>
                                                                     <small>
                                                                         فقط با روش ارسال موجود است:
-                                                                        <a role="button;">
+                                                                        <button>
                                                                             با نام شرکت تکمیل شده است
-                                                                        </a>
+                                                                        </button>
                                                                     </small>
                                                                 </label>
                                                             </div>
@@ -1003,9 +1003,9 @@ const CreateProductPage = () => {
                                                                 </span>
                                                                     <small>
                                                                         تحویل به کشور محل اقامت شما:
-                                                                        <a role="button;">
+                                                                        <button>
                                                                             تغییر آدرس پروفایل
-                                                                        </a>
+                                                                        </button>
                                                                     </small>
                                                                 </label>
                                                             </div>

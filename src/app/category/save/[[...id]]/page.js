@@ -393,7 +393,7 @@ const CreateCategoryPage = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className="col-12">
+                        <div className="col-8">
                             <div className="card mb-4">
                                 <div className="card-header d-flex align-items-center gap-3">
                                     <h5 className="card-tile mb-0">سلسله مراتب</h5>
@@ -404,9 +404,18 @@ const CreateCategoryPage = () => {
                                         }))
                                     }}/>
                                 </div>
-                                <div className="max-w-30 card-body d-flex flex-column">
+                                <div className="max-w-50 card-body d-flex flex-column">
                                     {pageData.childes?.map((item, key) => <Fragment
                                         key={key}>{renderCat(item)}</Fragment>)}
+                                </div>
+                            </div>
+                        </div>
+                        <div className="col-4">
+                            <div className="card mb-4">
+                                <div className="card-header d-flex align-items-center gap-3">
+                                    <h5 className="card-tile mb-0">ترتیب دهی</h5>
+                                </div>
+                                <div className="max-w-50 card-body d-flex flex-column">
                                 </div>
                             </div>
                         </div>

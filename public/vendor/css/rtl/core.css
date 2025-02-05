@@ -20330,7 +20330,7 @@ html:not(.layout-menu-fixed) .menu-inner-shadow {
   pointer-events: auto;
 }
 .menu-horizontal .menu-inner > .menu-item > .menu-sub {
-  /*margin-top: 0.625rem;*/
+  margin-top: 0.625rem;
 }
 .menu-horizontal .menu-sub .menu-item.open:not(.menu-item-closing) > .menu-toggle::after {
   transform: translateY(-50%) rotate(45deg);
@@ -20390,7 +20390,7 @@ html:not(.layout-menu-fixed) .menu-inner-shadow {
   padding-right: 2.75rem;
   padding-left: 0.875rem;
 }
-@media (max-width: 991.98px) {
+@media (max-width: 767.98px) {
   .menu-horizontal {
     display: none;
   }
