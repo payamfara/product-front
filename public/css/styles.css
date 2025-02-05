@@ -145,13 +145,9 @@ li {
   display: none;
 }
 
-::-webkit-scrollbar-button {
-  display: none;
-}
 
 ::-webkit-scrollbar {
   width: 27px;
-  height: 12px;
 }
 
 ::-webkit-scrollbar-track {
@@ -163,4 +159,22 @@ li {
   border-radius: 20px;
   border: 10px solid transparent;
   background-clip: padding-box;
+}
+
+body::-webkit-scrollbar {
+  width: 8px;
+}
+
+body::-webkit-scrollbar-track {
+  height: 12px;
+  background: #f0f0f1;
+  border-radius: 0;
+}
+
+body::-webkit-scrollbar-thumb {
+  background: #c0c2c5;
+  width: 8px;
+  border-radius: 0;
+  border: none;
+  background-clip: initial;
 }

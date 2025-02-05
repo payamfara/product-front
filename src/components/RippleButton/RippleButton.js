@@ -1,8 +1,11 @@
 import React from "react";
 import "./RippleButton.css";
 import Link from "next/link";
+import Button from "../Button";
 
-const RippleButton = ({children, className, href, ...props}) => {
+const RippleButton = (props) => {
+    const {children, className, ...rest} = props;
+
     const handleRipple = (e) => {
         // if (e.target !== e.currentTarget) return;
 
@@ -26,21 +29,15 @@ const RippleButton = ({children, className, href, ...props}) => {
         });
     };
 
-    return (href ? <Link
-            href={href}
+    return (
+        <Button
             className={`ripple-container ${className}`}
             onClick={handleRipple}
-            {...props}
+            {...rest}
         >
             {children}
-        </Link> : <button
-            type="button"
-            className={`ripple-container ${className}`}
-            onClick={handleRipple}
-            {...props}
-        >
-            {children}
-        </button>);
+        </Button>
+    );
 };
 
 export default RippleButton;
