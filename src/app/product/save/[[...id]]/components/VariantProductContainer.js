@@ -147,11 +147,6 @@ const VariantProductContainer = ({
         setIsAttributeFrm(true);
     };
 
-    useEffect(() => {
-        toggleLink(0);
-    }, []);
-
-
     const [variantLoading, setVariantLoading] = useState(false);
     const handleCardClick = async (index) => {
 
@@ -566,17 +561,17 @@ const VariantProductContainer = ({
                                                             urls={cards[activeCard].images}
                                                             updateUrls={updateUrls}
                                                         />
+                                                        <ButtonImageUpload
+                                                            openOnly
+                                                            icon={<IconUpload size={32}/>}
+                                                            text={'آپــلود دیــتاشیــت'}
+                                                            className={'justify-content-center align-items-center btn btn-lg border-success border-1 w-100 gap-1'}
+                                                            value={cards[activeCard].data_sheet}
+                                                            onChange={(url) => {
+                                                                updateAttrValues(url, "data_sheet")
+                                                            }}
+                                                        />
                                                     </div>
-                                                    <ButtonImageUpload
-                                                        openOnly
-                                                        icon={<IconUpload size={32}/>}
-                                                        text={'آپــلود دیــتاشیــت'}
-                                                        className={'justify-content-center align-items-center btn btn-lg border-success border-1 w-100 gap-1'}
-                                                        value={cards[activeCard].data_sheet}
-                                                        onChange={(url) => {
-                                                            updateAttrValues(url, "data_sheet")
-                                                        }}
-                                                    />
                                                 </div>
 
                                             </div>

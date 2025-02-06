@@ -62,7 +62,8 @@ const TagifyComponent =
         };
 
         const handleChange = (e) => {
-            if (onChange) onChange(JSON.parse(e.detail.value));
+            console.log('pure', e.detail.value)
+            if (onChange) onChange(e.detail.value ? JSON.parse(e.detail.value) : []);
         };
 
         return (

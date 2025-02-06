@@ -465,7 +465,6 @@ const CreateProductPage = () => {
                                             <div className="col-6 d-flex flex-column gap-3">
                                                 <div className="col-12">
                                                     <QuillEditorComponent
-
                                                         id="description"
                                                         name="description"
                                                         onChange={(value) =>
@@ -474,7 +473,7 @@ const CreateProductPage = () => {
                                                                 value
                                                             )
                                                         }
-                                                        value={mainProduct.description}
+                                                        value={mainProduct.description || ""}
                                                         toolbarOptions={[
                                                             "bold",
                                                             "italic",
