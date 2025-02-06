@@ -132,7 +132,7 @@ body {
     height: 5rem;
 }
 
-.h-24rem {
+.h-24r {
     height: 24rem;
 }
 
@@ -704,4 +704,10 @@ body {
 }
 .text-justify {
     text-align: justify;
+}
+.overflow-y-scroll {
+    overflow-y: scroll;
+}
+.w-scroll {
+    width: calc(100% - 8px);
 }

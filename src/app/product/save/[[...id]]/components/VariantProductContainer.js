@@ -245,31 +245,33 @@ const VariantProductContainer = ({
                 />
             </div>
             <div className="card-body">
-                <div className="row">
+                <div className="d-flex gap-3">
                     <div
                         dir="ltr"
-                        className="h-24rem overflow-scroll variant-carts col-3 d-flex flex-column gap-3"
+                        className="col-3 overflow-y-scroll position-relative"
                     >
-                        {cards.map((card, index) => (
-                            <Card
-                                key={index}
-                                card={card}
-                                isLinkable={mainProduct.non_variant_product_attrs.some(
-                                    (nonVariant) => nonVariant.changed
-                                )}
-                                isMain={card.id === pageData.id}
-                                isActive={activeCard === index}
-                                onDelete={() => handleDelete(index)}
-                                toggleLink={() => toggleLink(index)}
-                                onClick={() => handleCardClick(index)}
-                            />
-                        ))}
+                        <div className="w-scroll h-100 position-absolute d-flex flex-column gap-3">
+                            {cards.map((card, index) => (
+                                <Card
+                                    key={index}
+                                    card={card}
+                                    isLinkable={mainProduct.non_variant_product_attrs.some(
+                                        (nonVariant) => nonVariant.changed
+                                    )}
+                                    isMain={card.id === pageData.id}
+                                    isActive={activeCard === index}
+                                    onDelete={() => handleDelete(index)}
+                                    toggleLink={() => toggleLink(index)}
+                                    onClick={() => handleCardClick(index)}
+                                />
+                            ))}
+                        </div>
                     </div>
                     {variantLoading
                         ? (
-                            <div className="bg-secondary-subtle border border-dashed rounded col-9">
+                            <div className="flex-shrink-1 bg-secondary-subtle border border-dashed rounded col-9">
                                 <div
-                                    className="h-100 d-flex flex-column gap-1 justify-content-center align-items-center fs-5">
+                                    className="w-100 h-24r d-flex flex-column gap-1 justify-content-center align-items-center fs-5">
                                     <Loading/>
                                 </div>
                             </div>
@@ -279,7 +281,7 @@ const VariantProductContainer = ({
                         (cards[activeCard].linked ||
                             !mainProduct.non_variant_product_attrs.some((nonVariant) => nonVariant.changed)) ? (
                             <div
-                                className={`position-relative border border-dashed rounded col-9 ${!isAttributeFrm || cards[activeCard].variant_product_attrs.length ? 'p-2' : 'p-0'}`}>
+                                className={`flex-shrink-1 position-relative border border-dashed rounded col-9 ${!isAttributeFrm || cards[activeCard].variant_product_attrs.length ? 'p-2' : 'p-0'}`}>
                                 <div className="position-absolute end-0 top-0 myn-3 mx-3 d-flex gap-3">
                                     {cards[activeCard].id !== pageData.id && (
                                         <RippleButton
@@ -321,9 +323,9 @@ const VariantProductContainer = ({
                                         )
                                         : (
                                             <div
-                                                className="h-100 w-100 bg-secondary-subtle border border-dashed rounded col-9">
+                                                className="flex-shrink-1 w-100 h-24r bg-secondary-subtle border border-dashed rounded col-9">
                                                 <div
-                                                    className="h-100 d-flex flex-column gap-1 justify-content-center align-items-center fs-5">
+                                                    className="w-100 h-100 d-flex flex-column gap-1 justify-content-center align-items-center fs-5">
                                                     <div className="opacity-70">فرم ویژگی ها</div>
                                                     <div className="opacity-100 text-danger fs-6">
                                                         آیتمی یافت نشد!
@@ -579,9 +581,9 @@ const VariantProductContainer = ({
                                     )}
                             </div>
                         ) : mainProduct.non_variant_product_attrs.some((nonVariant) => nonVariant.changed) ? (
-                            <div className="bg-secondary-subtle border border-dashed rounded col-9">
+                            <div className="flex-shrink-1 h-24r bg-secondary-subtle border border-dashed rounded col-9">
                                 <div
-                                    className="h-100 d-flex flex-column gap-1 justify-content-center align-items-center fs-5">
+                                    className="w-100 h-100 d-flex flex-column gap-1 justify-content-center align-items-center fs-5">
                                     <div className="opacity-70">فرم ویژگی ها</div>
                                     <div className="opacity-100 text-danger fs-6">
                                         (ابتدا فرم{" "}
@@ -593,9 +595,9 @@ const VariantProductContainer = ({
                                 </div>
                             </div>
                         ) : (
-                            <div className="border border-dashed rounded col-9">
+                            <div className="flex-shrink-1 h-24r border border-dashed rounded col-9">
                                 <div
-                                    className="h-100 d-flex flex-column gap-1 justify-content-center align-items-center fs-5">
+                                    className="w-100 h-100 d-flex flex-column gap-1 justify-content-center align-items-center fs-5">
                                     <div className="opacity-70">فرم ویژگی ها</div>
                                     <div className="text-danger fs-6">
                                         (روی{" "}
