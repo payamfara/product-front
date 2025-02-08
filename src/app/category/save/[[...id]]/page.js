@@ -11,6 +11,7 @@ import RippleButton from "../../../../components/RippleButton/RippleButton";
 import {IconCamera, IconChevronDown, IconCircleChevronUp, IconPencil, IconPlus, IconTrash} from "@tabler/icons-react";
 import ButtonImageUpload from "../../../../components/ButtonImageUpload";
 import Toast from "../../../../utils/funcs";
+import DraggableFlexList from "../../../../components/DraggableFlexList";
 
 const CreateCategoryPage = () => {
     const [pageData, setPageData] = useState({});
@@ -59,7 +60,8 @@ const CreateCategoryPage = () => {
             .get(requestUrl)
             .then((res) => {
                 console.log('res', res)
-                setPageData({...res.data});
+                const {attr_orders_extra, ...data} = res.data;
+                setPageData({...data, attr_orders: [...data.attr_orders, ...attr_orders_extra]});
             })
             .catch((err) => {
                 console.error("Error fetching data:", err);
@@ -264,6 +266,15 @@ const CreateCategoryPage = () => {
         </>
     }
 
+    // const sortedItems = pageData.attr_orders.sort((a, b) => a.order - b.order);
+
+    const updateAttrOrders = (updateFunc) => {
+      setPageData(pageData=>({
+          ...pageData,
+          attr_orders: updateFunc(pageData.attr_orders)
+      }))
+    }
+
     return (<ClientLayout>
             <div className="container-xxl flex-grow-1 container-p-y">
                 <h4 className="py-3 mb-4">
@@ -393,7 +404,7 @@ const CreateCategoryPage = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className="col-8">
+                        <div className="col-4">
                             <div className="card mb-4">
                                 <div className="card-header d-flex align-items-center gap-3">
                                     <h5 className="card-tile mb-0">سلسله مراتب</h5>
@@ -415,7 +426,18 @@ const CreateCategoryPage = () => {
                                 <div className="card-header d-flex align-items-center gap-3">
                                     <h5 className="card-tile mb-0">ترتیب دهی</h5>
                                 </div>
-                                <div className="max-w-50 card-body d-flex flex-column">
+                                <div dir={'ltr'} className="card-body d-flex flex-wrap gap-2">
+                                    <DraggableFlexList items={pageData.attr_orders} setItems={updateAttrOrders} />
+                                    {/*{sortedItems.map((item, key)=>(*/}
+                                    {/*    <div draggable key={key} className={'btn-group'}>*/}
+                                    {/*        <RippleButton className={'p-1 btn btn-sm btn-label-primary'}>*/}
+                                    {/*            {item.title_fa}*/}
+                                    {/*        </RippleButton>*/}
+                                    {/*        <RippleButton className="p-1 btn btn-sm btn-label-primary">*/}
+                                    {/*            {item.order}*/}
+                                    {/*        </RippleButton>*/}
+                                    {/*    </div>*/}
+                                    {/*))}*/}
                                 </div>
                             </div>
                         </div>

@@ -68,7 +68,6 @@ const Menu = () => {
     const renderMenu = (menuItems, prevPath = []) => (
         menuItems.map((menuItem, key) => {
             const currentPath = [...prevPath, menuItem.path];
-                console.log('currentPath', menuItem.regex, pathname, menuItem.regex && menuItem.path.match(menuItem.regex), currentPath)
             if (menuItem.regex && pathname.match(menuItem.regex)) {
                 !activePath.length && setActivePath(currentPath)
             }
