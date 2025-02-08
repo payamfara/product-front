@@ -72,7 +72,7 @@ const Menu = () => {
                 !activePath.length && setActivePath(currentPath)
             }
             return <li key={key} className={`menu-item ${activePath.includes(menuItem.path) ? 'active' : ''}`}>
-                <Button href={pathname !== menuItem.path && !menuItem.childes ? menuItem.path : null} className={`w-100 menu-link ${menuItem.childes?.length ? 'menu-toggle' : ''}`}>
+                <Button href={!menuItem.childes ? menuItem.path : null} className={`w-100 menu-link ${menuItem.childes?.length ? 'menu-toggle' : ''}`}>
                     {menuItem.icon}
                     <div data-i18n="Pages">{menuItem.label}</div>
                 </Button>

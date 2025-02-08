@@ -233,7 +233,7 @@ const DataTable = ({fields, columns}) => {
                             title="Add Category"
                         >
                             <IconPlus size={18}/>
-                            افزودن محصول
+                            افزودن دسته بندی
                         </RippleButton>
                     </Link>
                 </div>

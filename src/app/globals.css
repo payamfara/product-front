@@ -455,6 +455,15 @@ body {
 .ps-20 {
     padding-right: 7.5rem !important;
 }
+.ps-24 {
+    padding-right: 9rem !important;
+}
+.ps-28 {
+    padding-right: 10.5rem !important;
+}
+.ps-32 {
+    padding-right: 12rem !important;
+}
 .max-w-30 {
     max-width: 30% !important;
 }

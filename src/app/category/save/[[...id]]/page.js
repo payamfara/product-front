@@ -12,6 +12,8 @@ import {IconCamera, IconChevronDown, IconCircleChevronUp, IconPencil, IconPlus, 
 import ButtonImageUpload from "../../../../components/ButtonImageUpload";
 import Toast from "../../../../utils/funcs";
 import DraggableFlexList from "../../../../components/DraggableFlexList";
+import DraggableFlexList2 from "../../../../components/DraggableFlexList2";
+import DraggableFlexList3 from "../../../../components/DraggableFlexList3";
 
 const CreateCategoryPage = () => {
     const [pageData, setPageData] = useState({});
@@ -53,6 +55,11 @@ const CreateCategoryPage = () => {
         setPageData((pageData) => ({...pageData, ...getValueDict(pageData[name])}));
     };
 
+    const attrCounter = useRef(1000);
+    const makeAttrCounter = () => {
+        return attrCounter.current++;
+    }
+
     const loadData = () => {
         const requestUrl = id ? `/api2/category/${id}` : `/api2/category/`;
         setLoading(true);
@@ -61,7 +68,10 @@ const CreateCategoryPage = () => {
             .then((res) => {
                 console.log('res', res)
                 const {attr_orders_extra, ...data} = res.data;
-                setPageData({...data, attr_orders: [...data.attr_orders, ...attr_orders_extra]});
+                setPageData({...data, attr_orders: [...data.attr_orders, ...attr_orders_extra || []].sort((a, b) => a.order - b.order).map(item=>({
+                        ...item,
+                        _id: item.id ?? makeAttrCounter()
+                    }))});
             })
             .catch((err) => {
                 console.error("Error fetching data:", err);
@@ -148,15 +158,15 @@ const CreateCategoryPage = () => {
                 return tempData.length === 0 && field === 'remove_child'
                     ? items.filter(item => item.id !== name)
                     : items.map(item => {
-                    const dd = field === 'childes' ? [emptyCategory()] : []
-                    const ss = !tempData.length && field !== 'childes' ? {[field]: newVal} : {}
-                    const obj = item.id === name ? {
-                        ...item,
-                        ...ss,
-                        childes: tempData.length ? innerFunc(item.childes) : [...dd, ...item.childes],
-                    } : item
-                    return obj
-                })
+                        const dd = field === 'childes' ? [emptyCategory()] : []
+                        const ss = !tempData.length && field !== 'childes' ? {[field]: newVal} : {}
+                        const obj = item.id === name ? {
+                            ...item,
+                            ...ss,
+                            childes: tempData.length ? innerFunc(item.childes) : [...dd, ...item.childes],
+                        } : item
+                        return obj
+                    })
             }
             const childes = tempData.length ? innerFunc(pageData.childes) : pageData.childes;
             // console.log('obj', obj);
@@ -204,7 +214,7 @@ const CreateCategoryPage = () => {
                         onClick={(e) => {
                             e.nativeEvent.stopImmediatePropagation()
                         }}
-                        className="shadow-lg card position-absolute end-0 translate translate-y-middle -translate-x-100">
+                        className="z-1 shadow-lg card position-absolute end-0 translate translate-y-middle -translate-x-100">
                         <div className="card mb-4">
                             <div className="card-header justify-content-between d-flex align-items-center gap-3">
                                 <h5 className="card-tile mb-0">اطلاعات دسته</h5>
@@ -266,13 +276,11 @@ const CreateCategoryPage = () => {
         </>
     }
 
-    // const sortedItems = pageData.attr_orders.sort((a, b) => a.order - b.order);
-
     const updateAttrOrders = (updateFunc) => {
-      setPageData(pageData=>({
-          ...pageData,
-          attr_orders: updateFunc(pageData.attr_orders)
-      }))
+        setPageData(pageData => ({
+            ...pageData,
+            attr_orders: updateFunc(pageData.attr_orders)
+        }))
     }
 
     return (<ClientLayout>
@@ -404,7 +412,7 @@ const CreateCategoryPage = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className="col-4">
+                        <div className="col-6">
                             <div className="card mb-4">
                                 <div className="card-header d-flex align-items-center gap-3">
                                     <h5 className="card-tile mb-0">سلسله مراتب</h5>
@@ -415,29 +423,34 @@ const CreateCategoryPage = () => {
                                         }))
                                     }}/>
                                 </div>
-                                <div className="max-w-50 card-body d-flex flex-column">
+                                <div className="card-body d-flex flex-column">
                                     {pageData.childes?.map((item, key) => <Fragment
                                         key={key}>{renderCat(item)}</Fragment>)}
                                 </div>
                             </div>
                         </div>
-                        <div className="col-4">
+                        <div className="col-6">
                             <div className="card mb-4">
                                 <div className="card-header d-flex align-items-center gap-3">
                                     <h5 className="card-tile mb-0">ترتیب دهی</h5>
                                 </div>
-                                <div dir={'ltr'} className="card-body d-flex flex-wrap gap-2">
-                                    <DraggableFlexList items={pageData.attr_orders} setItems={updateAttrOrders} />
-                                    {/*{sortedItems.map((item, key)=>(*/}
-                                    {/*    <div draggable key={key} className={'btn-group'}>*/}
-                                    {/*        <RippleButton className={'p-1 btn btn-sm btn-label-primary'}>*/}
-                                    {/*            {item.title_fa}*/}
-                                    {/*        </RippleButton>*/}
-                                    {/*        <RippleButton className="p-1 btn btn-sm btn-label-primary">*/}
-                                    {/*            {item.order}*/}
-                                    {/*        </RippleButton>*/}
-                                    {/*    </div>*/}
-                                    {/*))}*/}
+                                <div className="card-body d-flex flex-wrap">
+                                    <DraggableFlexList2
+                                        render={(item, props) => (
+                                            <div className={'col-6 col-md-4 col-lg-4 col-xl-3 p-1'}>
+                                                <div {...props} className={'cursor-grab w-100 btn-group border-1 border-primary'}>
+                                                    <RippleButton className={'col-10 d-block text-truncate px-1 py-3 pe-none btn btn-sm'}>
+                                                        {item.title_fa}
+                                                    </RippleButton>
+                                                    <RippleButton className="col-2 px-1 py-3 pe-none btn btn-sm btn-label-primary">
+                                                        {item.order}
+                                                    </RippleButton>
+                                                </div>
+                                            </div>
+                                        )}
+                                        items={pageData.attr_orders}
+                                        setItems={updateAttrOrders}
+                                    />
                                 </div>
                             </div>
                         </div>
