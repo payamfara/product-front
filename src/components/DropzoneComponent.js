@@ -5,8 +5,7 @@ import GalleryModal from "./GalleryModal";
 import Flickity from "react-flickity-component";
 import "flickity/css/flickity.css";
 import RippleButton from "./RippleButton/RippleButton";
-import {IconDownload, IconTrash, IconUpload} from "@tabler/icons-react";
-import ButtonImageUpload from "./ButtonImageUpload";
+import {IconTrash} from "@tabler/icons-react";
 import {mediaUrl} from "../utils/funcs";
 
 const DropzoneComponent = forwardRef(({

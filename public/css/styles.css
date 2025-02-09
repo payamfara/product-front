@@ -161,17 +161,20 @@ li {
   background-clip: padding-box;
 }
 
-body::-webkit-scrollbar {
+body::-webkit-scrollbar,
+.spec-scroll::-webkit-scrollbar {
   width: 8px;
 }
 
-body::-webkit-scrollbar-track {
+body::-webkit-scrollbar-track,
+.spec-scroll::-webkit-scrollbar-track {
   height: 12px;
   background: #f0f0f1;
   border-radius: 0;
 }
 
-body::-webkit-scrollbar-thumb {
+body::-webkit-scrollbar-thumb,
+.spec-scroll::-webkit-scrollbar-thumb {
   background: #c0c2c5;
   width: 8px;
   border-radius: 0;

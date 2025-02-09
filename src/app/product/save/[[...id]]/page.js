@@ -15,9 +15,6 @@ import {useRouter} from 'next/navigation'
 import LoadingBtn from "../../../../components/LoadingBtn";
 import {IconCheck, IconTrash, IconUpload, IconX} from "@tabler/icons-react";
 import RippleButton from "../../../../components/RippleButton/RippleButton";
-import Flickity from "react-flickity-component";
-import AddFromLinkModal from "../../../../components/AddFromLinkModal";
-import GalleryModal from "../../../../components/GalleryModal";
 import ButtonImageUpload from "../../../../components/ButtonImageUpload";
 import Toast from "../../../../utils/funcs";
 
