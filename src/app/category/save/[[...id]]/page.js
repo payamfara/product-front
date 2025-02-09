@@ -227,10 +227,6 @@ const CreateCategoryPage = () => {
                                         updateData([...prevArr, item.id], 'image', url)
                                     }}
                                 />
-                                {/*<RippleButton*/}
-                                {/*    className="btn btn-label-dark bg-secondary-subtle d-flex justify-content-center align-items-center">*/}
-                                {/*    <IconCamera size={24}/>*/}
-                                {/*</RippleButton>*/}
                             </div>
                         </div>
                         <div className="card-body d-flex flex-column gap-3">

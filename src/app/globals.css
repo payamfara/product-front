@@ -707,6 +707,7 @@ body {
 }
 .img-lg {
     width: 10rem;
+    max-width: 100%;
     height: 7rem;
 }
 .z-50 {
@@ -724,6 +725,6 @@ body {
 .w-scroll {
     width: calc(100% - 8px);
 }
-.max-h-400p {
-    max-height: 400px;
+.h-400p {
+    height: 400px;
 }
