@@ -90,7 +90,9 @@ const ListProductPage = () => {
         },
     ];
     const [shouldRefresh, setShouldRefresh] = useState(false);
-    const [fields, setFields] = useState({});
+    const [fields, setFields] = useState({
+        parent__isnull: {value: 'True', opr: '='}
+    });
 
     const updateFields = (attribute, value, opr) => {
         const extraData = typeof value === "object"

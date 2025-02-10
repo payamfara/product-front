@@ -132,8 +132,8 @@ body {
     height: 5rem;
 }
 
-.h-24r {
-    height: 24rem;
+.h-27r {
+    height: 27rem;
 }
 
 .card-sm {
@@ -727,4 +727,8 @@ body {
 }
 .h-400p {
     height: 400px;
+}
+
+.disable-btns button {
+    pointer-events: none;
 }

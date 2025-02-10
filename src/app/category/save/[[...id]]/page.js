@@ -68,7 +68,7 @@ const CreateCategoryPage = () => {
             .then((res) => {
                 console.log('res', res)
                 const {attr_orders_extra, ...data} = res.data;
-                setPageData({...data, attr_orders: [...data.attr_orders, ...attr_orders_extra || []].sort((a, b) => a.order - b.order).map(item=>({
+                setPageData({...data, attr_orders: [...data.attr_orders || [], ...attr_orders_extra || []].sort((a, b) => a.order - b.order).map(item=>({
                         ...item,
                         _id: item.id ?? makeAttrCounter()
                     }))});
@@ -150,7 +150,6 @@ const CreateCategoryPage = () => {
     })
 
     const updateData = (prevArr = [], field, newVal = '') => {
-        console.log('prevArr', prevArr, field, newVal);
         const tempData = [...prevArr];
         setPageData(pageData => {
             const innerFunc = (items) => {

@@ -105,7 +105,7 @@ const GalleryModal = ({show, onHide, onSubmit}) => {
                                         </div>
                                         <Flickity className={'w-100'} options={flickityOptions}>
                                             {product.images.map((image, idx) => (
-                                                <div className={'p-1 img-lg'}>
+                                                <div key={idx} className={'p-1 img-lg'}>
                                                     <label
                                                         className="border-1 border-label-primary bg-white w-100 h-100 rounded p-2"
                                                         style={{cursor: "pointer", display: "block"}}

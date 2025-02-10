@@ -25,14 +25,14 @@ const Card = ({
         <div
             onClick={onClick}
             className={`p-2 rounded border ${
-                isMain ? isActive ? "border-success" : "border-danger" : card.id && isActive || (card.linked && isActive) ? "border-success" : isActive ? "border-primary" : ""
+                card.id && isActive || (card.linked && isActive) ? "border-success border-2" : isActive ? "border-primary" : ""
             } border-dashed position-relative`}
         >
             <div
                 className="position-absolute d-flex flex-column justify-content-center gap-4 top-0 start-0 h-100 mxn-2">
                 {isMain ? (
                     <RippleButton
-                        className="pe-none z-1 rounded-start-0 border-0 border-danger ribbon btn btn-danger btn-sm p-1"
+                        className="pe-none z-1 rounded-start-0 border-0 border-success ribbon btn btn-success btn-sm p-1"
                     >
                         اصلی
                     </RippleButton>
@@ -40,13 +40,16 @@ const Card = ({
                 {card.id === undefined ? (
                     <RippleButton
                         className="z-1 rounded-start-0 border-0 border-danger ribbon btn btn-danger btn-sm p-1"
-                        onClick={onDelete}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            onDelete();
+                        }}
                         title="Delete"
                     >
                         <FaTrash size={16}/>
                     </RippleButton>
                 ) : undefined}
-                {card.id && isLinkable ? (
+                {!isMain && card.id && isLinkable ? (
                     <RippleButton
                         className="z-1 rounded-start-0 border-0 border-success ribbon btn btn-success btn-sm p-1"
                         onClick={toggleLink}
@@ -134,59 +137,62 @@ const VariantProductContainer = ({
         created: true,
     }
 
-    const handleDelete = (index) => {
-        setActiveCard((activeCard) => activeCard - 1);
-        setIsAttributeFrm(true);
-        updateVariants((cards) => cards.filter((_, i) => i !== index));
-    };
-
     const handleAddCard = () => {
         const _id = makeUUid();
         updateVariants((cards) => [cards[0], {_id, ...emptyCard}, ...cards?.slice(1)]);
-        setActiveCard(0);
+        setActiveCard(1);
         setIsAttributeFrm(true);
     };
 
     const [variantLoading, setVariantLoading] = useState(false);
-    const handleCardClick = async (index) => {
-
+    const handleCardClick = async (index, activate = true) => {
+        if (!cards[index]) return
         if (cards[index].variant_product_attrs) {
-            setActiveCard(index);
-            setIsAttributeFrm(true);
+            if (activate) {
+                setActiveCard(index);
+                setIsAttributeFrm(true);
+            }
             return;
         }
 
         setVariantLoading(true);
-        const requestUrl = `/api2/product/${cards[index].id}`;
-        baseApiAuth
-            .get(requestUrl)
-            .then((res) => {
-                updateVariants((cards) =>
-                    cards.map((c, i) =>
-                        i === index
-                            ? filterItem({
-                                ...cards[index],
-                                variant_product_attrs: [
-                                    ...res.data.variant_product_attrs,
-                                    ...res.data.variant_extra_attrs,
-                                ],
-                                non_variant_product_attrs: [
-                                    ...res.data.non_variant_product_attrs,
-                                    ...res.data.non_variant_extra_attrs,
-                                ],
-                            })
-                            : c
-                    )
-                );
+
+        try {
+            const requestUrl = `/api2/product/${cards[index].id}`;
+            const res = await baseApiAuth.get(requestUrl);
+
+            updateVariants((cards) =>
+                cards.map((c, i) =>
+                    i === index
+                        ? filterItem({
+                            ...cards[index],
+                            variant_product_attrs: [
+                                ...res.data.variant_product_attrs,
+                                ...res.data.variant_extra_attrs,
+                            ],
+                            non_variant_product_attrs: [
+                                ...res.data.non_variant_product_attrs,
+                                ...res.data.non_variant_extra_attrs,
+                            ],
+                        })
+                        : c
+                )
+            );
+
+            if (activate) {
                 setActiveCard(index);
                 setIsAttributeFrm(true);
-            })
-            .catch((err) => {
-                console.error("Error fetching data:", err);
-            })
-            .finally(() => {
-                setVariantLoading(false);
-            });
+            }
+        } catch (err) {
+            console.error("Error fetching data:", err);
+        } finally {
+            setVariantLoading(false);
+        }
+    };
+
+    const handleDelete = async (index) => {
+        await handleCardClick(index + 1, false)
+        updateVariants((cards) => cards.filter((_, i) => i !== index));
     };
 
     const updateAttrValues = (updateAttrValuesFunctionOrValue, key) =>
@@ -237,7 +243,7 @@ const VariantProductContainer = ({
     const mainProduct = cards.find(c => c.id === pageData.id)
 
     return (
-        <div id="variant_attrs" className="card h-100">
+        <div className={`card h-100 ${variantLoading ? 'disable-btns' : ''}`}>
             <div className="card-header d-flex align-items-center gap-3">
                 <h5 className="card-title mb-0">ویژگی های وریانت</h5>
                 <PlusButton
@@ -248,14 +254,14 @@ const VariantProductContainer = ({
                 <div className="d-flex gap-3">
                     <div
                         dir="ltr"
-                        className="col-3 overflow-y-scroll position-relative"
+                        className="col-3 h-27r overflow-y-scroll position-relative"
                     >
-                        <div className="w-scroll h-100 position-absolute d-flex flex-column gap-3">
+                        <div className="w-scroll position-absolute d-flex flex-column gap-3">
                             {cards.map((card, index) => (
                                 <Card
                                     key={index}
                                     card={card}
-                                    isLinkable={mainProduct.non_variant_product_attrs.some(
+                                    isLinkable={mainProduct.non_variant_product_attrs?.some(
                                         (nonVariant) => nonVariant.changed
                                     )}
                                     isMain={card.id === pageData.id}
@@ -271,7 +277,7 @@ const VariantProductContainer = ({
                         ? (
                             <div className="flex-shrink-1 bg-secondary-subtle border border-dashed rounded col-9">
                                 <div
-                                    className="w-100 h-24r d-flex flex-column gap-1 justify-content-center align-items-center fs-5">
+                                    className="w-100 h-100 d-flex flex-column gap-1 justify-content-center align-items-center fs-5">
                                     <Loading/>
                                 </div>
                             </div>
@@ -281,7 +287,7 @@ const VariantProductContainer = ({
                         (cards[activeCard].linked ||
                             !mainProduct.non_variant_product_attrs.some((nonVariant) => nonVariant.changed)) ? (
                             <div
-                                className={`flex-shrink-1 position-relative border border-dashed rounded col-9 ${!isAttributeFrm || cards[activeCard].variant_product_attrs.length ? 'p-2' : 'p-0'}`}>
+                                className={`flex-shrink-1 position-relative border border-dashed rounded col-9 ${!isAttributeFrm || cards[activeCard].variant_product_attrs?.length ? 'p-2' : 'p-0'}`}>
                                 <div className="position-absolute end-0 top-0 myn-3 mx-3 d-flex gap-3">
                                     {cards[activeCard].id !== pageData.id && (
                                         <RippleButton
@@ -309,7 +315,7 @@ const VariantProductContainer = ({
                                     </RippleButton>
                                 </div>
                                 {isAttributeFrm ?
-                                    cards[activeCard].variant_product_attrs.length ? (
+                                    cards[activeCard].variant_product_attrs?.length ? (
                                             <TabsWithInputsComponent
                                                 errors={errors[cards[activeCard]._id]?.nested_data?.variant_product_attrs}
                                                 inputs={cards[activeCard].variant_product_attrs}
@@ -323,7 +329,7 @@ const VariantProductContainer = ({
                                         )
                                         : (
                                             <div
-                                                className="flex-shrink-1 w-100 h-24r bg-secondary-subtle border border-dashed rounded col-9">
+                                                className="flex-shrink-1 h-100 w-100 bg-secondary-subtle border border-dashed rounded col-9">
                                                 <div
                                                     className="w-100 h-100 d-flex flex-column gap-1 justify-content-center align-items-center fs-5">
                                                     <div className="opacity-70">فرم ویژگی ها</div>
@@ -499,7 +505,8 @@ const VariantProductContainer = ({
                                                     <div
                                                         className="card-header d-flex justify-content-between align-items-center">
                                                         <h5 className="mb-0 card-title">رسانه ها</h5>
-                                                        <div className="d-flex align-items-center gap-1 fw-medium ql-snow">
+                                                        <div
+                                                            className="d-flex align-items-center gap-1 fw-medium ql-snow">
                                                             افزودن از
                                                             <button
                                                                 onClick={() => dropzoneRef.current?.handleOpenAddFromLinkModal()}
@@ -581,7 +588,7 @@ const VariantProductContainer = ({
                                     )}
                             </div>
                         ) : mainProduct.non_variant_product_attrs.some((nonVariant) => nonVariant.changed) ? (
-                            <div className="flex-shrink-1 h-24r bg-secondary-subtle border border-dashed rounded col-9">
+                            <div className="flex-shrink-1 bg-secondary-subtle border border-dashed rounded col-9">
                                 <div
                                     className="w-100 h-100 d-flex flex-column gap-1 justify-content-center align-items-center fs-5">
                                     <div className="opacity-70">فرم ویژگی ها</div>
@@ -595,7 +602,7 @@ const VariantProductContainer = ({
                                 </div>
                             </div>
                         ) : (
-                            <div className="flex-shrink-1 h-24r border border-dashed rounded col-9">
+                            <div className="flex-shrink-1 border border-dashed rounded col-9">
                                 <div
                                     className="w-100 h-100 d-flex flex-column gap-1 justify-content-center align-items-center fs-5">
                                     <div className="opacity-70">فرم ویژگی ها</div>
