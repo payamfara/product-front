@@ -9,6 +9,7 @@ import {IconTrash} from "@tabler/icons-react";
 import {mediaUrl} from "../utils/funcs";
 
 const DropzoneComponent = forwardRef(({
+                                          disabled,
                                           urls = [],
                                           updateUrls,
                                           uploadUrl = mediaUrl('/api/save_images/products/')
@@ -186,7 +187,7 @@ const DropzoneComponent = forwardRef(({
         setActiveFile((activeFile) => Math.max(0, activeFile - 1));
     };
 
-    return (<Fragment>
+    return (<div className={`${disabled ? 'disabled' : ''}`}>
         <div ref={dropzoneRef} className="d-flex flex-column justify-content-between flex-grow-1 dropzone">
             <div className={`flex-grow-1 dz-message needsclick ${pages.length ? "d-none" : "d-block"}`}>
                 <p className="fs-4 note needsclick pt-3 mb-1">کشیدن و رهاکردن</p>
@@ -259,7 +260,7 @@ const DropzoneComponent = forwardRef(({
             onHide={handleCloseGalleryModal}
             onSubmit={handleGallerySubmit}
         />
-    </Fragment>);
+    </div>);
 });
 
 export default DropzoneComponent;

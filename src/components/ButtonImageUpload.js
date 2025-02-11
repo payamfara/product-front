@@ -6,6 +6,7 @@ import {mediaUrl} from "../utils/funcs";
 import Link from "next/link";
 
 const ButtonImageUpload = ({
+                               disabled,
                                openOnly = false,
                                verticalProgress = false,
                                uploadPath = 'products/',
@@ -44,11 +45,11 @@ const ButtonImageUpload = ({
     };
 
     return (
-        <div className={'position-relative'}>
+        <div className={`${disabled ? 'disabled' : ''} position-relative`}>
             <RippleButton
                 className={className + ` ${value || isUploading ? 'pe-none' : ''} ${!openOnly && value ? 'p-0' : ''}`}>
                 <div
-                    className={`bg-success cursor-pointer position-absolute start-0 bottom-0 ${isUploading ? verticalProgress ? `h-${uploadProgress} w-100` : `w-${uploadProgress} h-100` :  ''} opacity-50`}>
+                    className={`bg-success cursor-pointer position-absolute start-0 bottom-0 ${isUploading ? verticalProgress ? `h-${uploadProgress} w-100` : `w-${uploadProgress} h-100` : ''} opacity-50`}>
                 </div>
                 <label className={'cursor-pointer position-absolute w-100 h-100 opacity-0'}>
                     <input
@@ -70,7 +71,7 @@ const ButtonImageUpload = ({
                     <Link className={'text-white'} href={mediaUrl(value)} target={'_blank'}>
                         <IconEye size={16}/>
                     </Link>
-                </RippleButton> : undefined }
+                </RippleButton> : undefined}
                 <RippleButton
                     onClick={() => {
                         onChange('');

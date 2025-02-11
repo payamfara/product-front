@@ -11,6 +11,7 @@ import Loading from "../../../../../components/Loading";
 import {IconCamera, IconCheck, IconUpload, IconX} from "@tabler/icons-react";
 import {mediaUrl} from "../../../../../utils/funcs";
 import ButtonImageUpload from "../../../../../components/ButtonImageUpload";
+import {Button} from "react-bootstrap";
 
 const Card = ({
                   isMain,
@@ -131,6 +132,8 @@ const VariantProductContainer = ({
         summary: "_",
         data_sheet: '',
         images: [],
+        images_from_main: true,
+        data_sheet_from_main: true,
         meta_datas: pageData.meta_datas,
         variant_product_attrs: emptyFrm,
         linked: true,
@@ -504,9 +507,27 @@ const VariantProductContainer = ({
                                                 <div className="card h-100">
                                                     <div
                                                         className="card-header d-flex justify-content-between align-items-center">
-                                                        <h5 className="mb-0 card-title">رسانه ها</h5>
+                                                        <h5 className="align-items-center d-flex gap-2 mb-0 card-title">رسانه
+                                                            ها
+                                                            <RippleButton
+                                                                onClick={() =>
+                                                                    updateAttrValues(value => !value, "images_from_main")
+                                                                }
+                                                                className={'btn btn-secondary btn-sm p-1 rounded-pill'}
+                                                            >
+                                                                {cards[activeCard].images_from_main ? '✔' : ''}
+                                                            </RippleButton>
+                                                            <RippleButton
+                                                                onClick={() =>
+                                                                    updateAttrValues(value => !value, "data_sheet_from_main")
+                                                                }
+                                                                className={'btn btn-success btn-sm p-1 rounded-pill'}
+                                                            >
+                                                                {cards[activeCard].data_sheet_from_main ? '✔' : ''}
+                                                            </RippleButton>
+                                                        </h5>
                                                         <div
-                                                            className="d-flex align-items-center gap-1 fw-medium ql-snow">
+                                                            className={`${cards[activeCard].images_from_main ? 'disabled' : ''} d-flex align-items-center gap-1 fw-medium ql-snow`}>
                                                             افزودن از
                                                             <button
                                                                 onClick={() => dropzoneRef.current?.handleOpenAddFromLinkModal()}
@@ -566,11 +587,13 @@ const VariantProductContainer = ({
                                                     </div>
                                                     <div className="card-body d-flex flex-column gap-3">
                                                         <DropzoneComponent
+                                                            disabled={cards[activeCard].images_from_main}
                                                             ref={dropzoneRef}
                                                             urls={cards[activeCard].images}
                                                             updateUrls={updateUrls}
                                                         />
                                                         <ButtonImageUpload
+                                                            disabled={cards[activeCard].data_sheet_from_main}
                                                             openOnly
                                                             icon={<IconUpload size={32}/>}
                                                             text={'آپــلود دیــتاشیــت'}

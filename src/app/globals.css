@@ -348,10 +348,9 @@ body {
 .disabled input,
 .disabled .custom-select__control,
 .disabled .tagify,
-.disabled .dropzone {
+.disabled .dropzone,
+.disabled button {
     pointer-events: none;
-    /*color: #AAA;*/
-    /*background: #F5F5F5;*/
 }
 
 .layout-page {
