@@ -731,3 +731,11 @@ body {
 .disable-btns button {
     pointer-events: none;
 }
+.-m-2 {
+    margin-right: -0.5rem;
+    margin-left: -0.5rem;
+}
+.-m-01 {
+    margin-right: -0.125rem;
+    margin-left: -0.125rem;
+}

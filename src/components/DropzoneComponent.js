@@ -256,6 +256,7 @@ const DropzoneComponent = forwardRef(({
             onSubmit={handleAddFromLinkSubmit}
         />
         <GalleryModal
+            displayKeys={{multi: 'images'}}
             show={isGalleryModalOpen}
             onHide={handleCloseGalleryModal}
             onSubmit={handleGallerySubmit}

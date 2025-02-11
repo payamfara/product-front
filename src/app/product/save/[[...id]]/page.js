@@ -233,6 +233,7 @@ const CreateProductPage = () => {
         }
 
         useEffect(() => {
+            setErrors({})
             loadData();
         }, [reload]);
 
@@ -254,6 +255,8 @@ const CreateProductPage = () => {
 
             const modifiedLinkedProducts = linkedProducts.map((linkedProduct) => ({
                 ...linkedProduct,
+                images: linkedProduct.images_from_main ? mainProduct.images : linkedProduct.images,
+                data_sheet: linkedProduct.data_sheet_from_main ? mainProduct.data_sheet : linkedProduct.data_sheet,
                 category: mainProduct.category,
                 status: linkedProduct.id === mainProduct.id ? mainProductStatusRef.current : linkedProduct.status,
                 non_variant_product_attrs: linkedProduct.non_variant_product_attrs
