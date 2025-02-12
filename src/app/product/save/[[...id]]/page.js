@@ -688,6 +688,7 @@ const CreateProductPage = () => {
                                                 updateUrls={(valueOrFunction) => updateMainProduct('images', valueOrFunction)}
                                             />
                                             <ButtonImageUpload
+                                                hasGallery
                                                 openOnly
                                                 icon={<IconUpload size={32}/>}
                                                 text={'آپــلود دیــتاشیــت'}

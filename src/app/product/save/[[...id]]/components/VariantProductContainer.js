@@ -593,6 +593,7 @@ const VariantProductContainer = ({
                                                             updateUrls={updateUrls}
                                                         />
                                                         <ButtonImageUpload
+                                                            hasGallery
                                                             disabled={cards[activeCard].data_sheet_from_main}
                                                             openOnly
                                                             icon={<IconUpload size={32}/>}

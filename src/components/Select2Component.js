@@ -17,9 +17,9 @@ const Select2Component = ({
 }) => {
   const [defaultOptions, setDefaultOptions] = useState(options);
   
-  const handleOptions = async (inputValue) => {
+  const handleOptions = async (inputValue = "") => {
     const separator = asyncUrl.includes("?") ? "&" : "?";
-    const requestUrl = `${asyncUrl}${separator}title_en__icontains=${inputValue}&title__icontains=${inputValue}`;
+    const requestUrl = `${asyncUrl}${separator}title_en__icontains=${inputValue}`;
     
     try {
       const res = await baseApiAuth.get(requestUrl);
@@ -30,16 +30,16 @@ const Select2Component = ({
       return []; 
     }
   };
-
-  useEffect(() => {
-    // isAsync && handleOptions(value.value || "")
-    if (!isAsync) return
-    const fetchData = async () => {
-      const options = await handleOptions(value?.value || "");
-      setDefaultOptions(options);
-    };
-    fetchData();
-  }, []);
+  //
+  // useEffect(() => {
+  //   // isAsync && handleOptions(value.value || "")
+  //   if (!isAsync) return
+  //   const fetchData = async () => {
+  //     const options = await handleOptions(value?.value || "");
+  //     setDefaultOptions(options);
+  //   };
+  //   fetchData();
+  // }, []);
 
   return (
     isAsync ? (
@@ -51,7 +51,13 @@ const Select2Component = ({
         value={value} 
         placeholder={`انتخاب ${placeholder}`}
         isMulti={isMulti}
-        onChange={onChange}
+        onChange={() => {
+          console.log('sdfsdf')
+          onChange()
+        }}
+        onFocus={()=>{
+          console.log('focus')
+        }}
         getOptionLabel={(e) => e.value || e.label || e.name || e.title_en || e.title}
         getOptionValue={(e) => e.pk || e.id || e.value}
         classNamePrefix="custom-select"

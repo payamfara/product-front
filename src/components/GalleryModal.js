@@ -1,4 +1,4 @@
-import React, {useState, useEffect, Fragment} from "react";
+import React, {useState, useEffect} from "react";
 import {Modal, Button} from "react-bootstrap";
 import {mediaUrl} from "../utils/funcs";
 import Flickity from "react-flickity-component";
@@ -8,7 +8,6 @@ import Loading from "./Loading";
 import {baseApiAuth} from "../api/baseApi";
 import RippleButton from "./RippleButton/RippleButton";
 import {IconEye, IconFile} from "@tabler/icons-react";
-import Link from "next/link";
 
 const GalleryModal = ({show, onHide, onSubmit, displayKeys = {single: 'data_sheet', multi: 'images'}}) => {
     const displayList = Object.values(displayKeys)
@@ -16,24 +15,27 @@ const GalleryModal = ({show, onHide, onSubmit, displayKeys = {single: 'data_shee
     const [selectedUrls, setSelectedUrls] = useState([]);
     const [searchQ, setSearchQ] = useState('');
     const [debounceSearch, setDebounceSearch] = useState('');
-    const [loading, setLoading] = useState(false);
+    const [changeLoading, setChangeLoading] = useState(false);
+    const [fetchLoading, setFetchLoading] = useState(false);
 
     const loadData = () => {
         const requestUrl = `/api2/product/?search_q=${searchQ}`
+        setFetchLoading(true);
         baseApiAuth
             .get(requestUrl)
             .then((res) => {
                 console.log('res', res.data.results);
                 setPageData(res.data.results);
+                setFetchLoading(false);
             })
             .catch((error) => console.error("Error fetching data:", error));
     }
 
     useEffect(() => {
-        setLoading(true);
+        setChangeLoading(true);
         const timer = setTimeout(() => {
             setDebounceSearch(searchQ);
-            setLoading(false);
+            setChangeLoading(false);
         }, 500);
 
         return () => clearTimeout(timer);
@@ -181,8 +183,9 @@ const GalleryModal = ({show, onHide, onSubmit, displayKeys = {single: 'data_shee
 
                 </div>
                 <div
-                    className={`${loading ? 'opacity-100' : 'opacity-0'} blur top-0 z-1 d-flex justify-content-center align-items-center transition bg-transparent position-absolute w-100 h-100`}>
-                    <Loading/>
+                    className={`${changeLoading || fetchLoading ? 'opacity-100' : 'opacity-0'} blur top-0 z-1 d-flex justify-content-center align-items-center transition position-absolute w-100 h-100`}>
+                    {changeLoading ? <Loading text={'در حال اعمال تغییرات ...'}/> : null}
+                    {fetchLoading ? <Loading /> : null}
                 </div>
 
             </div>

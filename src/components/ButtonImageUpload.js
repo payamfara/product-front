@@ -16,6 +16,7 @@ import Link from "next/link";
 import GalleryModal from "./GalleryModal";
 
 const ButtonImageUpload = ({
+                               hasGallery = false,
                                disabled,
                                openOnly = false,
                                verticalProgress = false,
@@ -99,7 +100,7 @@ const ButtonImageUpload = ({
                             <IconTrash size={16}/>
                         </RippleButton>
                     </div> :
-                    <div
+                    hasGallery ? <div
                         className={`d-flex ${openOnly ? "bg-white p-01 mx-2 translate-middle-y" : "-translate-middle"} rounded-2 gap-1 position-absolute top-0 end-0`}>
                         <RippleButton
                             onClick={handleOpenGalleryModal}
@@ -107,15 +108,15 @@ const ButtonImageUpload = ({
                         >
                             <IconFile size={16}/>
                         </RippleButton>
-                    </div>
+                    </div> : null
                 }
             </div>
-            <GalleryModal
+            {hasGallery ? <GalleryModal
                 displayKeys={{single: 'data_sheet'}}
                 show={isGalleryModalOpen}
                 onHide={handleCloseGalleryModal}
                 onSubmit={handleGallerySubmit}
-            />
+            /> : null}
         </>
     );
 };

@@ -12,9 +12,6 @@ const DynamicAttributeField = ({data, onChange, parentClassName}) => {
         setLocalData(data);
     }, [data]);
 
-
-    // <div className="d-flex justify-content-between align-items-center">
-    // {attribute_category && <span id="help_part_number_en" className="badge text-bg-danger fs-tiny form-label">{attribute_category}</span>}
     const attribute_type = localData.attr_type ?? localData.meta_datas?.attr_value;
     const attribute_error = localData.attribute_error;
     const attribute_name_en = localData.attribute_name_en ?? localData.title_en;
@@ -23,10 +20,6 @@ const DynamicAttributeField = ({data, onChange, parentClassName}) => {
     const attribute_value_str = localData.attribute_value_str ?? "";
     const attribute_priority = localData.attribute_priority ?? localData.priority;
     const attribute_id = localData.attribute_id ?? attribute_name_en;
-    const attribute_url = localData.attribute_url;
-    const attribute_category = localData.attribute_category ?? localData.category;
-    const attribute_prefix = localData.attribute_prefix ?? localData.prefix;
-    const attribute_postfix = localData.attribute_postfix ?? localData.postfix;
     const attribute_placeholder = localData.attribute_placeholder ?? attribute_name_fa;
     const attribute_description = localData.description;
     const attribute_readonly = localData.attribute_readonly ?? attribute_type.type === "readonly";
