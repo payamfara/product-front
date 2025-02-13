@@ -126,12 +126,12 @@
   border-radius: 0.375rem;
   padding: 0.5rem 1rem;
 }
-.select2-results__option[role=option][aria-selected=true] {
+.select2-results__option--selected[role=option] {
   background-color: #7367f0;
   color: #fff;
 }
 
-.select2-container--default .select2-results__option--highlighted:not([aria-selected=true]) {
+.select2-container--default .select2-results__option--highlighted:not(.select2-results__option--selected) {
   background-color: rgba(115, 103, 240, 0.08) !important;
   color: #7367f0 !important;
 }

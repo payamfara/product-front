@@ -51,10 +51,7 @@ const Select2Component = ({
         value={value} 
         placeholder={`انتخاب ${placeholder}`}
         isMulti={isMulti}
-        onChange={() => {
-          console.log('sdfsdf')
-          onChange()
-        }}
+        onChange={onChange}
         onFocus={()=>{
           console.log('focus')
         }}

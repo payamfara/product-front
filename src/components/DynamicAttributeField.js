@@ -4,6 +4,7 @@ import DatePicker from "./DatePicker";
 import {useEffect, useState} from "react";
 import {IconX} from "@tabler/icons-react";
 import RippleButton from "./RippleButton/RippleButton";
+import Select2Js from "./Select2Js";
 
 const DynamicAttributeField = ({data, onChange, parentClassName}) => {
     const [localData, setLocalData] = useState(data);
@@ -43,6 +44,15 @@ const DynamicAttributeField = ({data, onChange, parentClassName}) => {
                             className="form-control"
                         />
                         <label htmlFor={`${attribute_id}_fake`}>{attribute_name_fa}</label>
+                        {/*<Select2Js*/}
+                        {/*    id={attribute_id}*/}
+                        {/*    name={attribute_name_en}*/}
+                        {/*    asyncUrl={attribute_type.url}*/}
+                        {/*    placeholder={attribute_placeholder}*/}
+                        {/*    onChange={onChange}*/}
+                        {/*    value={{'id': attribute_value, 'value': attribute_value_str}}*/}
+                        {/*    className={`position-absolute bottom-0 w-100 custom-select--nobrorder`}*/}
+                        {/*/>*/}
                         <Select2
                             id={attribute_id}
                             name={attribute_name_en}

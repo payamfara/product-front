@@ -86,10 +86,10 @@ export default function RootLayout({
       </head>
 
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
       {children}
-      <Toaster position="top-left" />
+      <Toaster position="top-left"/>
       </body>
     </html>
   );

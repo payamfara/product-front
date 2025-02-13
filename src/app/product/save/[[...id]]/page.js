@@ -8,7 +8,6 @@ import {useParams} from "next/navigation";
 import {baseApiAuth} from "../../../../api/baseApi";
 import VariantProductContainer from "./components/VariantProductContainer";
 import DynamicAttributeField from "@/src/components/DynamicAttributeField";
-import toast, {Toaster} from "react-hot-toast";
 import Loading from "../../../../components/Loading";
 import ClientLayout from "../../../../components/ClientLayout";
 import {useRouter} from 'next/navigation'
@@ -427,8 +426,10 @@ const CreateProductPage = () => {
                                             {/* Category */}
                                             <div className="col-6 ecommerce-select2-dropdown">
                                                 <DynamicAttributeField
-                                                    onChange={(value) =>
+                                                    onChange={(value) => {
+                                                        console.log('value', value)
                                                         updateMainProduct("category", value)
+                                                    }
                                                     }
                                                     className="p-2"
                                                     data={{
@@ -709,7 +710,6 @@ const CreateProductPage = () => {
                                             <h5 className="card-title mb-0">ویژگی های عادی</h5>
                                         </div>
                                         <div
-                                            id="category_attrs_items"
                                             className="gap-3 d-flex flex-column card-body"
                                         >
                                             <TabsWithInputsComponent
