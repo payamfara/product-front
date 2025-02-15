@@ -1,7 +1,7 @@
 "use client";
 import Select2 from "./Select2Component";
 import DatePicker from "./DatePicker";
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {IconX} from "@tabler/icons-react";
 import RippleButton from "./RippleButton/RippleButton";
 import Select2Js from "./Select2Js";
@@ -33,7 +33,7 @@ const DynamicAttributeField = ({data, onChange, parentClassName}) => {
                         {attribute_value ? <RippleButton
                             className="position-absolute end-0 top-0 z-3 rounded-circle mn-1 btn btn-secondary btn-sm p-01 clear-btn"
                             title="Clear"
-                            onClick={() => onChange({id: undefined, value: undefined})}
+                            onClick={() => comRef.current}
                         >
                             <IconX size={10}/>
                         </RippleButton> : undefined}
@@ -44,25 +44,24 @@ const DynamicAttributeField = ({data, onChange, parentClassName}) => {
                             className="form-control"
                         />
                         <label htmlFor={`${attribute_id}_fake`}>{attribute_name_fa}</label>
-                        {/*<Select2Js*/}
+                        <Select2Js
+                            id={attribute_id}
+                            name={attribute_name_en}
+                            asyncUrl={attribute_type.url}
+                            placeholder={attribute_placeholder}
+                            onChange={onChange}
+                            value={{'id': attribute_value, 'text': attribute_value_str}}
+                        />
+                        {/*<Select2*/}
                         {/*    id={attribute_id}*/}
                         {/*    name={attribute_name_en}*/}
                         {/*    asyncUrl={attribute_type.url}*/}
+                        {/*    isAsync={true}*/}
                         {/*    placeholder={attribute_placeholder}*/}
                         {/*    onChange={onChange}*/}
                         {/*    value={{'id': attribute_value, 'value': attribute_value_str}}*/}
                         {/*    className={`position-absolute bottom-0 w-100 custom-select--nobrorder`}*/}
                         {/*/>*/}
-                        <Select2
-                            id={attribute_id}
-                            name={attribute_name_en}
-                            asyncUrl={attribute_type.url}
-                            isAsync={true}
-                            placeholder={attribute_placeholder}
-                            onChange={onChange}
-                            value={{'id': attribute_value, 'value': attribute_value_str}}
-                            className={`position-absolute bottom-0 w-100 custom-select--nobrorder`}
-                        />
                     </div>
                     {attribute_description ? <div className="text-justify invalid-feedback text-gray d-block">{attribute_description}</div> : undefined}
                     {Object.values(attribute_error || {}).map((err, key) => (
@@ -77,7 +76,7 @@ const DynamicAttributeField = ({data, onChange, parentClassName}) => {
                         {attribute_value ? <RippleButton
                             className="position-absolute end-0 top-0 z-3 rounded-circle mn-1 btn btn-secondary btn-sm p-01 clear-btn"
                             title="Clear"
-                            onClick={() => onChange({id: undefined, value: undefined})}
+                            onClick={() => onChange({id: undefined, text: undefined})}
                         >
                             <IconX size={10}/>
                         </RippleButton> : undefined}
@@ -88,16 +87,24 @@ const DynamicAttributeField = ({data, onChange, parentClassName}) => {
                             className="form-control"
                         />
                         <label htmlFor={`${attribute_id}_fake`}>{attribute_name_fa}</label>
-                        <Select2
-                            options={attribute_type.choice}
+                        <Select2Js
                             id={attribute_id}
                             name={attribute_name_en}
-                            isAsync={false}
+                            options={attribute_type.choice}
                             placeholder={attribute_placeholder}
                             onChange={onChange}
-                            value={{'id': attribute_value, 'value': attribute_value_str}}
-                            className={`position-absolute bottom-0 w-100 custom-select--nobrorder`}
+                            value={{'id': attribute_value, 'text': attribute_value_str}}
                         />
+                        {/*<Select2*/}
+                        {/*    options={attribute_type.choice}*/}
+                        {/*    id={attribute_id}*/}
+                        {/*    name={attribute_name_en}*/}
+                        {/*    isAsync={false}*/}
+                        {/*    placeholder={attribute_placeholder}*/}
+                        {/*    onChange={onChange}*/}
+                        {/*    value={{'id': attribute_value, 'value': attribute_value_str}}*/}
+                        {/*    className={`position-absolute bottom-0 w-100 custom-select--nobrorder`}*/}
+                        {/*/>*/}
                     </div>
                     {Object.values(attribute_error || {}).map((err, key)=> (
                         <div key={key} className="invalid-feedback d-block">{JSON.stringify(err)}</div>

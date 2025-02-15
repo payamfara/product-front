@@ -108,7 +108,7 @@ const ListProductPage = () => {
         const extraData = typeof value === "object"
             ? {
                 value: value.id,
-                value_str: (value.value || value.label || value.name || value.title_en),
+                value_str: (value.text || value.label || value.name || value.title_en),
                 opr: opr
             } : {
                 value: value,

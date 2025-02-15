@@ -28,7 +28,7 @@ const AttrListComponent = ({ inputs, updateAttrList }) => {
       return typeof val === 'object' && !Array.isArray(val)
           ? {
             [name]: val.pk || val.id || val.value,
-            [`${name}_str`]: val.value || val.label || val.name || val.title_en,
+            [`${name}_str`]: val.text || val.label || val.name || val.title_en,
           }
           : {[name]: val};
     };

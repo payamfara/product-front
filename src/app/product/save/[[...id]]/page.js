@@ -43,7 +43,7 @@ const CreateProductPage = () => {
                 return typeof val === 'object' && !Array.isArray(val)
                     ? {
                         [name]: val.pk || val.id || val.value,
-                        [`${name}_str`]: val.value || val.label || val.name || val.title_en,
+                        [`${name}_str`]: val.text || val.label || val.name || val.title_en,
                     }
                     : {[name]: val};
             };
@@ -427,7 +427,7 @@ const CreateProductPage = () => {
                                             <div className="col-6 ecommerce-select2-dropdown">
                                                 <DynamicAttributeField
                                                     onChange={(value) => {
-                                                        console.log('value', value)
+                                                        console.log('valueeeee', value)
                                                         updateMainProduct("category", value)
                                                     }
                                                     }

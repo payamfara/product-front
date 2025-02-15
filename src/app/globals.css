@@ -739,3 +739,16 @@ body {
     margin-right: -0.125rem;
     margin-left: -0.125rem;
 }
+.select2-selection__clear {
+    /*display: none;*/
+    z-index: 99999;
+}
+.form-floating .select2 {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}
+.form-floating .select2-selection {
+    border-width: 0 !important;
+    margin: 1px 2px;
+}
