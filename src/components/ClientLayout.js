@@ -3,7 +3,7 @@
 import Header from './Header';
 import Menu from './Menu';
 import ConfirmProvider from "./ConfirmModalComponent";
-import Toast from "../utils/funcs";
+import {Toast} from "../utils/funcs";
 import {useEffect, useRef} from "react";
 
 export default function ClientLayout({ children }) {

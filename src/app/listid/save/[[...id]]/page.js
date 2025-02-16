@@ -1,14 +1,13 @@
 "use client";
-import React, {Fragment, useState, useEffect, useRef} from "react";
+import React, {useState, useEffect, useRef} from "react";
 import {useParams, useRouter} from "next/navigation";
 import {baseApiAuth} from "../../../../api/baseApi";
 import DynamicAttributeField from "@/src/components/DynamicAttributeField";
-import toast from "react-hot-toast";
 import Loading from "../../../../components/Loading";
 import ClientLayout from "../../../../components/ClientLayout";
 import AttrListComponent from "../../../../components/AttrListComponent";
 import PlusButton from "../../../../components/PlusButton";
-import Toast from "../../../../utils/funcs";
+import {Toast} from "../../../../utils/funcs";
 
 const CreateCategoryPage = () => {
     const [pageData, setPageData] = useState({});

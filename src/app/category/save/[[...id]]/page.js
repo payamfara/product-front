@@ -10,10 +10,8 @@ import ClientLayout from "../../../../components/ClientLayout";
 import RippleButton from "../../../../components/RippleButton/RippleButton";
 import {IconCamera, IconChevronDown, IconCircleChevronUp, IconPencil, IconPlus, IconTrash} from "@tabler/icons-react";
 import ButtonImageUpload from "../../../../components/ButtonImageUpload";
-import Toast from "../../../../utils/funcs";
-import DraggableFlexList from "../../../../components/DraggableFlexList";
+import {Toast} from "../../../../utils/funcs";
 import DraggableFlexList2 from "../../../../components/DraggableFlexList2";
-import DraggableFlexList3 from "../../../../components/DraggableFlexList3";
 
 const CreateCategoryPage = () => {
     const [pageData, setPageData] = useState({});

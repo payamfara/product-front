@@ -15,7 +15,7 @@ import LoadingBtn from "../../../../components/LoadingBtn";
 import {IconCheck, IconTrash, IconUpload, IconX} from "@tabler/icons-react";
 import RippleButton from "../../../../components/RippleButton/RippleButton";
 import ButtonImageUpload from "../../../../components/ButtonImageUpload";
-import Toast from "../../../../utils/funcs";
+import {Toast} from "../../../../utils/funcs";
 
 const CreateProductPage = () => {
         const dropzoneRef = useRef(null);
@@ -426,11 +426,7 @@ const CreateProductPage = () => {
                                             {/* Category */}
                                             <div className="col-6 ecommerce-select2-dropdown">
                                                 <DynamicAttributeField
-                                                    onChange={(value) => {
-                                                        console.log('valueeeee', value)
-                                                        updateMainProduct("category", value)
-                                                    }
-                                                    }
+                                                    onChange={(value) => updateMainProduct("category", value)}
                                                     className="p-2"
                                                     data={{
                                                         attribute_name_en: "category",

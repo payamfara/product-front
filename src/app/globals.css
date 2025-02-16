@@ -740,8 +740,8 @@ body {
     margin-left: -0.125rem;
 }
 .select2-selection__clear {
-    /*display: none;*/
-    z-index: 99999;
+    display: none;
+    /*z-index: 99999;*/
 }
 .form-floating .select2 {
     position: absolute;
@@ -751,4 +751,8 @@ body {
 .form-floating .select2-selection {
     border-width: 0 !important;
     margin: 1px 2px;
+}
+.select2-results__option {
+    display: flex;
+    justify-content: space-between;
 }

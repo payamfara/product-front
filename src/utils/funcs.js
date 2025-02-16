@@ -9,7 +9,7 @@ export const getFirstLetters = (input) => {
 export const mediaUrl = (media) => `${process.env.NEXT_PUBLIC_API_URL}${media}`;
 
 
-const Toast = {
+export const Toast = {
   success: (message, options = {}) => {
     toast.success(message, {
       position: "top-center",
@@ -46,4 +46,8 @@ const Toast = {
   },
 };
 
-export default Toast;
+export const modifyUrl = (asyncUrl, data) => {
+  const [baseUrl, queryString] = asyncUrl.split("?");
+  const params = new URLSearchParams(queryString);
+  return `${baseUrl}${data}/${params.toString() ? "?" + params.toString() : ""}`;
+};

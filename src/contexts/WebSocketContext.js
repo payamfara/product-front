@@ -1,7 +1,6 @@
 "use client";
 import React, { createContext, useContext, useState, useEffect } from "react";
-import toast, {Toaster} from "react-hot-toast";
-import Toast from "../utils/funcs";
+import {Toast} from "../utils/funcs";
 
 const WebSocketContext = createContext(null);
 

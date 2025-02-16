@@ -33,7 +33,7 @@ const DynamicAttributeField = ({data, onChange, parentClassName}) => {
                         {attribute_value ? <RippleButton
                             className="position-absolute end-0 top-0 z-3 rounded-circle mn-1 btn btn-secondary btn-sm p-01 clear-btn"
                             title="Clear"
-                            onClick={() => comRef.current}
+                            onClick={() => onChange({id: undefined, text: undefined})}
                         >
                             <IconX size={10}/>
                         </RippleButton> : undefined}
