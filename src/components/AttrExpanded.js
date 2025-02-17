@@ -20,6 +20,7 @@ const AttrExpanded = ({ items, rowIndex, meta_datas, onChange }) => {
             attribute_value_str: items[`${name}_str`]
         },
     }}
+
     return (
         <Fragment>
             <div className="col-7 offset-1">

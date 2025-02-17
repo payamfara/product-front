@@ -750,9 +750,13 @@ body {
 }
 .form-floating .select2-selection {
     border-width: 0 !important;
-    margin: 1px 2px;
+    margin: 2px;
 }
 .select2-results__option {
     display: flex;
     justify-content: space-between;
 }
+.group:hover .group-hover-flex {
+    display: flex !important;
+}
+.hover-shadow-lg{box-shadow:var(--bs-box-shadow-lg)!important}

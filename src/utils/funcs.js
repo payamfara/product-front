@@ -49,5 +49,6 @@ export const Toast = {
 export const modifyUrl = (asyncUrl, data) => {
   const [baseUrl, queryString] = asyncUrl.split("?");
   const params = new URLSearchParams(queryString);
-  return `${baseUrl}${data}/${params.toString() ? "?" + params.toString() : ""}`;
+  const output = `${baseUrl}${data}/${params.toString() ? "?" + params.toString() : ""}`
+  return output.replaceAll('__icontains', '');
 };
