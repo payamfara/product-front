@@ -70,11 +70,9 @@ const AttrListComponent = ({inputs, updateAttrList, collapseFields = [], onlyCol
                             } p-2`}
                         >
                             <div
-                                onMouseEnter={() => handleHoverRow(rowIndex)}
-                                onMouseLeave={() => handleHoverRow(-1)}
                                 role="button"
                                 className={`ps-4 p-2 position-relative card border ${activeRow === rowIndex ? "border-success" : rowInputs.id ? "border-primary" : "border-warning"
-                                } ${hoverRow === rowIndex ? "shadow-lg" : "shadow-sm"}`}
+                                } group shadow-sm hover-shadow-lg`}
                             >
                                 <div
                                     className={`d-flex align-items-start flex-wrap w-100 ${activeRow === rowIndex ? "row-cols-5" : "row-cols-2"
@@ -98,32 +96,30 @@ const AttrListComponent = ({inputs, updateAttrList, collapseFields = [], onlyCol
                                             }/>
                                     }
                                 </div>
-                                {(hoverRow === rowIndex || activeRow === rowIndex) && (
-                                    <div
-                                        className="position-absolute d-flex flex-column justify-content-center gap-4 top-0 start-0 h-100 mxn-2">
-                                        <RippleButton
-                                            className="rounded-start-0 border-0 border-danger ribbon btn btn-danger btn-sm p-1 d-flex align-items-center justify-content-center"
-                                            onClick={() => handleDeleteRow(rowIndex)}
-                                            title="Delete"
-                                        >
-                                            <FaTrash size={16}/>
-                                        </RippleButton>
-                                        <RippleButton
-                                            className={`rounded-start-0 border-0 ribbon btn ${activeRow === rowIndex
-                                                ? "border-secondary btn-secondary"
-                                                : "border-primary btn-primary"
-                                            } btn-sm p-1 d-flex align-items-center justify-content-center`}
-                                            onClick={() => handleActivateRow(rowIndex)}
-                                            title={activeRow === rowIndex ? "Hide" : "Expand"}
-                                        >
-                                            {activeRow === rowIndex ? (
-                                                <FaCompressAlt size={16}/>
-                                            ) : (
-                                                <FaExpandAlt size={16}/>
-                                            )}
-                                        </RippleButton>
-                                    </div>
-                                )}
+                                <div
+                                    className={`${activeRow === rowIndex ? 'd-flex' : 'd-none'} group-hover-flex position-absolute flex-column justify-content-center gap-4 top-0 start-0 h-100 mxn-2`}>
+                                    <RippleButton
+                                        className="rounded-start-0 border-0 border-danger ribbon btn btn-danger btn-sm p-1 d-flex align-items-center justify-content-center"
+                                        onClick={() => handleDeleteRow(rowIndex)}
+                                        title="Delete"
+                                    >
+                                        <FaTrash size={16}/>
+                                    </RippleButton>
+                                    <RippleButton
+                                        className={`rounded-start-0 border-0 ribbon btn ${activeRow === rowIndex
+                                            ? "border-secondary btn-secondary"
+                                            : "border-primary btn-primary"
+                                        } btn-sm p-1 d-flex align-items-center justify-content-center`}
+                                        onClick={() => handleActivateRow(rowIndex)}
+                                        title={activeRow === rowIndex ? "Hide" : "Expand"}
+                                    >
+                                        {activeRow === rowIndex ? (
+                                            <FaCompressAlt size={16}/>
+                                        ) : (
+                                            <FaExpandAlt size={16}/>
+                                        )}
+                                    </RippleButton>
+                                </div>
                             </div>
                         </div>
                     </Fragment>

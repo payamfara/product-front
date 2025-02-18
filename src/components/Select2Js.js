@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {forwardRef, useEffect, useImperativeHandle, useRef, useState} from "react";
 import $ from "jquery";
 import "select2";
 import {baseApiAuth} from "../api/baseApi";
@@ -8,19 +8,23 @@ import AddFromLinkModal from "./AddFromLinkModal";
 import {modifyUrl} from "../utils/funcs";
 import FrmModal from "./FrmModal";
 
-const Select2Component = ({
-                              options = [],
-                              asyncUrl,
-                              onChange,
-                              placeholder,
-                              value,
-                              multiple = false,
-                              updatability = true,
-                              ...props
-                          }) => {
+const Select2Component = forwardRef(({
+                                         options = [],
+                                         asyncUrl,
+                                         onChange,
+                                         placeholder,
+                                         value,
+                                         multiple = false,
+                                         updatability = true,
+                                         ...props
+                                     }, ref) => {
     const selectRef = useRef();
     const modalRef = useRef();
     const isInternalChange = useRef(false);
+
+    useImperativeHandle(ref, () => ({
+        showModal: (id, url) => modalRef.current.showModal(id, url)
+    }));
 
     const fetchOptions = async (searchTerm = '') => {
         const separator = asyncUrl.includes("?") ? "&" : "?";
@@ -117,13 +121,14 @@ const Select2Component = ({
             $select.val(selectedValue).trigger("change");
         }
 
-        $select.on("change", (e) => {
+        const updateValue = () => {
             if (onChange) {
                 const selectedValue = $select.select2("data");
                 isInternalChange.current = false;
                 onChange(multiple ? selectedValue : selectedValue[0]);
             }
-        });
+        }
+        $select.on("change", updateValue);
 
         return () => {
             $select.select2("destroy");
@@ -136,6 +141,7 @@ const Select2Component = ({
             $select.empty()
             $select.select2('destroy');
             $select.select2(select2Config(value));
+            updateValue();
         } else {
             if (value) {
                 const selectedValue = multiple
@@ -148,11 +154,6 @@ const Select2Component = ({
         }
     }
 
-    useEffect(() => {
-        if (!isInternalChange.current) return;
-        handleSubmit(value)
-    }, [value]);
-
     return (
         <>
             <select ref={selectRef} {...props}></select>
@@ -162,6 +163,6 @@ const Select2Component = ({
             />
         </>
     );
-};
+});
 
 export default Select2Component;

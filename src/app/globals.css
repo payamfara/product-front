@@ -476,6 +476,9 @@ body {
 .translate-y-middle {
     --translate-y: -50%;
 }
+.-translate-y-middle {
+    --translate-y: 50%;
+}
 .translate {
     transform: translate(var(--translate-x), var(--translate-y)) !important;
 }

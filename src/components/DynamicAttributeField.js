@@ -2,7 +2,7 @@
 import Select2 from "./Select2Component";
 import DatePicker from "./DatePicker";
 import {useEffect, useRef, useState} from "react";
-import {IconX} from "@tabler/icons-react";
+import {IconPencil, IconPlus, IconX} from "@tabler/icons-react";
 import RippleButton from "./RippleButton/RippleButton";
 import Select2Js from "./Select2Js";
 
@@ -23,13 +23,34 @@ const DynamicAttributeField = ({data, onChange, parentClassName}) => {
     const attribute_id = localData.attribute_id ?? attribute_name_en;
     const attribute_placeholder = localData.attribute_placeholder ?? attribute_name_fa;
     const attribute_description = localData.description;
+    console.log(attribute_name_en, attribute_name_fa)
     const attribute_readonly = localData.attribute_readonly ?? attribute_type.type === "readonly";
+    const select2Ref = useRef(null);
 
     switch (attribute_type?.type) {
         case "select_2": // Select_2
             return (
                 <div className={'d-flex flex-column gap-1'}>
                     <div className={`${parentClassName} form-floating`}>
+                        <div
+                            className="bg-white d-flex gap-1 position-absolute end-0 top-0 z-3 translate-middle-y rounded-circle mx-4 p-01"
+                        >
+                            <RippleButton
+                                className="rounded-circle btn btn btn-primary p-1"
+                                title="Add"
+                                onClick={() => select2Ref.current.showModal(0, attribute_type.url)}
+                            >
+                                <IconPlus size={10}/>
+                            </RippleButton>
+                            <RippleButton
+                                disabled={!attribute_value}
+                                className="rounded-circle btn btn btn-label-primary p-1"
+                                title="Edit"
+                                onClick={() => select2Ref.current.showModal(attribute_value, attribute_type.url)}
+                            >
+                                <IconPencil size={10}/>
+                            </RippleButton>
+                        </div>
                         {attribute_value ? <RippleButton
                             className="position-absolute end-0 top-0 z-3 rounded-circle mn-1 btn btn-secondary btn-sm p-01 clear-btn"
                             title="Clear"
@@ -45,6 +66,7 @@ const DynamicAttributeField = ({data, onChange, parentClassName}) => {
                         />
                         <label htmlFor={`${attribute_id}_fake`}>{attribute_name_fa}</label>
                         <Select2Js
+                            ref={select2Ref}
                             id={attribute_id}
                             name={attribute_name_en}
                             asyncUrl={attribute_type.url}
@@ -63,7 +85,8 @@ const DynamicAttributeField = ({data, onChange, parentClassName}) => {
                         {/*    className={`position-absolute bottom-0 w-100 custom-select--nobrorder`}*/}
                         {/*/>*/}
                     </div>
-                    {attribute_description ? <div className="text-justify invalid-feedback text-gray d-block">{attribute_description}</div> : undefined}
+                    {attribute_description ? <div
+                        className="text-justify invalid-feedback text-gray d-block">{attribute_description}</div> : undefined}
                     {Object.values(attribute_error || {}).map((err, key) => (
                         <div key={key} className="invalid-feedback d-block">{JSON.stringify(err)}</div>
                     ))}
@@ -72,7 +95,7 @@ const DynamicAttributeField = ({data, onChange, parentClassName}) => {
         case "list": // Select_2
             return (
                 <>
-                <div className={`${parentClassName} form-floating`}>
+                    <div className={`${parentClassName} form-floating`}>
                         {attribute_value ? <RippleButton
                             className="position-absolute end-0 top-0 z-3 rounded-circle mn-1 btn btn-secondary btn-sm p-01 clear-btn"
                             title="Clear"
@@ -106,7 +129,7 @@ const DynamicAttributeField = ({data, onChange, parentClassName}) => {
                         {/*    className={`position-absolute bottom-0 w-100 custom-select--nobrorder`}*/}
                         {/*/>*/}
                     </div>
-                    {Object.values(attribute_error || {}).map((err, key)=> (
+                    {Object.values(attribute_error || {}).map((err, key) => (
                         <div key={key} className="invalid-feedback d-block">{JSON.stringify(err)}</div>
                     ))}
                 </>
@@ -135,7 +158,7 @@ const DynamicAttributeField = ({data, onChange, parentClassName}) => {
                         <label htmlFor={attribute_id}>{attribute_name_fa}</label>
                     </div>
 
-                    {Object.values(attribute_error || {}).map((err, key)=> (
+                    {Object.values(attribute_error || {}).map((err, key) => (
                         <div key={key} className="invalid-feedback d-block">{JSON.stringify(err)}</div>
                     ))}
                 </>
@@ -163,7 +186,7 @@ const DynamicAttributeField = ({data, onChange, parentClassName}) => {
                         />
                         <label htmlFor={attribute_id}>{attribute_name_fa}</label>
                     </div>
-                    {Object.values(attribute_error || {}).map((err, key)=> (
+                    {Object.values(attribute_error || {}).map((err, key) => (
                         <div key={key} className="invalid-feedback d-block">{JSON.stringify(err)}</div>
                     ))}
                 </>
@@ -193,7 +216,7 @@ const DynamicAttributeField = ({data, onChange, parentClassName}) => {
                                 defaultChecked={!!attribute_value}
                             />
                         </div>
-                        {Object.values(attribute_error || {}).map((err, key)=> (
+                        {Object.values(attribute_error || {}).map((err, key) => (
                             <div key={key} className="invalid-feedback d-block">{JSON.stringify(err)}</div>
                         ))}
                     </>
@@ -211,7 +234,8 @@ const DynamicAttributeField = ({data, onChange, parentClassName}) => {
                             <label htmlFor={`${attribute_id}_fake`}>
                                 {attribute_name_fa}
                             </label>
-                            <div className="flex-nowrap row row-cols-auto w-100 gap-2 position-absolute bottom-0 m-2 mx-3">
+                            <div
+                                className="flex-nowrap row row-cols-auto w-100 gap-2 position-absolute bottom-0 m-2 mx-3">
                                 <div className="flex-nowrap row max-w-50">
                                     <input
                                         onChange={(e) => onChange(true)}
@@ -232,11 +256,12 @@ const DynamicAttributeField = ({data, onChange, parentClassName}) => {
                                         className={`form-check-input p-0`}
                                         defaultChecked={attribute_value === false}
                                     />
-                                    <label className={'text-truncate'} htmlFor={`${attribute_name_en}_false`}>خیر</label>
+                                    <label className={'text-truncate'}
+                                           htmlFor={`${attribute_name_en}_false`}>خیر</label>
                                 </div>
                             </div>
                         </div>
-                        {Object.values(attribute_error || {}).map((err, key)=> (
+                        {Object.values(attribute_error || {}).map((err, key) => (
                             <div key={key} className="invalid-feedback d-block">{JSON.stringify(err)}</div>
                         ))}
                     </>
@@ -256,7 +281,7 @@ const DynamicAttributeField = ({data, onChange, parentClassName}) => {
                         <DatePicker name={attribute_name_en}/>
                         <label htmlFor={attribute_id}>{attribute_name_en}</label>
                     </div>
-                    {Object.values(attribute_error || {}).map((err, key)=> (
+                    {Object.values(attribute_error || {}).map((err, key) => (
                         <div key={key} className="invalid-feedback d-block">{JSON.stringify(err)}</div>
                     ))}
                 </>

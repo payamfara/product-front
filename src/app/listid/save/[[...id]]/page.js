@@ -145,21 +145,28 @@ const CreateCategoryPage = () => {
                                     {/* Part number en */}
                                     <div className={'col-4 p-2'}>
                                         <DynamicAttributeField
-                                            onChange={(value) => handleChange("title", value)}
+                                            onChange={(value) => handleChange("title_en", value)}
                                             className="p-2"
                                             data={{
-                                                attribute_name_en: "title",
+                                                attribute_name_en: "title_en",
                                                 attribute_name_fa: "کلید مقدار",
-                                                attr_type: pageData.meta_datas.title,
-                                                attr_value: pageData.title,
+                                                attr_type: pageData.meta_datas.title_en,
+                                                attr_value: pageData.title_en,
                                             }}
                                         />
-                                        <span
-                                            id="help_value_en"
-                                            className="fs-tiny form-label"
-                                        ></span>
                                     </div>
-
+                                    <div className={'col-4 p-2'}>
+                                        <DynamicAttributeField
+                                            onChange={(value) => handleChange("is_float", value)}
+                                            className="p-2"
+                                            data={{
+                                                attribute_name_en: "is_float",
+                                                attribute_name_fa: "مقادیر اعشاری",
+                                                attr_type: pageData.meta_datas.is_float,
+                                                attr_value: pageData.is_float,
+                                            }}
+                                        />
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -172,11 +179,17 @@ const CreateCategoryPage = () => {
                                 <div className="card-body">
                                     <AttrListComponent
                                         onlyCollapse
-                                        collapseFields={[
-                                            'title_en',
-                                            'title_fa',
-                                            'title_bz',
-                                        ]}
+                                        collapseFields={
+                                            pageData.is_float
+                                                ? [
+                                                    'title_en',
+                                                ]
+                                                : [
+                                                    'title_en',
+                                                    'title_fa',
+                                                    'title_bz',
+                                                ]
+                                        }
                                         updateAttrList={updateAttrList}
                                         inputs={pageData.attr_values || []}
                                     />
