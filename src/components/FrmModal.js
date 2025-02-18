@@ -18,6 +18,7 @@ const FrmModal = forwardRef(({url, onSubmit}, ref) => {
             setRequestUrl(requestUrl);
             try {
                 const response = await baseApiAuth.get(requestUrl);
+                console.log('response', response);
                 setPageData(response.data);
             } catch (err) {
                 console.error("Error fetching tags:", err);

@@ -23,7 +23,24 @@ const CreateCategoryPage = () => {
             .get(requestUrl)
             .then((res) => {
                 console.log('res', res)
-                setPageData({...res.data, _id: id});
+                setPageData({
+                    ...res.data,
+                    _id: id,
+                    attr_values: !res.data.is_float
+                        ? res.data.attr_values
+                        : res.data.attr_values.map(item => {
+                            const match = item.title_en.match(/^(\d+)(\D+)$/);
+                            const numberPart = match[1];
+                            const letterPart = match[2];
+                            console.log(item.title_en, numberPart, letterPart)
+
+                            return {
+                                ...item,
+                                title_en: numberPart,
+                                units: letterPart,
+                            }
+                        }),
+                });
             })
             .catch((err) => {
                 console.error("Error fetching data:", err);
@@ -58,20 +75,18 @@ const CreateCategoryPage = () => {
         const {created_at, updated_at, ...data} = pageData;
 
         let url = id ? `/api2/listid/${id}/` : `/api2/listid/`;
-        const nonReadOnly = (data) =>
-            Object.fromEntries(
-                Object.entries(data).filter(
-                    ([name, dict]) => name === 'id' || name === 'category_attrs' || pageData.meta_datas[name] && !pageData.meta_datas[name]?.read_only
-                )
-            )
-        const nonReadOnlyData = (data) => ({
-            ...nonReadOnly(data),
-            childes: data.childes.map((child) => nonReadOnlyData(child)),
-        })
+        const finalData = pageData.is_float
+            ? {
+                ...data,
+                attr_values: data.attr_values.map((attr) => ({
+                    ...attr,
+                    title_en: attr.title_en + attr.units,
+                })),
+            } : data
 
-        console.log('nonReadOnlyData', data)
+        console.log(finalData);
         baseApiAuth
-            .post(url, data)
+            .post(url, finalData)
             .then((res) => {
                 Toast.success("موفقیت آمیز بود!");
                 router.push(`/listid/save/${res.data.id}`);
@@ -181,14 +196,15 @@ const CreateCategoryPage = () => {
                                         onlyCollapse
                                         collapseFields={
                                             pageData.is_float
-                                                ? [
-                                                    'title_en',
-                                                ]
-                                                : [
-                                                    'title_en',
-                                                    'title_fa',
-                                                    'title_bz',
-                                                ]
+                                                ? {
+                                                    title_en: 'float',
+                                                    units: '',
+                                                }
+                                                : {
+                                                    title_en: '',
+                                                    title_fa: '',
+                                                    title_bz: '',
+                                                }
                                         }
                                         updateAttrList={updateAttrList}
                                         inputs={pageData.attr_values || []}

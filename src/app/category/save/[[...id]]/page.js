@@ -337,7 +337,7 @@ const CreateCategoryPage = () => {
                                             data={{
                                                 attribute_name_en: "title_en",
                                                 attribute_name_fa: "مقدار انگلیسی",
-                                                attr_type: pageData.meta_datas.title_en,
+                                                attr_type: {...pageData.meta_datas.title_en},
                                                 attr_value: pageData.title_en,
                                             }}
                                         />

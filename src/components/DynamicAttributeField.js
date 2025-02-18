@@ -14,16 +14,16 @@ const DynamicAttributeField = ({data, onChange, parentClassName}) => {
     }, [data]);
 
     const attribute_type = localData.attr_type ?? localData.meta_datas?.attr_value;
+    const attribute_select2Frm = attribute_type.select_2_form;
     const attribute_error = localData.attribute_error;
     const attribute_name_en = localData.attribute_name_en ?? localData.title_en;
     const attribute_name_fa = localData.attribute_name_fa ?? localData.title_fa;
-    const attribute_value = localData.attribute_value ?? localData.attr_value ?? "";
+    const attribute_value = localData.attribute_value ? localData.attribute_value : localData.attr_value ? localData.attr_value :  "";
     const attribute_value_str = localData.attribute_value_str ?? "";
     const attribute_priority = localData.attribute_priority ?? localData.priority;
     const attribute_id = localData.attribute_id ?? attribute_name_en;
     const attribute_placeholder = localData.attribute_placeholder ?? attribute_name_fa;
     const attribute_description = localData.description;
-    console.log(attribute_name_en, attribute_name_fa)
     const attribute_readonly = localData.attribute_readonly ?? attribute_type.type === "readonly";
     const select2Ref = useRef(null);
 
@@ -32,7 +32,7 @@ const DynamicAttributeField = ({data, onChange, parentClassName}) => {
             return (
                 <div className={'d-flex flex-column gap-1'}>
                     <div className={`${parentClassName} form-floating`}>
-                        <div
+                        {attribute_select2Frm ? <div
                             className="bg-white d-flex gap-1 position-absolute end-0 top-0 z-3 translate-middle-y rounded-circle mx-4 p-01"
                         >
                             <RippleButton
@@ -50,7 +50,7 @@ const DynamicAttributeField = ({data, onChange, parentClassName}) => {
                             >
                                 <IconPencil size={10}/>
                             </RippleButton>
-                        </div>
+                        </div> : null}
                         {attribute_value ? <RippleButton
                             className="position-absolute end-0 top-0 z-3 rounded-circle mn-1 btn btn-secondary btn-sm p-01 clear-btn"
                             title="Clear"
@@ -66,6 +66,7 @@ const DynamicAttributeField = ({data, onChange, parentClassName}) => {
                         />
                         <label htmlFor={`${attribute_id}_fake`}>{attribute_name_fa}</label>
                         <Select2Js
+                            updatability={attribute_select2Frm}
                             ref={select2Ref}
                             id={attribute_id}
                             name={attribute_name_en}

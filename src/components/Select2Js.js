@@ -15,7 +15,7 @@ const Select2Component = forwardRef(({
                                          placeholder,
                                          value,
                                          multiple = false,
-                                         updatability = true,
+                                         updatability = false,
                                          ...props
                                      }, ref) => {
     const selectRef = useRef();
@@ -34,7 +34,7 @@ const Select2Component = forwardRef(({
             id: item.id || item.pk || item.value,
             text: item.title_en || item.title || item.value || item.label || item.name,
         }));
-        const modifiedData = !data.some((item) => item.text === searchTerm) ? [{
+        const modifiedData = updatability && !data.some((item) => item.text === searchTerm) ? [{
             id: 0,
             add: true,
             text: 'افزودن'
@@ -85,7 +85,10 @@ const Select2Component = forwardRef(({
         width: "100%",
         data: asyncUrl
             ? convertData(value)
-            : options,
+            : options.map((item) => ({
+                id: item.id || item.pk || item.value,
+                text: item.title_en || item.title || item.value || item.label || item.name,
+            })),
         multiple: multiple,
         cache: false,
         ajax: asyncUrl ? {
@@ -104,6 +107,14 @@ const Select2Component = forwardRef(({
         } : null
     });
 
+    const updateValue = () => {
+        if (onChange) {
+            const selectedValue = $(selectRef.current).select2("data");
+            isInternalChange.current = false;
+            onChange(multiple ? selectedValue : selectedValue[0]);
+        }
+    }
+
     useEffect(() => {
         const $select = $(selectRef.current);
 
@@ -121,13 +132,6 @@ const Select2Component = forwardRef(({
             $select.val(selectedValue).trigger("change");
         }
 
-        const updateValue = () => {
-            if (onChange) {
-                const selectedValue = $select.select2("data");
-                isInternalChange.current = false;
-                onChange(multiple ? selectedValue : selectedValue[0]);
-            }
-        }
         $select.on("change", updateValue);
 
         return () => {

@@ -6,7 +6,6 @@ import RippleButton from "./RippleButton/RippleButton";
 
 const AttrListComponent = ({inputs, updateAttrList, collapseFields = [], onlyCollapse = false}) => {
     const [activeRow, setActiveRow] = useState(-1);
-    const [hoverRow, setHoverRow] = useState(-1);
 
     const rowRefs = useRef([]);
 
@@ -51,8 +50,6 @@ const AttrListComponent = ({inputs, updateAttrList, collapseFields = [], onlyCol
         );
     };
 
-    const handleHoverRow = (rowIndex) => setHoverRow(rowIndex);
-
     return (
         <div className={`ps-3 d-flex flex-wrap`}>
             {inputs.map((_rowInputs, rowIndex) => {
@@ -75,7 +72,7 @@ const AttrListComponent = ({inputs, updateAttrList, collapseFields = [], onlyCol
                                 } group shadow-sm hover-shadow-lg`}
                             >
                                 <div
-                                    className={`d-flex align-items-start flex-wrap w-100 ${activeRow === rowIndex ? "row-cols-5" : "row-cols-2"
+                                    className={`d-flex align-items-start flex-wrap w-100 ${activeRow === rowIndex ? "row-cols-5" : Object.keys(collapseFields).length < 3 ? "row-cols-1" : "row-cols-2"
                                     } `}
                                 >
                                     {activeRow === rowIndex && !onlyCollapse

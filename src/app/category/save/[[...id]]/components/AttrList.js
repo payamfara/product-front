@@ -1,5 +1,5 @@
 import React, { useState, useImperativeHandle, forwardRef, Fragment } from "react";
-import { FaTrash, FaExpandAlt, FaCompressAlt } from "react-icons/fa"; // آیکون‌ها از Font Awesome
+import { FaTrash, FaExpandAlt, FaCompressAlt } from "react-icons/fa";
 import RippleButton from "../../../../../components/RippleButton/RippleButton";
 import DynamicAttributeField from "@/src/components/DynamicAttributeField";
 
