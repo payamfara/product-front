@@ -23,8 +23,8 @@ const TagifyComponent =
             placeholder,
             maxTags,
             whitelist: whitelist.map((item) => ({
-                [displayKey]: item[displayKey] || item['value'] || item['title'],
-                value: item[displayKey] || item['value'] || item['title'],
+                [displayKey]: item[displayKey] || item['value'] || item['title_en'],
+                value: item[displayKey] || item['value'] || item['title_en'],
             })),
             dropdown: {
                 enabled: 0,
@@ -36,8 +36,8 @@ const TagifyComponent =
 
         const processedvalue = value.map((item) => ({
             id: item[valueKey],
-            [displayKey]: item[displayKey] || item['value'] || item['title'],
-            value: item[displayKey] || item['value'] || item['title'],
+            [displayKey]: item[displayKey] || item['value'] || item['title_en'],
+            value: item[displayKey] || item['value'] || item['title_en'],
         }));
 
         const handleInput = async (e) => {
@@ -49,8 +49,8 @@ const TagifyComponent =
                     .then((res) => {
                         tagifyRef.current.settings.whitelist = res.data.results.map(
                             (item) => ({
-                                [displayKey]: item[displayKey] || item['value'] || item['title'],
-                                value: item[displayKey] || item['value'] || item['title'],
+                                [displayKey]: item[displayKey] || item['value'] || item['title_en'],
+                                value: item[displayKey] || item['value'] || item['title_en'],
                             })
                         );
                     })

@@ -90,7 +90,7 @@ const GalleryModal = ({show, onHide, onSubmit, displayKeys = {single: 'data_shee
                 <div
                     className={`d-flex flex-column gap-2 spec-scroll overflow-auto h-400p`}>
                     {pageData
-                        .filter((product) => (displayList.some(item=>product[item])))
+                        .filter((product) => (displayList.some(item=>Array.isArray(product[item]) ? product[item].length : product[item])))
                         .map((product, key) => (<div key={key} id={product.product_id}
                                                      className={`${key % 2 === 1 ? 'bg-label-light' : 'bg-label-secondary'} p-2 mx-3 pt-1 rounded-3 d-flex flex-column`}>
                             <div className={'small text-primary align-items-center gap-2 d-flex p-1'}>

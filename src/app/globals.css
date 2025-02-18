@@ -127,6 +127,10 @@ body {
     border-top-right-radius: 0 !important;
     border-bottom-right-radius: 0 !important;
 }
+.rounded-end-0 {
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+}
 
 .card-img {
     height: 5rem;
@@ -480,7 +484,7 @@ body {
     --translate-y: 50%;
 }
 .translate {
-    transform: translate(var(--translate-x), var(--translate-y)) !important;
+    transform: translate(var(--translate-x), var(--translate-y)) rotate(var(--rotate-degree)) !important;
 }
 .gap-x-3 {
     column-gap: 1rem;
@@ -763,3 +767,17 @@ body {
     display: flex !important;
 }
 .hover-shadow-lg{box-shadow:var(--bs-box-shadow-lg)!important}
+.hover-visible:hover {
+    overflow: visible !important;
+    pointer-events: auto !important;
+}
+.rotate-90 {
+    --rotate-degree: 90deg;
+}
+.-rotate-90 {
+    --rotate-degree: -90deg;
+}
+
+.z-9999 {
+    z-index: 9999;
+}

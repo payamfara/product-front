@@ -12,7 +12,7 @@ import Loading from "../../../../components/Loading";
 import ClientLayout from "../../../../components/ClientLayout";
 import {useRouter} from 'next/navigation'
 import LoadingBtn from "../../../../components/LoadingBtn";
-import {IconCheck, IconTrash, IconUpload, IconX} from "@tabler/icons-react";
+import {IconCheck, IconChevronsLeft, IconChevronsRight, IconTrash, IconUpload, IconX} from "@tabler/icons-react";
 import RippleButton from "../../../../components/RippleButton/RippleButton";
 import ButtonImageUpload from "../../../../components/ButtonImageUpload";
 import {Toast} from "../../../../utils/funcs";
@@ -80,7 +80,7 @@ const CreateProductPage = () => {
             if (name === 'category') {
                 const mainProduct = updatedProducts.find((vp) => vp.id === pageData.id);
                 const {variant_product_attrs, non_variant_product_attrs, ...rest} = mainProduct;
-                const [status, results] = await saveProduct({...rest}, {save: false})
+                const [status, results] = await saveProduct({...rest}, {must_save: false})
                 console.log('results', results)
                 const mergedNonVariantAttrs = [
                     ...results.non_variant_product_attrs || [],
@@ -275,11 +275,11 @@ const CreateProductPage = () => {
                     : mainProduct.non_variant_product_attrs.map(({id, ...nv}) => nv)
             }))
 
-            const innerSave = async (save) => {
+            const innerSave = async (must_save) => {
                 let reload = true;
                 let mainProductId;
                 for (const linkedProduct of modifiedLinkedProducts) {
-                    const [status, results] = await saveProduct({...linkedProduct}, {save})
+                    const [status, results] = await saveProduct({...linkedProduct}, {must_save})
 
                     if (status) {
                         if (linkedProduct.id === pageData.id) {
@@ -342,6 +342,18 @@ const CreateProductPage = () => {
 
         return (
             <ClientLayout>
+                {pageData.navigation_instances.next ? <RippleButton
+                    href={`/product/save/${pageData.navigation_instances.next}`}
+                    className={'z-9999 rounded-end-0 opacity-70 position-fixed end-0 top-50 p-0 translate-middle-y btn btn-light text-primary shadow-lg'}
+                >
+                    <IconChevronsLeft size={18}/>
+                </RippleButton> : null}
+                {pageData.navigation_instances.previous ? <RippleButton
+                    href={`/product/save/${pageData.navigation_instances.previous}`}
+                    className={'z-9999 rounded-start-0 opacity-70 position-fixed start-0 top-50 p-0 translate-middle-y btn btn-light text-primary shadow-lg'}
+                >
+                    <IconChevronsRight size={18}/>
+                </RippleButton> : null}
                 <div className="container-xxl flex-grow-1 container-p-y">
                     <h4 className="py-3 mb-4">
                         <span className="text-muted fw-light"> صفحه اصلی / </span>

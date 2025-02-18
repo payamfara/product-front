@@ -8,7 +8,15 @@ import PlusButton from "../../../../components/PlusButton";
 import Loading from "../../../../components/Loading";
 import ClientLayout from "../../../../components/ClientLayout";
 import RippleButton from "../../../../components/RippleButton/RippleButton";
-import {IconCamera, IconChevronDown, IconCircleChevronUp, IconPencil, IconPlus, IconTrash} from "@tabler/icons-react";
+import {
+    IconCamera,
+    IconChevronDown,
+    IconChevronsLeft, IconChevronsRight,
+    IconCircleChevronUp,
+    IconPencil,
+    IconPlus,
+    IconTrash
+} from "@tabler/icons-react";
 import ButtonImageUpload from "../../../../components/ButtonImageUpload";
 import {Toast} from "../../../../utils/funcs";
 import DraggableFlexList2 from "../../../../components/DraggableFlexList2";
@@ -277,6 +285,18 @@ const CreateCategoryPage = () => {
     }
 
     return (<ClientLayout>
+            {pageData.navigation_instances.next ? <RippleButton
+                href={`/category/save/${pageData.navigation_instances.next}`}
+                className={'z-9999 rounded-end-0 opacity-70 position-fixed end-0 top-50 p-0 translate-middle-y btn btn-light text-primary shadow-lg'}
+            >
+                <IconChevronsLeft size={18}/>
+            </RippleButton> : null}
+            {pageData.navigation_instances.previous ? <RippleButton
+                href={`/category/save/${pageData.navigation_instances.previous}`}
+                className={'z-9999 rounded-start-0 opacity-70 position-fixed start-0 top-50 p-0 translate-middle-y btn btn-light text-primary shadow-lg'}
+            >
+                <IconChevronsRight size={18}/>
+            </RippleButton> : null}
             <div className="container-xxl flex-grow-1 container-p-y">
                 <h4 className="py-3 mb-4">
                     <span className="text-muted fw-light"> صفحه اصلی / </span>
