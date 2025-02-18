@@ -54,7 +54,7 @@ const DynamicAttributeField = ({data, onChange, parentClassName}) => {
                         {attribute_value ? <RippleButton
                             className="position-absolute end-0 top-0 z-3 rounded-circle mn-1 btn btn-secondary btn-sm p-01 clear-btn"
                             title="Clear"
-                            onClick={() => onChange({id: undefined, text: undefined})}
+                            onClick={() => select2Ref.current.onChange(null)}
                         >
                             <IconX size={10}/>
                         </RippleButton> : undefined}
@@ -100,7 +100,7 @@ const DynamicAttributeField = ({data, onChange, parentClassName}) => {
                         {attribute_value ? <RippleButton
                             className="position-absolute end-0 top-0 z-3 rounded-circle mn-1 btn btn-secondary btn-sm p-01 clear-btn"
                             title="Clear"
-                            onClick={() => onChange({id: undefined, text: undefined})}
+                            onClick={() => select2Ref.current.onChange(null)}
                         >
                             <IconX size={10}/>
                         </RippleButton> : undefined}
@@ -112,6 +112,7 @@ const DynamicAttributeField = ({data, onChange, parentClassName}) => {
                         />
                         <label htmlFor={`${attribute_id}_fake`}>{attribute_name_fa}</label>
                         <Select2Js
+                            ref={select2Ref}
                             id={attribute_id}
                             name={attribute_name_en}
                             options={attribute_type.choice}

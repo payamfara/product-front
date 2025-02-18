@@ -26,7 +26,7 @@ const FrmModal = forwardRef(({url, onSubmit}, ref) => {
         },
     }));
 
-    const handleSubmitLinks = async () => {
+    const handleSubmit = async () => {
         try {
             const response = await baseApiAuth.post(requestUrl, pageData);
             onSubmit({id: response.data.id, text: response.data.title_en})
@@ -77,7 +77,7 @@ const FrmModal = forwardRef(({url, onSubmit}, ref) => {
                 <Button variant="secondary" onClick={onHide}>
                     لغو
                 </Button>
-                <Button variant="primary" onClick={handleSubmitLinks}>
+                <Button variant="primary" onClick={handleSubmit}>
                     تایید
                 </Button>
             </Modal.Footer>

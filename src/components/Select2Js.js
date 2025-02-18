@@ -23,7 +23,8 @@ const Select2Component = forwardRef(({
     const isInternalChange = useRef(false);
 
     useImperativeHandle(ref, () => ({
-        showModal: (id, url) => modalRef.current.showModal(id, url)
+        showModal: (id, url) => modalRef.current.showModal(id, url),
+        onChange: handleSubmit
     }));
 
     const fetchOptions = async (searchTerm = '') => {
@@ -142,8 +143,10 @@ const Select2Component = forwardRef(({
     const handleSubmit = (value) => {
         const $select = $(selectRef.current);
         if (asyncUrl) {
+            console.log('valval', value)
             $select.empty()
             $select.select2('destroy');
+            console.log('config', select2Config(value))
             $select.select2(select2Config(value));
             updateValue();
         } else {
