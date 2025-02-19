@@ -31,9 +31,9 @@ const CreateCategoryPage = () => {
                     attr_values: !res.data.is_float
                         ? res.data.attr_values
                         : res.data.attr_values.map(item => {
-                            const match = item.title_en.match(/^(\d+)(\D+)$/);
+                            const match = item.title_en.match(/^(\d+(\.\d+)?)([a-zA-Z]*)$/);
                             const numberPart = match[1];
-                            const letterPart = match[2];
+                            const letterPart = match[3];
                             console.log(item.title_en, numberPart, letterPart)
 
                             return {

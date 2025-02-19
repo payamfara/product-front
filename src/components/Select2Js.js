@@ -1,11 +1,7 @@
-import React, {forwardRef, useEffect, useImperativeHandle, useRef, useState} from "react";
+import React, {forwardRef, useEffect, useImperativeHandle, useRef} from "react";
 import $ from "jquery";
 import "select2";
 import {baseApiAuth} from "../api/baseApi";
-import {IconPencil} from "@tabler/icons-react";
-import GalleryModal from "./GalleryModal";
-import AddFromLinkModal from "./AddFromLinkModal";
-import {modifyUrl} from "../utils/funcs";
 import FrmModal from "./FrmModal";
 
 const Select2Component = forwardRef(({
@@ -127,7 +123,6 @@ const Select2Component = forwardRef(({
             }
         });
 
-        console.log('config', select2Config(value))
         $select.select2(select2Config(value));
 
         if (!asyncUrl && value) {

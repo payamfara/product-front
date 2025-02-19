@@ -52,7 +52,7 @@ const DynamicAttributeField = ({data, onChange, parentClassName}) => {
                                 className="bg-white d-flex gap-1 z-3 rounded-circle px-2"
                             >
                                 <RippleButton
-                                    className="rounded-circle btn btn btn-primary p-1"
+                                    className="pe-auto rounded-circle btn btn btn-primary p-1"
                                     title="Add"
                                     onClick={() => select2Ref.current.showModal(0, attribute_type.url)}
                                 >
@@ -60,7 +60,7 @@ const DynamicAttributeField = ({data, onChange, parentClassName}) => {
                                 </RippleButton>
                                 <RippleButton
                                     disabled={!attribute_value}
-                                    className="rounded-circle btn btn btn-label-primary p-1"
+                                    className="pe-auto rounded-circle btn btn btn-label-primary p-1"
                                     title="Edit"
                                     onClick={() => select2Ref.current.showModal(attribute_value, attribute_type.url)}
                                 >
