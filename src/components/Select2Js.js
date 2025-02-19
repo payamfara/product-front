@@ -116,6 +116,7 @@ const Select2Component = forwardRef(({
         }
     }
 
+    // console.log('config2', select2Config(value))
     useEffect(() => {
         const $select = $(selectRef.current);
 
@@ -126,6 +127,7 @@ const Select2Component = forwardRef(({
             }
         });
 
+        console.log('config', select2Config(value))
         $select.select2(select2Config(value));
 
         if (!asyncUrl && value) {
@@ -136,17 +138,15 @@ const Select2Component = forwardRef(({
         $select.on("change", updateValue);
 
         return () => {
-            $select.select2("destroy");
+            // $select.select2("destroy");
         };
     }, []);
 
     const handleSubmit = (value) => {
         const $select = $(selectRef.current);
         if (asyncUrl) {
-            console.log('valval', value)
             $select.empty()
             $select.select2('destroy');
-            console.log('config', select2Config(value))
             $select.select2(select2Config(value));
             updateValue();
         } else {

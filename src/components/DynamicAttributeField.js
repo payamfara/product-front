@@ -18,7 +18,7 @@ const DynamicAttributeField = ({data, onChange, parentClassName}) => {
     const attribute_error = localData.attribute_error;
     const attribute_name_en = localData.attribute_name_en ?? localData.title_en;
     const attribute_name_fa = localData.attribute_name_fa ?? localData.title_fa;
-    const attribute_value = localData.attribute_value ? localData.attribute_value : localData.attr_value ? localData.attr_value : "";
+    const attribute_value = localData.attribute_value ?? localData.attr_value ?? "";
     const attribute_value_str = localData.attribute_value_str ?? "";
     const attribute_priority = localData.attribute_priority ?? localData.priority;
     const attribute_id = localData.attribute_id ?? attribute_name_en;

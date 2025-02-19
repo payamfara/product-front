@@ -123,18 +123,6 @@ const CreateCategoryPage = () => {
     }));
 
     return (<ClientLayout>
-            {pageData.navigation_instances.next ? <RippleButton
-                href={`/listid/save/${pageData.navigation_instances.next}`}
-                className={'z-9999 rounded-end-0 opacity-70 position-fixed end-0 top-50 p-0 translate-middle-y btn btn-light text-primary shadow-lg'}
-            >
-                <IconChevronsLeft size={18}/>
-            </RippleButton> : null}
-            {pageData.navigation_instances.previous ? <RippleButton
-                href={`/listid/save/${pageData.navigation_instances.previous}`}
-                className={'z-9999 rounded-start-0 opacity-70 position-fixed start-0 top-50 p-0 translate-middle-y btn btn-light text-primary shadow-lg'}
-            >
-                <IconChevronsRight size={18}/>
-            </RippleButton> : null}
             <div className="container-xxl flex-grow-1 container-p-y">
                 <h4 className="py-3 mb-4">
                     <span className="text-muted fw-light"> صفحه اصلی / </span>
@@ -229,6 +217,18 @@ const CreateCategoryPage = () => {
                     </div>
                 </form>
             </div>
+            {pageData.navigation_instances.next ? <RippleButton
+                href={`/listid/save/${pageData.navigation_instances.next}`}
+                className={'z-9999 rounded-end-0 opacity-70 position-fixed end-0 top-50 p-0 translate-middle-y btn btn-light text-primary shadow-lg'}
+            >
+                <IconChevronsLeft size={18}/>
+            </RippleButton> : null}
+            {pageData.navigation_instances.previous ? <RippleButton
+                href={`/listid/save/${pageData.navigation_instances.previous}`}
+                className={'z-9999 rounded-start-0 opacity-70 position-fixed start-0 top-50 p-0 translate-middle-y btn btn-light text-primary shadow-lg'}
+            >
+                <IconChevronsRight size={18}/>
+            </RippleButton> : null}
         </ClientLayout>
     );
 };
