@@ -16,18 +16,18 @@ const TabsWithInputs = ({onChange, inputs, errors}) => {
     const [activeTab, setActiveTab] = useState("");
 
     const categorizedInputs = useMemo(() => {
-        const sortedInputs = inputs.sort((a, b) => {
-            if (a.order !== b.order) {
-                return a.order - b.order;
-            }
-            return a.title_en.localeCompare(b.title_en, "fa");
-        });
-        return categorizeInputs(sortedInputs);
+        // const sortedInputs = inputs.sort((a, b) => {
+        //     if (a.order !== b.order) {
+        //         return a.order - b.order;
+        //     }
+        //     return a.title_en.localeCompare(b.title_en, "fa");
+        // });
+        return categorizeInputs(inputs);
     }, [inputs]);
 
     useEffect(() => {
         if (!activeTab && Object.keys(categorizedInputs).length > 0) {
-            setActiveTab(Object.keys(categorizedInputs)[0]); // مقدار اولیه تب
+            setActiveTab(Object.keys(categorizedInputs)[0]);
         }
     }, [categorizedInputs]);
 
